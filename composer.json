@@ -1,0 +1,36 @@
+{
+    "name": "6tail/tyme4php",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "6tail",
+            "email": "6tail@6tail.cn",
+            "homepage": "https://6tail.cn"
+        }
+    ],
+    "minimum-stability": "stable",
+    "require": {
+        "php": ">=8.1",
+        "ext-bcmath": "*"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "*"
+    },
+    "autoload": {
+        "psr-4": {
+            "com\\tyme\\": "src/"
+        }
+    },
+    "homepage": "https://github.com/6tail/tyme4php",
+    "keywords": [
+        "公历",
+        "农历",
+        "星座",
+        "干支",
+        "生肖",
+        "节气",
+        "法定假日"
+    ],
+    "description": "a calendar library"
+}

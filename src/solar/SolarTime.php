@@ -1,0 +1,221 @@
+<?php
+
+namespace com\tyme\solar;
+
+
+use com\tyme\AbstractTyme;
+use com\tyme\jd\JulianDay;
+use com\tyme\lunar\LunarHour;
+use InvalidArgumentException;
+
+/**
+ * 公历时刻
+ * @author 6tail
+ * @package com\tyme\solar
+ */
+class SolarTime extends AbstractTyme
+{
+    /**
+     * @var SolarDay 公历日
+     */
+    protected SolarDay $day;
+
+    /**
+     * @var int 时
+     */
+    protected int $hour;
+
+    /**
+     * @var int 分
+     */
+    protected int $minute;
+
+    /**
+     * @var int 秒
+     */
+    protected int $second;
+
+    protected function __construct(int $year, int $month, int $day, int $hour, int $minute, int $second)
+    {
+        if ($hour < 0 || $hour > 23) {
+            throw new InvalidArgumentException(sprintf('illegal hour: %d', $hour));
+        }
+        if ($minute < 0 || $minute > 59) {
+            throw new InvalidArgumentException(sprintf('illegal minute: %d', $minute));
+        }
+        if ($second < 0 || $second > 59) {
+            throw new InvalidArgumentException(sprintf('illegal second: %d', $second));
+        }
+        $this->day = SolarDay::fromYmd($year, $month, $day);
+        $this->hour = $hour;
+        $this->minute = $minute;
+        $this->second = $second;
+    }
+
+    static function fromYmdHms(int $year, int $month, int $day, int $hour, int $minute, int $second): static
+    {
+        return new static($year, $month, $day, $hour, $minute, $second);
+    }
+
+    /**
+     * 日
+     *
+     * @return SolarDay 日
+     */
+    function getDay(): SolarDay
+    {
+        return $this->day;
+    }
+
+    /**
+     * 时
+     *
+     * @return int 时
+     */
+    function getHour(): int
+    {
+        return $this->hour;
+    }
+
+    /**
+     * 分
+     *
+     * @return int 分
+     */
+    function getMinute(): int
+    {
+        return $this->minute;
+    }
+
+    /**
+     * 秒
+     *
+     * @return int 秒
+     */
+    function getSecond(): int
+    {
+        return $this->second;
+    }
+
+    function getName(): string
+    {
+        return sprintf('%02d:%02d:%02d', $this->hour, $this->minute, $this->second);
+    }
+
+    function __toString(): string
+    {
+        return sprintf('%s %s', $this->day, $this->getName());
+    }
+
+    /**
+     * 是否在指定公历时刻之前
+     *
+     * @param SolarTime $target 公历时刻
+     * @return bool true/false
+     */
+    function isBefore(SolarTime $target): bool
+    {
+        if (!$this->day->equals($target->getDay())) {
+            return $this->day->isBefore($target->getDay());
+        }
+        $bHour = $target->getHour();
+        if ($this->hour == $bHour) {
+            $bMinute = $target->getMinute();
+            return $this->minute == $bMinute ? $this->second < $target->getSecond() : $this->minute < $bMinute;
+        }
+        return $this->hour < $bHour;
+    }
+
+    /**
+     * 是否在指定公历时刻之后
+     *
+     * @param SolarTime $target 公历时刻
+     * @return true/false
+     */
+    function isAfter(SolarTime $target): bool
+    {
+        if (!$this->day->equals($target->getDay())) {
+            return $this->day->isAfter($target->getDay());
+        }
+        $bHour = $target->getHour();
+        if ($this->hour == $bHour) {
+            $bMinute = $target->getMinute();
+            return $this->minute == $bMinute ? $this->second > $target->getSecond() : $this->minute > $bMinute;
+        }
+        return $this->hour > $bHour;
+    }
+
+    /**
+     * 节气
+     *
+     * @return SolarTerm 节气
+     */
+    function getTerm(): SolarTerm
+    {
+        $term = SolarTerm::fromIndex($this->day->getMonth()->getYear()->getYear() + 1, 0);
+        while ($this->isBefore($term->getJulianDay()->getSolarTime())) {
+            $term = $term->next(-1);
+        }
+        return $term;
+    }
+
+    /**
+     * 儒略日
+     *
+     * @return JulianDay 儒略日
+     */
+    function getJulianDay(): JulianDay
+    {
+        $month = $this->day->getMonth();
+        return JulianDay::fromYmdHms($month->getYear()->getYear(), $month->getMonth(), $this->day->getDay(), $this->hour, $this->minute, $this->second);
+    }
+
+    /**
+     * 公历时刻相减，获得相差秒数
+     *
+     * @param SolarTime $target 公历时刻
+     * @return int 秒数
+     */
+    function subtract(SolarTime $target): int
+    {
+        $days = $this->day->subtract($target->getDay());
+        $cs = $this->hour * 3600 + $this->minute * 60 + $this->second;
+        $ts = $target->getHour() * 3600 + $target->getMinute() * 60 + $target->getSecond();
+        $seconds = $cs - $ts;
+        if ($seconds < 0) {
+            $seconds += 86400;
+            $days--;
+        }
+        $seconds += $days * 86400;
+        return $seconds;
+    }
+
+    /**
+     * 推移
+     *
+     * @param int $n 推移秒数
+     * @return SolarTime 公历时刻
+     */
+    function next(int $n): SolarTime
+    {
+        $ts = $this->second + $n;
+        $tm = $this->minute + intdiv($ts, 60);
+        $th = $this->hour + intdiv($tm, 60);
+        $d = $this->day->next(intdiv($th, 24));
+        $month = $d->getMonth();
+        return SolarTime::fromYmdHms($month->getYear()->getYear(), $month->getMonth(), $d->getDay(), $th % 24, $tm % 60, $ts % 60);
+    }
+
+    /**
+     * 时辰
+     *
+     * @return LunarHour 农历时辰
+     */
+    function getLunarHour(): LunarHour
+    {
+        $d = $this->day->getLunarDay();
+        $m = $d->getMonth();
+        return LunarHour::fromYmdHms($m->getYear()->getYear(), $m->getMonthWithLeap(), $d->getDay(), $this->hour, $this->minute, $this->second);
+    }
+
+}
