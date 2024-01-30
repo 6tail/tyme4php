@@ -22,9 +22,8 @@ Tyme是一个非常强大的日历工具库，可以看作 [Lunar](https://6tail
 
 ## 单文件版本
 
-1. 下载本源代码，执行<code>tools/build-standalone.php</code>，可在tools目录下生成<code>Tyme.php</code>单文件。
-2. 可在 [Releases](https://github.com/6tail/tyme4php/releases) 中下载对应版本的<code>Tyme.php</code>单文件。
-
+> 1. 下载本源代码，执行<code>tools/build-standalone.php</code>，可在tools目录下生成<code>Tyme.php</code>单文件。
+> 2. 可在 [Releases](https://github.com/6tail/tyme4php/releases) 中下载对应版本的<code>Tyme.php</code>单文件。
 
     <?php
     require 'Tyme.php';
