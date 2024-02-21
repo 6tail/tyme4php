@@ -32,5 +32,5 @@
         "节气",
         "法定假日"
     ],
-    "description": "a calendar library"
+    "description": "Tyme是一个非常强大的日历工具库，可以看作 Lunar 的升级版，拥有更优的设计和扩展性，支持公历和农历、星座、干支、生肖、节气、法定假日等。"
 }

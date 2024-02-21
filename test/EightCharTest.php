@@ -2,6 +2,8 @@
 
 use com\tyme\eightchar\ChildLimit;
 use com\tyme\eightchar\EightChar;
+use com\tyme\eightchar\provider\impl\China95ChildLimitProvider;
+use com\tyme\eightchar\provider\impl\DefaultChildLimitProvider;
 use com\tyme\enums\Gender;
 use com\tyme\lunar\LunarHour;
 use com\tyme\sixtycycle\HeavenStem;
@@ -473,24 +475,176 @@ class EightCharTest extends TestCase
 
     function test29()
     {
-        $eightChar = new EightChar(
-            SixtyCycle::fromName('丙寅'),
-            SixtyCycle::fromName('庚寅'),
-            SixtyCycle::fromName('辛卯'),
-            SixtyCycle::fromName('壬辰')
-        );
+        $eightChar = new EightChar('丙寅', '庚寅', '辛卯', '壬辰');
         $this->assertEquals('己亥', $eightChar->getOwnSign()->getName());
         $this->assertEquals('乙未', $eightChar->getBodySign()->getName());
     }
 
     function test30()
     {
-        $eightChar = new EightChar(
-            SixtyCycle::fromName('壬子'),
-            SixtyCycle::fromName('辛亥'),
-            SixtyCycle::fromName('壬戌'),
-            SixtyCycle::fromName('乙巳')
-        );
+        $eightChar = new EightChar('壬子', '辛亥', '壬戌', '乙巳');
         $this->assertEquals('乙巳', $eightChar->getBodySign()->getName());
+    }
+
+    function test31()
+    {
+        // 采用元亨利贞的起运算法
+        ChildLimit::$provider = new China95ChildLimitProvider();
+        // 童限
+        $childLimit = ChildLimit::fromSolarTime(SolarTime::fromYmdHms(1986, 5, 29, 13, 37, 0), Gender::MAN);
+        // 童限年数
+        $this->assertEquals(2, $childLimit->getYearCount());
+        // 童限月数
+        $this->assertEquals(7, $childLimit->getMonthCount());
+        // 童限日数
+        $this->assertEquals(0, $childLimit->getDayCount());
+        // 童限时数
+        $this->assertEquals(0, $childLimit->getHourCount());
+        // 童限分数
+        $this->assertEquals(0, $childLimit->getMinuteCount());
+        // 童限结束(即开始起运)的公历时刻
+        $this->assertEquals('1988年12月29日 13:37:00', $childLimit->getEndTime()->__toString());
+
+        // 为了不影响其他测试用例，恢复默认起运算法
+        ChildLimit::$provider = new DefaultChildLimitProvider();
+    }
+
+    public function test32()
+    {
+        $eightChar = new EightChar('丙辰', '丁酉', '丙子', '甲午');
+        $solarTimes = $eightChar->getSolarTimes(1900, 2024);
+        $actual = array();
+        foreach ($solarTimes as $solarTime) {
+            $actual[] = $solarTime->__toString();
+        }
+
+        $expected = array('1916年10月6日 12:00:00', '1976年9月21日 12:00:00');
+        $this->assertEquals($expected, $actual);
+    }
+
+    public function test33()
+    {
+        $eightChar = new EightChar('壬寅', '庚戌', '己未', '乙亥');
+        $solarTimes = $eightChar->getSolarTimes(1900, 2024);
+        $actual = array();
+        foreach ($solarTimes as $solarTime) {
+            $actual[] = $solarTime->__toString();
+        }
+
+        $expected = array('2022年11月2日 22:00:00');
+        $this->assertEquals($expected, $actual);
+    }
+
+    public function test34()
+    {
+        $eightChar = new EightChar('己卯', '辛未', '甲戌', '壬申');
+        $solarTimes = $eightChar->getSolarTimes(1900, 2024);
+        $actual = array();
+        foreach ($solarTimes as $solarTime) {
+            $actual[] = $solarTime->__toString();
+        }
+
+        $expected = array('1939年8月5日 16:00:00', '1999年7月21日 16:00:00');
+        $this->assertEquals($expected, $actual);
+    }
+
+    public function test35()
+    {
+        $eightChar = new EightChar('庚子', '戊子', '己卯', '庚午');
+        $solarTimes = $eightChar->getSolarTimes(1900, 2024);
+        $actual = array();
+        foreach ($solarTimes as $solarTime) {
+            $actual[] = $solarTime->__toString();
+        }
+
+        $expected = array('1901年1月1日 12:00:00', '1960年12月17日 12:00:00');
+        $this->assertEquals($expected, $actual);
+    }
+
+    public function test36()
+    {
+        $eightChar = new EightChar('庚子', '癸未', '乙丑', '丁亥');
+        $solarTimes = $eightChar->getSolarTimes(1900, 2024);
+        $actual = array();
+        foreach ($solarTimes as $solarTime) {
+            $actual[] = $solarTime->__toString();
+        }
+
+        $expected = array('1960年8月5日 22:00:00', '2020年7月21日 22:00:00');
+        $this->assertEquals($expected, $actual);
+    }
+
+    public function test37()
+    {
+        $eightChar = SolarTime::fromYmdHms(1999, 6, 7, 9, 11, 0)->getLunarHour()->getEightChar();
+        $actual = $eightChar->__toString();
+
+        $expected = '己卯 庚午 庚寅 辛巳';
+        $this->assertEquals($expected, $actual);
+    }
+
+    public function test38()
+    {
+        $eightChar = new EightChar('癸卯', '甲寅', '甲寅', '甲子');
+        $solarTimes = $eightChar->getSolarTimes(1800, 2024);
+        $actual = array();
+        foreach ($solarTimes as $solarTime) {
+            $actual[] = $solarTime->__toString();
+        }
+
+        $expected = array('1843年2月9日 00:00:00', '2023年2月25日 00:00:00');
+        $this->assertEquals($expected, $actual);
+    }
+
+    public function test39()
+    {
+        $eightChar = new EightChar('己亥', '丁丑', '壬寅', '戊申');
+        $solarTimes = $eightChar->getSolarTimes(1900, 2024);
+        $actual = array();
+        foreach ($solarTimes as $solarTime) {
+            $actual[] = $solarTime->__toString();
+        }
+
+        $expected = array('1900年1月29日 16:00:00', '1960年1月15日 16:00:00');
+        $this->assertEquals($expected, $actual);
+    }
+
+    public function test40()
+    {
+        $eightChar = new EightChar('己亥', '丙子', '癸酉', '庚申');
+        $solarTimes = $eightChar->getSolarTimes(1900, 2024);
+        $actual = array();
+        foreach ($solarTimes as $solarTime) {
+            $actual[] = $solarTime->__toString();
+        }
+
+        $expected = array('1959年12月17日 16:00:00');
+        $this->assertEquals($expected, $actual);
+    }
+
+    public function test41()
+    {
+        $eightChar = new EightChar('乙亥', '乙酉', '乙酉', '乙酉');
+        $solarTimes = $eightChar->getSolarTimes(1000, 2024);
+        $actual = array();
+        foreach ($solarTimes as $solarTime) {
+            $actual[] = $solarTime->__toString();
+        }
+
+        $expected = array('1095年9月23日 18:00:00', '1155年9月8日 18:00:00', '1335年9月23日 18:00:00', '1395年9月8日 18:00:00', '1575年9月23日 18:00:00', '1635年9月18日 18:00:00', '1815年10月5日 18:00:00', '1875年9月20日 18:00:00');
+        $this->assertEquals($expected, $actual);
+    }
+
+    public function test42()
+    {
+        $eightChar = new EightChar('癸卯', '乙卯', '丙辰', '丁酉');
+        $solarTimes = $eightChar->getSolarTimes(1900, 2024);
+        $actual = array();
+        foreach ($solarTimes as $solarTime) {
+            $actual[] = $solarTime->__toString();
+        }
+
+        $expected = array('1903年3月29日 18:00:00', '1963年3月14日 18:00:00');
+        $this->assertEquals($expected, $actual);
     }
 }

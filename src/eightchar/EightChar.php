@@ -8,6 +8,8 @@ use com\tyme\culture\Duty;
 use com\tyme\sixtycycle\EarthBranch;
 use com\tyme\sixtycycle\HeavenStem;
 use com\tyme\sixtycycle\SixtyCycle;
+use com\tyme\solar\SolarTerm;
+use com\tyme\solar\SolarTime;
 
 /**
  * 八字
@@ -36,12 +38,12 @@ class EightChar extends AbstractCulture
      */
     protected SixtyCycle $hour;
 
-    function __construct(SixtyCycle $year, SixtyCycle $month, SixtyCycle $day, SixtyCycle $hour)
+    function __construct(SixtyCycle|string $year, SixtyCycle|string $month, SixtyCycle|string $day, SixtyCycle|string $hour)
     {
-        $this->year = $year;
-        $this->month = $month;
-        $this->day = $day;
-        $this->hour = $hour;
+        $this->year = $year instanceof SixtyCycle ? $year : SixtyCycle::fromName($year);
+        $this->month = $month instanceof SixtyCycle ? $month : SixtyCycle::fromName($month);
+        $this->day = $day instanceof SixtyCycle ? $day : SixtyCycle::fromName($day);
+        $this->hour = $hour instanceof SixtyCycle ? $hour : SixtyCycle::fromName($hour);
     }
 
     /**
@@ -143,6 +145,64 @@ class EightChar extends AbstractCulture
     function getName(): string
     {
         return sprintf('%s %s %s %s', $this->year, $this->month, $this->day, $this->hour);
+    }
+
+    /**
+     * 阳历时刻列表
+     * @param int $startYear 开始年(含)，支持1-9999年
+     * @param int $endYear 结束年(含)，支持1-9999年
+     * @return SolarTime[] 阳历时刻列表
+     */
+    function getSolarTimes(int $startYear, int $endYear): array
+    {
+        $l = array();
+        // 月地支距寅月的偏移值
+        $m = $this->month->getEarthBranch()->next(-2)->getIndex();
+        // 月天干要一致
+        if (!HeavenStem::fromIndex(($this->year->getHeavenStem()->getIndex() + 1) * 2 + $m)->equals($this->month->getHeavenStem())) {
+            return $l;
+        }
+        // 1年的立春是辛酉，序号57
+        $y = $this->year->next(-57)->getIndex() + 1;
+        // 节令偏移值
+        $m *= 2;
+        // 时辰地支转时刻，子时按零点算
+        $h = $this->hour->getEarthBranch()->getIndex() * 2;
+        $baseYear = $startYear - 1;
+        while ($y <= $endYear) {
+            if ($y >= $baseYear) {
+                // 立春为寅月的开始
+                $term = SolarTerm::fromIndex($y, 3);
+                // 节令推移，年干支和月干支就都匹配上了
+                if ($m > 0) {
+                    $term = $term->next($m);
+                }
+                $solarTime = $term->getJulianDay()->getSolarTime();
+                if ($solarTime->getDay()->getMonth()->getYear()->getYear() >= $startYear) {
+                    $mi = 0;
+                    $s = 0;
+                    // 日干支和节令干支的偏移值
+                    $solarDay = $solarTime->getDay();
+                    $d = $this->day->next(-$solarDay->getLunarDay()->getSixtyCycle()->getIndex())->getIndex();
+                    if ($d > 0) {
+                        // 从节令推移天数
+                        $solarDay = $solarDay->next($d);
+                    } else if ($h == $solarTime->getHour()) {
+                        // 如果正好是节令当天，且小时和节令的小时数相等的极端情况，把分钟和秒钟带上
+                        $mi = $solarTime->getMinute();
+                        $s = $solarTime->getSecond();
+                    }
+                    $solarMonth = $solarDay->getMonth();
+                    $time = SolarTime::fromYmdHms($solarMonth->getYear()->getYear(), $solarMonth->getMonth(), $solarDay->getDay(), $h, $mi, $s);
+                    // 验证一下
+                    if ($time->getLunarHour()->getEightChar()->equals($this)) {
+                        $l[] = $time;
+                    }
+                }
+            }
+            $y += 60;
+        }
+        return $l;
     }
 
 }
