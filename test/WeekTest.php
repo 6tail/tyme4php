@@ -149,4 +149,24 @@ class WeekTest extends TestCase
         $this->assertEquals('2023年1月第一周', $week->__toString());
         $this->assertEquals('2022年12月27日', $week->getFirstDay()->__toString());
     }
+
+    function test23()
+    {
+        $start = 0;
+        $week = SolarWeek::fromYm(2024, 2, 2, $start);
+        $this->assertEquals('2024年2月第三周', $week->__toString());
+        $this->assertEquals(6, $week->getIndexInYear());
+
+        $week = SolarDay::fromYmd(2024, 2, 11)->getSolarWeek($start);
+        $this->assertEquals('2024年2月第三周', $week->__toString());
+
+        $week = SolarDay::fromYmd(2024, 2, 17)->getSolarWeek($start);
+        $this->assertEquals('2024年2月第三周', $week->__toString());
+
+        $week = SolarDay::fromYmd(2024, 2, 10)->getSolarWeek($start);
+        $this->assertEquals('2024年2月第二周', $week->__toString());
+
+        $week = SolarDay::fromYmd(2024, 2, 18)->getSolarWeek($start);
+        $this->assertEquals('2024年2月第四周', $week->__toString());
+    }
 }

@@ -74,6 +74,23 @@ class SolarWeek extends AbstractTyme
     }
 
     /**
+     * 位于当年的索引
+     *
+     * @return int 索引
+     */
+    function getIndexInYear(): int
+    {
+        $i = 0;
+        // 今年第1周
+        $w = self::fromYm($this->month->getYear()->getYear(), 1, 0, $this->start->getIndex());
+        while (!$w->equals($this)) {
+            $w = $w->next(1);
+            $i += 1;
+        }
+        return $i;
+    }
+
+    /**
      * 起始星期
      *
      * @return Week 星期
@@ -101,12 +118,12 @@ class SolarWeek extends AbstractTyme
         $d = $this->index + $n;
         $m = $this->month;
         $startIndex = $this->start->getIndex();
-        $weeksInMonth = $m->getWeekCount($startIndex);
+        $weekCount = $m->getWeekCount($startIndex);
         $forward = $n > 0;
         $add = $forward ? 1 : -1;
-        while ($forward ? ($d >= $weeksInMonth) : ($d < 0)) {
+        while ($forward ? ($d >= $weekCount) : ($d < 0)) {
             if ($forward) {
-                $d -= $weeksInMonth;
+                $d -= $weekCount;
             }
             if (!$forward) {
                 if (!SolarDay::fromYmd($m->getYear()->getYear(), $m->getMonth(), 1)->getWeek()->equals($this->start)) {
@@ -119,9 +136,9 @@ class SolarWeek extends AbstractTyme
                     $d += $add;
                 }
             }
-            $weeksInMonth = $m->getWeekCount($startIndex);
+            $weekCount = $m->getWeekCount($startIndex);
             if (!$forward) {
-                $d += $weeksInMonth;
+                $d += $weekCount;
             }
         }
         return static::fromYm($m->getYear()->getYear(), $m->getMonth(), $d, $startIndex);

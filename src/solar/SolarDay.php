@@ -40,19 +40,18 @@ class SolarDay extends AbstractTyme
 
     protected function __construct(int $year, int $month, int $day)
     {
-        $this->month = SolarMonth::fromYm($year, $month);
+        $m = SolarMonth::fromYm($year, $month);
         if ($day < 1) {
             throw new InvalidArgumentException(sprintf('illegal solar day: %d-%d-%d', $year, $month, $day));
         }
         if (1582 == $year && 10 == $month) {
-            if ($day > 4 && $day < 15) {
-                throw new InvalidArgumentException(sprintf('illegal solar day: %d-%d-%d', $year, $month, $day));
-            } else if ($day > 31) {
+            if (($day > 4 && $day < 15) || $day > 31) {
                 throw new InvalidArgumentException(sprintf('illegal solar day: %d-%d-%d', $year, $month, $day));
             }
-        } else if ($day > SolarMonth::fromYm($year, $month)->getDayCount()) {
+        } else if ($day > $m->getDayCount()) {
             throw new InvalidArgumentException(sprintf('illegal solar day: %d-%d-%d', $year, $month, $day));
         }
+        $this->month = $m;
         $this->day = $day;
     }
 
@@ -191,6 +190,19 @@ class SolarDay extends AbstractTyme
             $term = $term->next(-1);
         }
         return $term;
+    }
+
+    /**
+     * 公历周
+     *
+     * @param int $start 起始星期，1234560分别代表星期一至星期天
+     * @return SolarWeek 公历周
+     */
+    function getSolarWeek(int $start): SolarWeek
+    {
+        $y = $this->month->getYear()->getYear();
+        $m = $this->month->getMonth();
+        return SolarWeek::fromYm($y, $m, (int)ceil(($this->day + SolarDay::fromYmd($y, $m, 1)->getWeek()->next(-$start)->getIndex()) / 7.0) - 1, $start);
     }
 
     /**

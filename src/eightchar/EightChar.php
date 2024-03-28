@@ -148,10 +148,10 @@ class EightChar extends AbstractCulture
     }
 
     /**
-     * 阳历时刻列表
+     * 公历时刻列表
      * @param int $startYear 开始年(含)，支持1-9999年
      * @param int $endYear 结束年(含)，支持1-9999年
-     * @return SolarTime[] 阳历时刻列表
+     * @return SolarTime[] 公历时刻列表
      */
     function getSolarTimes(int $startYear, int $endYear): array
     {

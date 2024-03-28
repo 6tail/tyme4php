@@ -38,4 +38,10 @@ class SolarHalfYearTest extends TestCase
         $this->assertEquals('上半年', SolarHalfYear::fromIndex(2023, 0)->next(-2)->getName());
         $this->assertEquals('2022年上半年', SolarHalfYear::fromIndex(2023, 0)->next(-2)->__toString());
     }
+
+    function test5()
+    {
+        $this->assertEquals('2021年上半年', SolarHalfYear::fromIndex(2023, 0)->next(-4)->__toString());
+        $this->assertEquals('2021年下半年', SolarHalfYear::fromIndex(2023, 0)->next(-3)->__toString());
+    }
 }

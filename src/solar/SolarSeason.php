@@ -28,8 +28,8 @@ class SolarSeason extends AbstractTyme
     protected function __construct(int $year, int $index)
     {
         $this->year = SolarYear::fromYear($year);
-        if ($index < 0 || $index > 1) {
-            throw new InvalidArgumentException(sprintf('illegal solar half year index: %d', $index));
+        if ($index < 0 || $index > 3) {
+            throw new InvalidArgumentException(sprintf('illegal solar season index: %d', $index));
         }
         $this->index = $index;
     }
@@ -63,10 +63,24 @@ class SolarSeason extends AbstractTyme
         return self::$NAMES[$this->index];
     }
 
+    function __toString(): string
+    {
+        return sprintf('%s%s', $this->year, $this->getName());
+    }
+
     function next(int $n): static
     {
-        $m = $this->index + $n;
-        return self::fromIndex($this->year->getYear() + intdiv($m, 4), abs($m % 4));
+        if ($n == 0) {
+            return self::fromIndex($this->year->getYear(), $this->index);
+        }
+        $i = $this->index + $n;
+        $y = $this->year->getYear() + intdiv($i, 4);
+        $i %= 4;
+        if ($i < 0) {
+            $i += 4;
+            $y -= 1;
+        }
+        return self::fromIndex($y, $i);
     }
 
     /**
