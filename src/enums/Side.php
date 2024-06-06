@@ -27,18 +27,18 @@ enum Side: int
 
     static function fromCode(int $code): Side
     {
-        return match (true) {
-            $code == 0 => self::IN,
-            $code == 1 => self::OUT,
+        return match ($code) {
+            0 => self::IN,
+            1 => self::OUT,
             default => null
         };
     }
 
     static function fromName(string $name): Side
     {
-        return match (true) {
-            $name == '内' => self::IN,
-            $name == '外' => self::OUT,
+        return match ($name) {
+            '内' => self::IN,
+            '外' => self::OUT,
             default => null
         };
     }

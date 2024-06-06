@@ -185,11 +185,23 @@ class SolarDay extends AbstractTyme
      */
     function getTerm(): SolarTerm
     {
+        return $this->getTermDay()->getSolarTerm();
+    }
+
+    /**
+     * 节气第几天
+     *
+     * @return SolarTermDay 节气第几天
+     */
+    function getTermDay(): SolarTermDay
+    {
         $term = SolarTerm::fromIndex($this->month->getYear()->getYear() + 1, 0);
-        while ($this->isBefore($term->getJulianDay()->getSolarDay())) {
+        $day = $term->getJulianDay()->getSolarDay();
+        while ($this->isBefore($day)) {
             $term = $term->next(-1);
+            $day = $term->getJulianDay()->getSolarDay();
         }
-        return $term;
+        return new SolarTermDay($term, $this->subtract($day));
     }
 
     /**

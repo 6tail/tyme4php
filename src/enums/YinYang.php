@@ -27,18 +27,18 @@ enum YinYang: int
 
     static function fromCode(int $code): YinYang
     {
-        return match (true) {
-            $code == 1 => self::YANG,
-            $code == 0 => self::YIN,
+        return match ($code) {
+            1 => self::YANG,
+            0 => self::YIN,
             default => null
         };
     }
 
     static function fromName(string $name): YinYang
     {
-        return match (true) {
-            $name == '阳' => self::YANG,
-            $name == '阴' => self::YIN,
+        return match ($name) {
+            '阳' => self::YANG,
+            '阴' => self::YIN,
             default => null
         };
     }

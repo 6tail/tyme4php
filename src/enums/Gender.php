@@ -27,23 +27,23 @@ enum Gender: int
 
     static function fromCode(int $code): Gender
     {
-        return match (true) {
-            $code == 0 => self::WOMAN,
-            $code == 1 => self::MAN,
+        return match ($code) {
+            0 => self::WOMAN,
+            1 => self::MAN,
             default => null
         };
     }
 
     static function fromName(string $name): Gender
     {
-        return match (true) {
-            $name == '女' => self::WOMAN,
-            $name == '男' => self::MAN,
+        return match ($name) {
+            '女' => self::WOMAN,
+            '男' => self::MAN,
             default => null
         };
     }
 
-    function equals(Side $o): bool
+    function equals(Gender $o): bool
     {
         return $this->value == $o->value;
     }
