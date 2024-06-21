@@ -27,10 +27,10 @@ class SolarHalfYear extends AbstractTyme
 
     protected function __construct(int $year, int $index)
     {
-        $this->year = SolarYear::fromYear($year);
         if ($index < 0 || $index > 1) {
             throw new InvalidArgumentException(sprintf('illegal solar half year index: %d', $index));
         }
+        $this->year = SolarYear::fromYear($year);
         $this->index = $index;
     }
 

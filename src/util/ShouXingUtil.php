@@ -2,8 +2,6 @@
 
 namespace com\tyme\util;
 
-bcscale(12);
-
 /**
  * 寿星天文历工具
  * @package com\tyme\util
@@ -13,20 +11,20 @@ class ShouXingUtil
   /**
    * @var float
    */
-  static float $ONE_THIRD = 0.3333333333333333;
+  const ONE_THIRD = 0.3333333333333333;
   /**
    * @var float 1年天数
    */
-  static float $DAY_PER_YEAR = 365.2422;
+  const DAY_PER_YEAR = 365.2422;
   /**
    * @var int 1天对应的秒数
    */
-  static int $SECOND_PER_DAY = 86400;
+  const SECOND_PER_DAY = 86400;
 
   /**
    * @var float 1弧度对应的角秒
    */
-  static float $SECOND_PER_RAD = 206264.80624709636;
+  const SECOND_PER_RAD = 206264.80624709636;
   private static array $NUT_B = array(
     2.1824, -33.75705, 36e-6, -1720, 920,
     3.5069, 1256.66393, 11e-6, -132, 57,
@@ -346,7 +344,7 @@ class ShouXingUtil
       $dl += (self::$NUT_B[$i + 3] + $a) * sin(self::$NUT_B[$i] + self::$NUT_B[$i + 1] * $t + self::$NUT_B[$i + 2] * $t2);
       $a = 0;
     }
-    return $dl / 100 / self::$SECOND_PER_RAD;
+    return $dl / 100 / self::SECOND_PER_RAD;
   }
 
   static function eLon($t, $n)
@@ -382,7 +380,7 @@ class ShouXingUtil
     }
     $v /= self::$XL0[0];
     $t2 = $t * $t;
-    $v += (-0.0728 - 2.7702 * $t - 1.1019 * $t2 - 0.0996 * $t2 * $t) / self::$SECOND_PER_RAD;
+    $v += (-0.0728 - 2.7702 * $t - 1.1019 * $t2 - 0.0996 * $t2 * $t) / self::SECOND_PER_RAD;
     return $v;
   }
 
@@ -397,7 +395,7 @@ class ShouXingUtil
     $t4 = $t3 * $t;
     $t5 = $t4 * $t;
     $tx = $t - 10;
-    $v += (3.81034409 + 8399.684730072 * $t - 3.319e-05 * $t2 + 3.11e-08 * $t3 - 2.033e-10 * $t4) * self::$SECOND_PER_RAD;
+    $v += (3.81034409 + 8399.684730072 * $t - 3.319e-05 * $t2 + 3.11e-08 * $t3 - 2.033e-10 * $t4) * self::SECOND_PER_RAD;
     $v += 5028.792262 * $t + 1.1124406 * $t2 + 0.00007699 * $t3 - 0.000023479 * $t4 - 0.0000000178 * $t5;
     if ($tx > 0) {
       $v += -0.866 + 1.43 * $tx + 0.054 * $tx * $tx;
@@ -425,7 +423,7 @@ class ShouXingUtil
       }
       $v += $c * $tn;
     }
-    $v /= self::$SECOND_PER_RAD;
+    $v /= self::SECOND_PER_RAD;
     return $v;
   }
 
@@ -434,7 +432,7 @@ class ShouXingUtil
     $t2 = $t * $t;
     $v = -0.043126 + 628.301955 * $t - 0.000002732 * $t2;
     $e = 0.016708634 - 0.000042037 * $t - 0.0000001267 * $t2;
-    return -20.49552 * (1 + $e * cos($v)) / self::$SECOND_PER_RAD;
+    return -20.49552 * (1 + $e * cos($v)) / self::SECOND_PER_RAD;
   }
 
   static function ev($t): float
@@ -479,7 +477,7 @@ class ShouXingUtil
 
   static function dtT($t): float
   {
-    return self::dtCalc($t / 365.2425 + 2000) / self::$SECOND_PER_DAY;
+    return self::dtCalc($t / 365.2425 + 2000) / self::SECOND_PER_DAY;
   }
 
   static function mv($t): float
@@ -505,7 +503,7 @@ class ShouXingUtil
     $v = 628.3319653318;
     $t = ($w - 1.75347 - M_PI) / $v;
     $t -= (0.000005297 * $t * $t + 0.0334166 * cos(4.669257 + 628.307585 * $t) + 0.0002061 * cos(2.67823 + 628.307585 * $t) * $t) / $v;
-    $t += ($w - self::eLon($t, 8) - M_PI + (20.5 + 17.2 * sin(2.1824 - 33.75705 * $t)) / self::$SECOND_PER_RAD) / $v;
+    $t += ($w - self::eLon($t, 8) - M_PI + (20.5 + 17.2 * sin(2.1824 - 33.75705 * $t)) / self::SECOND_PER_RAD) / $v;
     return $t;
   }
 
@@ -531,7 +529,7 @@ class ShouXingUtil
     $t = ($w + 1.08472) / $v;
     $t2 = $t * $t;
     $t -= (-0.00003309 * $t2 + 0.10976 * cos(0.784758 + 8328.6914246 * $t + 0.000152292 * $t2) + 0.02224 * cos(0.18740 + 7214.0628654 * $t - 0.00021848 * $t2) - 0.03342 * cos(4.669257 + 628.307585 * $t)) / $v;
-    $l = self::mLon($t, 20) - (4.8950632 + 628.3319653318 * $t + 0.000005297 * $t * $t + 0.0334166 * cos(4.669257 + 628.307585 * $t) + 0.0002061 * cos(2.67823 + 628.307585 * $t) * $t + 0.000349 * cos(4.6261 + 1256.61517 * $t) - 20.5 / self::$SECOND_PER_RAD);
+    $l = self::mLon($t, 20) - (4.8950632 + 628.3319653318 * $t + 0.000005297 * $t * $t + 0.0334166 * cos(4.669257 + 628.307585 * $t) + 0.0002061 * cos(2.67823 + 628.307585 * $t) * $t + 0.000349 * cos(4.6261 + 1256.61517 * $t) - 20.5 / self::SECOND_PER_RAD);
     $v = 7771.38 - 914 * sin(0.7848 + 8328.691425 * $t + 0.0001523 * $t * $t) - 179 * sin(2.543 + 15542.7543 * $t) - 160 * sin(0.1874 + 7214.0629 * $t);
     $t += ($w - $l) / $v;
     return $t;
@@ -540,10 +538,10 @@ class ShouXingUtil
   static function qiHigh($w): float
   {
     $t = self::saLonT2($w) * 36525;
-    $t = $t - self::dtT($t) + self::$ONE_THIRD;
-    $v = ((int)($t + 0.5) % 1) * self::$SECOND_PER_DAY;
-    if ($v < 1200 || $v > self::$SECOND_PER_DAY - 1200) {
-      $t = self::saLonT($w) * 36525 - self::dtT($t) + self::$ONE_THIRD;
+    $t = $t - self::dtT($t) + self::ONE_THIRD;
+    $v = ((int)($t + 0.5) % 1) * self::SECOND_PER_DAY;
+    if ($v < 1200 || $v > self::SECOND_PER_DAY - 1200) {
+      $t = self::saLonT($w) * 36525 - self::dtT($t) + self::ONE_THIRD;
     }
     return $t;
   }
@@ -551,10 +549,10 @@ class ShouXingUtil
   static function shuoHigh($w): float
   {
     $t = self::msaLonT2($w) * 36525;
-    $t = $t - self::dtT($t) + self::$ONE_THIRD;
-    $v = ((int)($t + 0.5) % 1) * self::$SECOND_PER_DAY;
-    if ($v < 1800 || $v > self::$SECOND_PER_DAY - 1800) {
-      $t = self::msaLont($w) * 36525 - self::dtT($t) + self::$ONE_THIRD;
+    $t = $t - self::dtT($t) + self::ONE_THIRD;
+    $v = ((int)($t + 0.5) % 1) * self::SECOND_PER_DAY;
+    if ($v < 1800 || $v > self::SECOND_PER_DAY - 1800) {
+      $t = self::msaLont($w) * 36525 - self::dtT($t) + self::ONE_THIRD;
     }
     return $t;
   }
@@ -565,16 +563,16 @@ class ShouXingUtil
     $t = ($w - 4.895062166) / $v;
     $t -= (53 * $t * $t + 334116 * cos(4.67 + 628.307585 * $t) + 2061 * cos(2.678 + 628.3076 * $t) * $t) / $v / 10000000;
     $n = 48950621.66 + 6283319653.318 * $t + 53 * $t * $t + 334166 * cos(4.669257 + 628.307585 * $t) + 3489 * cos(4.6261 + 1256.61517 * $t) + 2060.6 * cos(2.67823 + 628.307585 * $t) * $t - 994 - 834 * sin(2.1824 - 33.75705 * $t);
-    $t -= ($n / 10000000 - $w) / 628.332 + (32 * ($t + 1.8) * ($t + 1.8) - 20) / self::$SECOND_PER_DAY / 36525;
-    return $t * 36525 + self::$ONE_THIRD;
+    $t -= ($n / 10000000 - $w) / 628.332 + (32 * ($t + 1.8) * ($t + 1.8) - 20) / self::SECOND_PER_DAY / 36525;
+    return $t * 36525 + self::ONE_THIRD;
   }
 
   static function shuoLow($w): float
   {
     $v = 7771.37714500204;
     $t = ($w + 1.08472) / $v;
-    $t -= (-0.0000331 * $t * $t + 0.10976 * cos(0.785 + 8328.6914 * $t) + 0.02224 * cos(0.187 + 7214.0629 * $t) - 0.03342 * cos(4.669 + 628.3076 * $t)) / $v + (32 * ($t + 1.8) * ($t + 1.8) - 20) / self::$SECOND_PER_DAY / 36525;
-    return $t * 36525 + self::$ONE_THIRD;
+    $t -= (-0.0000331 * $t * $t + 0.10976 * cos(0.785 + 8328.6914 * $t) + 0.02224 * cos(0.187 + 7214.0629 * $t) - 0.03342 * cos(4.669 + 628.3076 * $t)) / $v + (32 * ($t + 1.8) * ($t + 1.8) - 20) / self::SECOND_PER_DAY / 36525;
+    return $t * 36525 + self::ONE_THIRD;
   }
 
   static function calcShuo($jd): float
@@ -629,7 +627,7 @@ class ShouXingUtil
     $f2 = self::$QI_KB[$size - 1] - $pc;
     $f3 = 2436935;
     if ($jd < $f1 || $jd >= $f3) {
-      $d = floor(self::qiHigh(floor(($jd + $pc - 2451259) / self::$DAY_PER_YEAR * 24) * M_PI / 12) + 0.5);
+      $d = floor(self::qiHigh(floor(($jd + $pc - 2451259) / self::DAY_PER_YEAR * 24) * M_PI / 12) + 0.5);
     } else if ($jd >= $f1 && $jd < $f2) {
       for ($i = 0; $i < $size; $i += 2) {
         if ($jd + $pc < self::$QI_KB[$i + 2]) {
@@ -643,8 +641,8 @@ class ShouXingUtil
       }
       $d -= 2451545;
     } else if ($jd >= $f2) {
-      $d = floor(self::qiLow(floor(($jd + $pc - 2451259) / self::$DAY_PER_YEAR * 24) * M_PI / 12) + 0.5);
-      $from = (int)(($jd - $f2) / self::$DAY_PER_YEAR * 24);
+      $d = floor(self::qiLow(floor(($jd + $pc - 2451259) / self::DAY_PER_YEAR * 24) * M_PI / 12) + 0.5);
+      $from = (int)(($jd - $f2) / self::DAY_PER_YEAR * 24);
       $n = substr(self::$QB, $from, 1);
       if (strcmp('1', $n) == 0) {
         $d += 1;
@@ -658,13 +656,13 @@ class ShouXingUtil
   static function qiAccurate($w): float
   {
     $t = self::saLonT($w) * 36525;
-    return $t - self::dtT($t) + self::$ONE_THIRD;
+    return $t - self::dtT($t) + self::ONE_THIRD;
   }
 
   static function qiAccurate2($jd): float
   {
     $d = M_PI / 12;
-    $w = floor(($jd + 293) / self::$DAY_PER_YEAR * 24) * $d;
+    $w = floor(($jd + 293) / self::DAY_PER_YEAR * 24) * $d;
     $a = self::qiAccurate($w);
     if ($a - $jd > 5) {
       return self::qiAccurate($w - $d);

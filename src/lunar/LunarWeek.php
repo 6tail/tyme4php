@@ -107,8 +107,7 @@ class LunarWeek extends AbstractTyme
         while ($forward ? ($d >= $weeksInMonth) : ($d < 0)) {
             if ($forward) {
                 $d -= $weeksInMonth;
-            }
-            if (!$forward) {
+            } else {
                 if (!LunarDay::fromYmd($m->getYear()->getYear(), $m->getMonthWithLeap(), 1)->getWeek()->equals($this->start)) {
                     $d += $add;
                 }
@@ -134,8 +133,7 @@ class LunarWeek extends AbstractTyme
      */
     function getFirstDay(): LunarDay
     {
-        $m = $this->getMonth();
-        $firstDay = LunarDay::fromYmd($m->getYear()->getYear(), $m->getMonthWithLeap(), 1);
+        $firstDay = LunarDay::fromYmd($this->month->getYear()->getYear(), $this->month->getMonthWithLeap(), 1);
         return $firstDay->next($this->index * 7 - $this->indexOf($firstDay->getWeek()->getIndex() - $this->start->getIndex(), null, 7));
     }
 

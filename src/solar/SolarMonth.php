@@ -20,7 +20,6 @@ class SolarMonth extends AbstractTyme
      */
     static array $DAYS = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
 
-
     /**
      * @var SolarYear 年
      */
@@ -33,10 +32,10 @@ class SolarMonth extends AbstractTyme
 
     protected function __construct(int $year, int $month)
     {
-        $this->year = SolarYear::fromYear($year);
         if ($month < 1 || $month > 12) {
             throw new InvalidArgumentException(sprintf('illegal solar month: %d', $month));
         }
+        $this->year = SolarYear::fromYear($year);
         $this->month = $month;
     }
 

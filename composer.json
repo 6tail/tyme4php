@@ -11,8 +11,7 @@
     ],
     "minimum-stability": "stable",
     "require": {
-        "php": ">=8.1",
-        "ext-bcmath": "*"
+        "php": ">=8.1"
     },
     "require-dev": {
         "phpunit/phpunit": "*"

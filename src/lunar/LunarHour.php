@@ -128,12 +128,10 @@ class LunarHour extends AbstractTyme
         if (!$this->day->equals($target->getDay())) {
             return $this->day->isBefore($target->getDay());
         }
-        $bHour = $target->getHour();
-        if ($this->hour == $bHour) {
-            $bMinute = $target->getMinute();
-            return $this->minute == $bMinute ? $this->second < $target->getSecond() : $this->minute < $bMinute;
+        if ($this->hour != $target->getHour()) {
+            return $this->hour < $target->getHour();
         }
-        return $this->hour < $bHour;
+        return $this->minute != $target->getMinute() ? $this->minute < $target->getMinute() : $this->second < $target->getSecond();
     }
 
     /**
@@ -147,12 +145,10 @@ class LunarHour extends AbstractTyme
         if (!$this->day->equals($target->getDay())) {
             return $this->day->isAfter($target->getDay());
         }
-        $bHour = $target->getHour();
-        if ($this->hour == $bHour) {
-            $bMinute = $target->getMinute();
-            return $this->minute == $bMinute ? $this->second > $target->getSecond() : $this->minute > $bMinute;
+        if ($this->hour != $target->getHour()) {
+            return $this->hour > $target->getHour();
         }
-        return $this->hour > $bHour;
+        return $this->minute != $target->getMinute() ? $this->minute > $target->getMinute() : $this->second > $target->getSecond();
     }
 
     function next(int $n): LunarHour
@@ -172,7 +168,7 @@ class LunarHour extends AbstractTyme
     }
 
     /**
-     * 当时的年干支
+     * 当时的年干支（立春换）
      *
      * @return SixtyCycle 干支
      */
@@ -197,7 +193,7 @@ class LunarHour extends AbstractTyme
     }
 
     /**
-     * 当时的月干支
+     * 当时的月干支（节气换）
      *
      * @return SixtyCycle 干支
      */
@@ -221,7 +217,7 @@ class LunarHour extends AbstractTyme
     function getDaySixtyCycle(): SixtyCycle
     {
         $d = $this->day->getSixtyCycle();
-        return $this->hour > 22 ? $d->next(1) : $d;
+        return $this->hour < 23 ? $d : $d->next(1);
     }
 
     /**

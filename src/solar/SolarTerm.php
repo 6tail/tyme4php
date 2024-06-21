@@ -64,7 +64,7 @@ class SolarTerm extends LoopTyme
     }
 
     /**
-     * 是否节
+     * 是否节令
      *
      * @return bool true/false
      */
@@ -74,7 +74,7 @@ class SolarTerm extends LoopTyme
     }
 
     /**
-     * 是否气
+     * 是否气令
      *
      * @return bool true/false
      */
@@ -90,7 +90,7 @@ class SolarTerm extends LoopTyme
      */
     function getJulianDay(): JulianDay
     {
-        return JulianDay::fromJulianDay(ShouXingUtil::qiAccurate2($this->cursoryJulianDay) + JulianDay::$J2000);
+        return JulianDay::fromJulianDay(ShouXingUtil::qiAccurate2($this->cursoryJulianDay) + JulianDay::J2000);
     }
 
     /**

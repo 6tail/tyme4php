@@ -78,15 +78,11 @@ class LunarMonth extends AbstractTyme
             $w -= 29.53;
         }
 
-        // 计算正月初一的偏移
-        $prevYear = LunarYear::fromYear($year - 1);
-        $prevLeapMonth = $prevYear->getLeapMonth();
-
         // 正常情况正月初一为第3个朔日，但有些特殊的
         $offset = 2;
         if ($year > 8 && $year < 24) {
             $offset = 1;
-        } else if ($prevLeapMonth > 10 && $year != 239 && $year != 240) {
+        } else if (LunarYear::fromYear($year - 1)->getLeapMonth() > 10 && $year != 239 && $year != 240) {
             $offset = 3;
         }
 
@@ -100,7 +96,7 @@ class LunarMonth extends AbstractTyme
         // 本月初一
         $w += 29.5306 * ($offset + $index);
         $firstDay = ShouXingUtil::calcShuo($w);
-        $this->firstJulianDay = JulianDay::fromJulianDay(JulianDay::$J2000 + $firstDay);
+        $this->firstJulianDay = JulianDay::fromJulianDay(JulianDay::J2000 + $firstDay);
         // 本月天数 = 下月初一 - 本月初一
         $this->dayCount = (int)(ShouXingUtil::calcShuo($w + 29.5306) - $firstDay);
         $this->year = $currentYear;

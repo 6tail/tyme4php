@@ -124,8 +124,7 @@ class SolarWeek extends AbstractTyme
         while ($forward ? ($d >= $weekCount) : ($d < 0)) {
             if ($forward) {
                 $d -= $weekCount;
-            }
-            if (!$forward) {
+            } else {
                 if (!SolarDay::fromYmd($m->getYear()->getYear(), $m->getMonth(), 1)->getWeek()->equals($this->start)) {
                     $d += $add;
                 }

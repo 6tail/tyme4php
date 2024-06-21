@@ -9,6 +9,7 @@ use com\tyme\culture\Duty;
 use com\tyme\culture\fetus\FetusDay;
 use com\tyme\culture\Phase;
 use com\tyme\culture\star\nine\NineStar;
+use com\tyme\culture\star\six\SixStar;
 use com\tyme\culture\star\twelve\TwelveStar;
 use com\tyme\culture\star\twentyeight\TwentyEightStar;
 use com\tyme\culture\Week;
@@ -90,71 +91,67 @@ class LunarDay extends AbstractTyme
             return self::fromYmd($this->month->getYear()->getYear(), $this->month->getMonthWithLeap(), $this->day);
         }
         $d = $this->day + $n;
-        $lm = $this->month;
-        $daysInMonth = $lm->getDayCount();
+        $m = $this->month;
+        $daysInMonth = $m->getDayCount();
         $forward = $n > 0;
         $add = $forward ? 1 : -1;
         while ($forward ? ($d > $daysInMonth) : ($d <= 0)) {
             if ($forward) {
                 $d -= $daysInMonth;
             }
-            $lm = $lm->next($add);
-            $daysInMonth = $lm->getDayCount();
+            $m = $m->next($add);
+            $daysInMonth = $m->getDayCount();
             if (!$forward) {
                 $d += $daysInMonth;
             }
         }
-        return self::fromYmd($lm->getYear()->getYear(), $lm->getMonthWithLeap(), $d);
+        return self::fromYmd($m->getYear()->getYear(), $m->getMonthWithLeap(), $d);
     }
 
     /**
      * 是否在指定农历日之前
      *
-     * @param LunarDay target 农历日
+     * @param LunarDay $target 农历日
      * @return bool true/false
      */
     function isBefore(LunarDay $target): bool
     {
+        $bMonth = $target->getMonth();
         $aYear = $this->month->getYear()->getYear();
-        $targetMonth = $target->getMonth();
-        $bYear = $targetMonth->getYear()->getYear();
-        if ($aYear == $bYear) {
-            $aMonth = $this->month->getMonth();
-            $bMonth = $targetMonth->getMonth();
-            if ($aMonth == $bMonth) {
-                if ($this->month->isLeap() && !$targetMonth->isLeap()) {
-                    return false;
-                }
-                return $this->day < $target->getDay();
-            }
-            return $aMonth < $bMonth;
+        $bYear = $bMonth->getYear()->getYear();
+        if ($aYear != $bYear) {
+            return $aYear < $bYear;
         }
-        return $aYear < $bYear;
+        if ($this->month->getMonth() != $bMonth->getMonth()) {
+            return $this->month->getMonth() < $bMonth->getMonth();
+        }
+        if ($this->month->isLeap() && !$bMonth->isLeap()) {
+            return false;
+        }
+        return $this->day < $target->getDay();
     }
 
     /**
      * 是否在指定农历日之后
      *
-     * @param LunarDay target 农历日
+     * @param LunarDay $target 农历日
      * @return bool true/false
      */
     function isAfter(LunarDay $target): bool
     {
-        $aYear = $this->month->getYear()->getYear();
         $targetMonth = $target->getMonth();
+        $aYear = $this->month->getYear()->getYear();
         $bYear = $targetMonth->getYear()->getYear();
-        if ($aYear == $bYear) {
-            $aMonth = $this->month->getMonth();
-            $bMonth = $targetMonth->getMonth();
-            if ($aMonth == $bMonth) {
-                if ($this->month->isLeap() && !$targetMonth->isLeap()) {
-                    return true;
-                }
-                return $this->day > $target->getDay();
-            }
-            return $aMonth > $bMonth;
+        if ($aYear != $bYear) {
+            return $aYear > $bYear;
         }
-        return $aYear > $bYear;
+        if ($this->month->getMonth() != $targetMonth->getMonth()) {
+            return $this->month->getMonth() > $targetMonth->getMonth();
+        }
+        if ($this->month->isLeap() && !$targetMonth->isLeap()) {
+            return true;
+        }
+        return $this->day > $target->getDay();
     }
 
     /**
@@ -164,7 +161,7 @@ class LunarDay extends AbstractTyme
      */
     function getWeek(): Week
     {
-        return $this->getSolarDay()->getJulianDay()->getWeek();
+        return $this->getSolarDay()->getWeek();
     }
 
     /**
@@ -334,8 +331,32 @@ class LunarDay extends AbstractTyme
      */
     function getFestival(): ?LunarFestival
     {
-        $m = $this->getMonth();
-        return LunarFestival::fromYmd($m->getYear()->getYear(), $m->getMonthWithLeap(), $this->day);
+        return LunarFestival::fromYmd($this->month->getYear()->getYear(), $this->month->getMonthWithLeap(), $this->day);
+    }
+
+    /**
+     * 当天的时辰列表
+     * @return LunarHour[] 时辰列表
+     */
+    function getHours(): array
+    {
+        $y = $this->month->getYear()->getYear();
+        $m = $this->month->getMonth();
+        $l = array();
+        $l[] = LunarHour::fromYmdHms($y, $m, $this->day, 0, 0, 0);
+        for ($i = 0; $i < 24; $i += 2) {
+            $l[] = LunarHour::fromYmdHms($y, $m, $this->day, $i + 1, 0, 0);
+        }
+        return $l;
+    }
+
+    /**
+     * 六曜
+     * @return SixStar 六曜
+     */
+    function getSixStar(): SixStar
+    {
+        return SixStar::fromIndex(($this->month->getMonth() + $this->day - 2) % 6);
     }
 
     function equals(mixed $o): bool

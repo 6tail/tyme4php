@@ -18,7 +18,7 @@ class JulianDay extends AbstractTyme
     /**
      * @var int 2000年儒略日数(2000-1-1 12:00:00 UTC)
      */
-    static int $J2000 = 2451545;
+    const J2000 = 2451545;
 
     /**
      * @var float 儒略日
@@ -182,5 +182,14 @@ class JulianDay extends AbstractTyme
         return Week::fromIndex((int)($this->day + 0.5) + 7000001);
     }
 
+    /**
+     * 儒略日相减
+     * @param JulianDay $target 儒略日
+     * @return float 差
+     */
+    function subtract(JulianDay $target): float
+    {
+        return $this->day - $target->getDay();
+    }
 
 }
