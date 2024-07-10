@@ -116,12 +116,12 @@ class LunarDayTest extends TestCase
 
     function test22()
     {
-        $this->assertEquals('甲辰', LunarDay::fromYmd(2024, 1, 1)->getMonth()->getYear()->getSixtyCycle()->getName());
+        $this->assertEquals('甲辰', LunarDay::fromYmd(2024, 1, 1)->getLunarMonth()->getLunarYear()->getSixtyCycle()->getName());
     }
 
     function test23()
     {
-        $this->assertEquals('癸卯', LunarDay::fromYmd(2023, 12, 30)->getMonth()->getYear()->getSixtyCycle()->getName());
+        $this->assertEquals('癸卯', LunarDay::fromYmd(2023, 12, 30)->getLunarMonth()->getLunarYear()->getSixtyCycle()->getName());
     }
 
     /**
@@ -160,7 +160,7 @@ class LunarDayTest extends TestCase
     function test26()
     {
         $lunar = LunarDay::fromYmd(2005, 11, 23);
-        $this->assertEquals('戊子', $lunar->getMonth()->getSixtyCycle()->getName());
+        $this->assertEquals('戊子', $lunar->getLunarMonth()->getSixtyCycle()->getName());
         $this->assertEquals('戊子', $lunar->getMonthSixtyCycle()->getName());
     }
 }

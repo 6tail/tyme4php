@@ -54,13 +54,33 @@ class LunarWeek extends AbstractTyme
     }
 
     /**
-     * 月
+     * 农历月
      *
-     * @return LunarMonth 月
+     * @return LunarMonth 农历月
      */
-    function getMonth(): LunarMonth
+    function getLunarMonth(): LunarMonth
     {
         return $this->month;
+    }
+
+    /**
+     * 年
+     *
+     * @return int 年
+     */
+    function getYear(): int
+    {
+        return $this->month->getYear();
+    }
+
+    /**
+     * 月
+     *
+     * @return int 月
+     */
+    function getMonth(): int
+    {
+        return $this->month->getMonthWithLeap();
     }
 
     /**
@@ -96,34 +116,34 @@ class LunarWeek extends AbstractTyme
     function next(int $n): static
     {
         if ($n == 0) {
-            return static::fromYm($this->month->getYear()->getYear(), $this->month->getMonthWithLeap(), $this->index, $this->start->getIndex());
+            return static::fromYm($this->getYear(), $this->getMonth(), $this->index, $this->start->getIndex());
         }
         $d = $this->index + $n;
         $m = $this->month;
         $startIndex = $this->start->getIndex();
-        $weeksInMonth = $m->getWeekCount($startIndex);
+        $weekCount = $m->getWeekCount($startIndex);
         $forward = $n > 0;
         $add = $forward ? 1 : -1;
-        while ($forward ? ($d >= $weeksInMonth) : ($d < 0)) {
+        while ($forward ? ($d >= $weekCount) : ($d < 0)) {
             if ($forward) {
-                $d -= $weeksInMonth;
+                $d -= $weekCount;
             } else {
-                if (!LunarDay::fromYmd($m->getYear()->getYear(), $m->getMonthWithLeap(), 1)->getWeek()->equals($this->start)) {
+                if (!LunarDay::fromYmd($m->getYear(), $m->getMonthWithLeap(), 1)->getWeek()->equals($this->start)) {
                     $d += $add;
                 }
             }
             $m = $m->next($add);
             if ($forward) {
-                if (!LunarDay::fromYmd($m->getYear()->getYear(), $m->getMonthWithLeap(), 1)->getWeek()->equals($this->start)) {
+                if (!LunarDay::fromYmd($m->getYear(), $m->getMonthWithLeap(), 1)->getWeek()->equals($this->start)) {
                     $d += $add;
                 }
             }
-            $weeksInMonth = $m->getWeekCount($startIndex);
+            $weekCount = $m->getWeekCount($startIndex);
             if (!$forward) {
-                $d += $weeksInMonth;
+                $d += $weekCount;
             }
         }
-        return static::fromYm($m->getYear()->getYear(), $m->getMonthWithLeap(), $d, $startIndex);
+        return static::fromYm($m->getYear(), $m->getMonthWithLeap(), $d, $startIndex);
     }
 
     /**
@@ -133,7 +153,7 @@ class LunarWeek extends AbstractTyme
      */
     function getFirstDay(): LunarDay
     {
-        $firstDay = LunarDay::fromYmd($this->month->getYear()->getYear(), $this->month->getMonthWithLeap(), 1);
+        $firstDay = LunarDay::fromYmd($this->getYear(), $this->getMonth(), 1);
         return $firstDay->next($this->index * 7 - $this->indexOf($firstDay->getWeek()->getIndex() - $this->start->getIndex(), null, 7));
     }
 

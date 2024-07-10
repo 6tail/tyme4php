@@ -114,9 +114,19 @@ class LunarMonth extends AbstractTyme
      *
      * @return LunarYear 农历年
      */
-    function getYear(): LunarYear
+    function getLunarYear(): LunarYear
     {
         return $this->year;
+    }
+
+    /**
+     * 年
+     *
+     * @return int 年
+     */
+    function getYear(): int
+    {
+        return $this->year->getYear();
     }
 
     /**
@@ -218,7 +228,7 @@ class LunarMonth extends AbstractTyme
     function next(int $n): LunarMonth
     {
         if ($n == 0) {
-            return static::fromYm($this->year->getYear(), $this->getMonthWithLeap());
+            return static::fromYm($this->getYear(), $this->getMonthWithLeap());
         }
         $m = $this->indexInYear + 1 + $n;
         $y = $this->year;
@@ -257,7 +267,7 @@ class LunarMonth extends AbstractTyme
     function getDays(): array
     {
         $size = $this->getDayCount();
-        $y = $this->year->getYear();
+        $y = $this->getYear();
         $m = $this->getMonthWithLeap();
         $l = array();
         for ($i = 0; $i < $size; $i++) {
@@ -275,7 +285,7 @@ class LunarMonth extends AbstractTyme
     function getWeeks(int $start): array
     {
         $size = $this->getWeekCount($start);
-        $y = $this->year->getYear();
+        $y = $this->getYear();
         $m = $this->getMonthWithLeap();
         $l = array();
         for ($i = 0; $i < $size; $i++) {
@@ -331,7 +341,7 @@ class LunarMonth extends AbstractTyme
         if (!($o instanceof LunarMonth)) {
             return false;
         }
-        return $this->year->equals($o->getYear()) && $this->getMonthWithLeap() == $o->getMonthWithLeap();
+        return $this->getYear() == $o->getYear() && $this->getMonthWithLeap() == $o->getMonthWithLeap();
     }
 
 }

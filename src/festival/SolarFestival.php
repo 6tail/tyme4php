@@ -85,10 +85,8 @@ class SolarFestival extends AbstractTyme
 
     function next(int $n): static
     {
-        $m = $this->day->getMonth();
-        $year = $m->getYear()->getYear();
         if ($n == 0) {
-            return static::fromYmd($year, $m->getMonth(), $this->day->getDay());
+            return static::fromYmd($this->day->getYear(), $this->day->getMonth(), $this->day->getDay());
         }
         $size = count(static::$NAMES);
         $t = $this->index + $n;
@@ -96,7 +94,7 @@ class SolarFestival extends AbstractTyme
         if ($t < 0) {
             $t -= $size;
         }
-        return static::fromIndex($year + intdiv($t, $size), $offset);
+        return static::fromIndex($this->day->getYear() + intdiv($t, $size), $offset);
     }
 
     function __toString(): string

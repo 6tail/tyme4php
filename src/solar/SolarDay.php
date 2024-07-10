@@ -63,13 +63,33 @@ class SolarDay extends AbstractTyme
     }
 
     /**
-     * 月
+     * 公历月
      *
-     * @return SolarMonth 月
+     * @return SolarMonth 公历月
      */
-    function getMonth(): SolarMonth
+    function getSolarMonth(): SolarMonth
     {
         return $this->month;
+    }
+
+    /**
+     * 年
+     *
+     * @return int 年
+     */
+    function getYear(): int
+    {
+        return $this->month->getYear();
+    }
+
+    /**
+     * 月
+     *
+     * @return int 月
+     */
+    function getMonth(): int
+    {
+        return $this->month->getMonth();
     }
 
     /**
@@ -100,7 +120,7 @@ class SolarDay extends AbstractTyme
     function getConstellation(): Constellation
     {
         $index = 11;
-        $y = $this->month->getMonth() * 100 + $this->day;
+        $y = $this->getMonth() * 100 + $this->day;
         if ($y >= 321 && $y <= 419) {
             $index = 0;
         } else if ($y >= 420 && $y <= 520) {
@@ -150,13 +170,14 @@ class SolarDay extends AbstractTyme
      */
     function isBefore(SolarDay $target): bool
     {
-        $bMonth = $target->getMonth();
-        $aYear = $this->month->getYear()->getYear();
-        $bYear = $bMonth->getYear()->getYear();
+        $aYear = $this->getYear();
+        $bYear = $target->getYear();
         if ($aYear != $bYear) {
             return $aYear < $bYear;
         }
-        return $this->month->getMonth() != $bMonth->getMonth() ? $this->month->getMonth() < $bMonth->getMonth() : $this->day < $target->getDay();
+        $aMonth = $this->getMonth();
+        $bMonth = $target->getMonth();
+        return $aMonth != $bMonth ? $aMonth < $bMonth : $this->day < $target->getDay();
     }
 
     /**
@@ -167,13 +188,14 @@ class SolarDay extends AbstractTyme
      */
     function isAfter(SolarDay $target): bool
     {
-        $bMonth = $target->getMonth();
-        $aYear = $this->month->getYear()->getYear();
-        $bYear = $bMonth->getYear()->getYear();
+        $aYear = $this->getYear();
+        $bYear = $target->getYear();
         if ($aYear != $bYear) {
             return $aYear > $bYear;
         }
-        return $this->month->getMonth() != $bMonth->getMonth() ? $this->month->getMonth() > $bMonth->getMonth() : $this->day > $target->getDay();
+        $aMonth = $this->getMonth();
+        $bMonth = $target->getMonth();
+        return $aMonth != $bMonth ? $aMonth > $bMonth : $this->day > $target->getDay();
     }
 
     /**
@@ -193,8 +215,8 @@ class SolarDay extends AbstractTyme
      */
     function getTermDay(): SolarTermDay
     {
-        $y = $this->month->getYear()->getYear();
-        $i = $this->month->getMonth() * 2;
+        $y = $this->getYear();
+        $i = $this->getMonth() * 2;
         if ($i == 24) {
             $y += 1;
             $i = 0;
@@ -216,8 +238,8 @@ class SolarDay extends AbstractTyme
      */
     function getSolarWeek(int $start): SolarWeek
     {
-        $y = $this->month->getYear()->getYear();
-        $m = $this->month->getMonth();
+        $y = $this->getYear();
+        $m = $this->getMonth();
         return SolarWeek::fromYm($y, $m, (int)ceil(($this->day + SolarDay::fromYmd($y, $m, 1)->getWeek()->next(-$start)->getIndex()) / 7.0) - 1, $start);
     }
 
@@ -245,7 +267,7 @@ class SolarDay extends AbstractTyme
      */
     function getDogDay(): ?DogDay
     {
-        $xiaZhi = SolarTerm::fromIndex($this->month->getYear()->getYear(), 12);
+        $xiaZhi = SolarTerm::fromIndex($this->getYear(), 12);
         // 第1个庚日
         $start = $xiaZhi->getJulianDay()->getSolarDay();
         $add = 6 - $start->getLunarDay()->getSixtyCycle()->getHeavenStem()->getIndex();
@@ -293,7 +315,7 @@ class SolarDay extends AbstractTyme
      */
     function getNineDay(): ?NineDay
     {
-        $year = $this->month->getYear()->getYear();
+        $year = $this->getYear();
         $start = SolarTerm::fromIndex($year + 1, 0)->getJulianDay()->getSolarDay();
         if ($this->isBefore($start)) {
             $start = SolarTerm::fromIndex($year, 0)->getJulianDay()->getSolarDay();
@@ -313,7 +335,7 @@ class SolarDay extends AbstractTyme
     function getPlumRainDay(): ?PlumRainDay
     {
         // 芒种
-        $grainInEar = SolarTerm::fromIndex($this->month->getYear()->getYear(), 11);
+        $grainInEar = SolarTerm::fromIndex($this->getYear(), 11);
         $start = $grainInEar->getJulianDay()->getSolarDay();
         $add = 2 - $start->getLunarDay()->getSixtyCycle()->getHeavenStem()->getIndex();
         if ($add < 0) {
@@ -345,7 +367,7 @@ class SolarDay extends AbstractTyme
      */
     function getIndexInYear(): int
     {
-        return $this->subtract(self::fromYmd($this->month->getYear()->getYear(), 1, 1));
+        return $this->subtract(self::fromYmd($this->getYear(), 1, 1));
     }
 
     /**
@@ -366,7 +388,7 @@ class SolarDay extends AbstractTyme
      */
     function getJulianDay(): JulianDay
     {
-        return JulianDay::fromYmdHms($this->month->getYear()->getYear(), $this->month->getMonth(), $this->day, 0, 0, 0);
+        return JulianDay::fromYmdHms($this->getYear(), $this->getMonth(), $this->day, 0, 0, 0);
     }
 
     /**
@@ -376,13 +398,13 @@ class SolarDay extends AbstractTyme
      */
     function getLunarDay(): LunarDay
     {
-        $m = LunarMonth::fromYm($this->month->getYear()->getYear(), $this->month->getMonth());
+        $m = LunarMonth::fromYm($this->getYear(), $this->getMonth());
         $days = $this->subtract($m->getFirstJulianDay()->getSolarDay());
         while ($days < 0) {
             $m = $m->next(-1);
             $days = $this->subtract($m->getFirstJulianDay()->getSolarDay());
         }
-        return LunarDay::fromYmd($m->getYear()->getYear(), $m->getMonthWithLeap(), $days + 1);
+        return LunarDay::fromYmd($m->getYear(), $m->getMonthWithLeap(), $days + 1);
     }
 
     /**
@@ -392,7 +414,7 @@ class SolarDay extends AbstractTyme
      */
     function getLegalHoliday(): ?LegalHoliday
     {
-        return LegalHoliday::fromYmd($this->month->getYear()->getYear(), $this->month->getMonth(), $this->day);
+        return LegalHoliday::fromYmd($this->getYear(), $this->getMonth(), $this->day);
     }
 
     /**
@@ -402,7 +424,7 @@ class SolarDay extends AbstractTyme
      */
     function getFestival(): ?SolarFestival
     {
-        return SolarFestival::fromYmd($this->month->getYear()->getYear(), $this->month->getMonth(), $this->day);
+        return SolarFestival::fromYmd($this->getYear(), $this->getMonth(), $this->day);
     }
 
 }

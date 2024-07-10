@@ -52,7 +52,7 @@ class Fortune extends AbstractTyme
      */
     function getLunarYear(): LunarYear
     {
-        return $this->childLimit->getEndTime()->getLunarHour()->getDay()->getMonth()->getYear()->next($this->index);
+        return $this->childLimit->getEndTime()->getLunarHour()->getLunarDay()->getLunarMonth()->getLunarYear()->next($this->index);
     }
 
     /**

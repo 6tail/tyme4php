@@ -62,7 +62,7 @@ class DecadeFortune extends AbstractTyme
      */
     function getStartLunarYear(): LunarYear
     {
-        return $this->childLimit->getEndTime()->getLunarHour()->getDay()->getMonth()->getYear()->next($this->index * 10);
+        return $this->childLimit->getEndTime()->getLunarHour()->getLunarDay()->getLunarMonth()->getLunarYear()->next($this->index * 10);
     }
 
     /**

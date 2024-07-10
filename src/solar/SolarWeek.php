@@ -54,13 +54,33 @@ class SolarWeek extends AbstractTyme
     }
 
     /**
-     * 月
+     * 公历月
      *
-     * @return SolarMonth 月
+     * @return SolarMonth 公历月
      */
-    function getMonth(): SolarMonth
+    function getSolarMonth(): SolarMonth
     {
         return $this->month;
+    }
+
+    /**
+     * 年
+     *
+     * @return int 年
+     */
+    function getYear(): int
+    {
+        return $this->month->getYear();
+    }
+
+    /**
+     * 月
+     *
+     * @return int 月
+     */
+    function getMonth(): int
+    {
+        return $this->month->getMonth();
     }
 
     /**
@@ -82,7 +102,7 @@ class SolarWeek extends AbstractTyme
     {
         $i = 0;
         // 今年第1周
-        $w = self::fromYm($this->month->getYear()->getYear(), 1, 0, $this->start->getIndex());
+        $w = self::fromYm($this->getYear(), 1, 0, $this->start->getIndex());
         while (!$w->equals($this)) {
             $w = $w->next(1);
             $i += 1;
@@ -113,7 +133,7 @@ class SolarWeek extends AbstractTyme
     function next(int $n): static
     {
         if ($n == 0) {
-            return static::fromYm($this->month->getYear()->getYear(), $this->month->getMonth(), $this->index, $this->start->getIndex());
+            return static::fromYm($this->getYear(), $this->getMonth(), $this->index, $this->start->getIndex());
         }
         $d = $this->index + $n;
         $m = $this->month;
@@ -125,13 +145,13 @@ class SolarWeek extends AbstractTyme
             if ($forward) {
                 $d -= $weekCount;
             } else {
-                if (!SolarDay::fromYmd($m->getYear()->getYear(), $m->getMonth(), 1)->getWeek()->equals($this->start)) {
+                if (!SolarDay::fromYmd($m->getYear(), $m->getMonth(), 1)->getWeek()->equals($this->start)) {
                     $d += $add;
                 }
             }
             $m = $m->next($add);
             if ($forward) {
-                if (!SolarDay::fromYmd($m->getYear()->getYear(), $m->getMonth(), 1)->getWeek()->equals($this->start)) {
+                if (!SolarDay::fromYmd($m->getYear(), $m->getMonth(), 1)->getWeek()->equals($this->start)) {
                     $d += $add;
                 }
             }
@@ -140,7 +160,7 @@ class SolarWeek extends AbstractTyme
                 $d += $weekCount;
             }
         }
-        return static::fromYm($m->getYear()->getYear(), $m->getMonth(), $d, $startIndex);
+        return static::fromYm($m->getYear(), $m->getMonth(), $d, $startIndex);
     }
 
     /**
@@ -150,8 +170,7 @@ class SolarWeek extends AbstractTyme
      */
     function getFirstDay(): SolarDay
     {
-        $m = $this->getMonth();
-        $firstDay = SolarDay::fromYmd($m->getYear()->getYear(), $m->getMonth(), 1);
+        $firstDay = SolarDay::fromYmd($this->getYear(), $this->getMonth(), 1);
         return $firstDay->next($this->index * 7 - $this->indexOf($firstDay->getWeek()->getIndex() - $this->start->getIndex(), null, 7));
     }
 

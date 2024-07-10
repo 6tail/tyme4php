@@ -49,9 +49,8 @@ class LegalHoliday
 
     function next(int $n): ?static
     {
-        $m = $this->day->getMonth();
-        $year = $m->getYear()->getYear();
-        $month = $m->getMonth();
+        $year = $this->day->getYear();
+        $month = $this->day->getMonth();
         if ($n == 0) {
             return static::fromYmd($year, $month, $this->day->getDay());
         }

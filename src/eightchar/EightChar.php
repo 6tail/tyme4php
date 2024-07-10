@@ -178,11 +178,11 @@ class EightChar extends AbstractCulture
                     $term = $term->next($m);
                 }
                 $solarTime = $term->getJulianDay()->getSolarTime();
-                if ($solarTime->getDay()->getMonth()->getYear()->getYear() >= $startYear) {
+                if ($solarTime->getYear() >= $startYear) {
                     $mi = 0;
                     $s = 0;
                     // 日干支和节令干支的偏移值
-                    $solarDay = $solarTime->getDay();
+                    $solarDay = $solarTime->getSolarDay();
                     $d = $this->day->next(-$solarDay->getLunarDay()->getSixtyCycle()->getIndex())->getIndex();
                     if ($d > 0) {
                         // 从节令推移天数
@@ -192,8 +192,7 @@ class EightChar extends AbstractCulture
                         $mi = $solarTime->getMinute();
                         $s = $solarTime->getSecond();
                     }
-                    $solarMonth = $solarDay->getMonth();
-                    $time = SolarTime::fromYmdHms($solarMonth->getYear()->getYear(), $solarMonth->getMonth(), $solarDay->getDay(), $h, $mi, $s);
+                    $time = SolarTime::fromYmdHms($solarDay->getYear(), $solarDay->getMonth(), $solarDay->getDay(), $h, $mi, $s);
                     // 验证一下
                     if ($time->getLunarHour()->getEightChar()->equals($this)) {
                         $l[] = $time;

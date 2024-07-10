@@ -274,9 +274,9 @@ class EightCharTest extends TestCase
         // 童限结束(即开始起运)的公历时刻
         $this->assertEquals('1989年5月4日 18:24:00', $childLimit->getEndTime()->__toString());
         // 童限开始(即出生)的农历年干支
-        $this->assertEquals('癸亥', $childLimit->getStartTime()->getLunarHour()->getDay()->getMonth()->getYear()->getSixtyCycle()->getName());
+        $this->assertEquals('癸亥', $childLimit->getStartTime()->getLunarHour()->getLunarDay()->getLunarMonth()->getLunarYear()->getSixtyCycle()->getName());
         // 童限结束(即开始起运)的农历年干支
-        $this->assertEquals('己巳', $childLimit->getEndTime()->getLunarHour()->getDay()->getMonth()->getYear()->getSixtyCycle()->getName());
+        $this->assertEquals('己巳', $childLimit->getEndTime()->getLunarHour()->getLunarDay()->getLunarMonth()->getLunarYear()->getSixtyCycle()->getName());
 
         // 第1轮大运
         $decadeFortune = $childLimit->getStartDecadeFortune();
@@ -325,9 +325,9 @@ class EightCharTest extends TestCase
         // 童限结束(即开始起运)的公历时刻
         $this->assertEquals('2001年2月11日 18:58:00', $childLimit->getEndTime()->__toString());
         // 童限开始(即出生)的农历年干支
-        $this->assertEquals('辛未', $childLimit->getStartTime()->getLunarHour()->getDay()->getMonth()->getYear()->getSixtyCycle()->getName());
+        $this->assertEquals('辛未', $childLimit->getStartTime()->getLunarHour()->getLunarDay()->getLunarMonth()->getLunarYear()->getSixtyCycle()->getName());
         // 童限结束(即开始起运)的农历年干支
-        $this->assertEquals('辛巳', $childLimit->getEndTime()->getLunarHour()->getDay()->getMonth()->getYear()->getSixtyCycle()->getName());
+        $this->assertEquals('辛巳', $childLimit->getEndTime()->getLunarHour()->getLunarDay()->getLunarMonth()->getLunarYear()->getSixtyCycle()->getName());
 
         // 第1轮大运
         $decadeFortune = $childLimit->getStartDecadeFortune();

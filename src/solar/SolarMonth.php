@@ -45,12 +45,21 @@ class SolarMonth extends AbstractTyme
     }
 
     /**
-     * 年
-     * @return SolarYear 年
+     * 公历年
+     * @return SolarYear 公历年
      */
-    function getYear(): SolarYear
+    function getSolarYear(): SolarYear
     {
         return $this->year;
+    }
+
+    /**
+     * 年
+     * @return int 年
+     */
+    function getYear(): int
+    {
+        return $this->year->getYear();
     }
 
     /**
@@ -70,7 +79,7 @@ class SolarMonth extends AbstractTyme
      */
     function getDayCount(): int
     {
-        if (1582 == $this->year->getYear() && 10 == $this->month) {
+        if (1582 == $this->getYear() && 10 == $this->month) {
             return 21;
         }
         $d = self::$DAYS[$this->getIndexInYear()];
@@ -98,7 +107,7 @@ class SolarMonth extends AbstractTyme
      */
     function getSeason(): SolarSeason
     {
-        return SolarSeason::fromIndex($this->year->getYear(), intdiv($this->getIndexInYear(), 3));
+        return SolarSeason::fromIndex($this->getYear(), intdiv($this->getIndexInYear(), 3));
     }
 
     /**
@@ -109,7 +118,7 @@ class SolarMonth extends AbstractTyme
      */
     function getWeekCount(int $start): int
     {
-        return (int)ceil(($this->indexOf(SolarDay::fromYmd($this->year->getYear(), $this->month, 1)->getWeek()->getIndex() - $start, null, 7) + $this->getDayCount()) / 7);
+        return (int)ceil(($this->indexOf(SolarDay::fromYmd($this->getYear(), $this->month, 1)->getWeek()->getIndex() - $start, null, 7) + $this->getDayCount()) / 7);
     }
 
     function getName(): string
@@ -125,10 +134,10 @@ class SolarMonth extends AbstractTyme
     function next(int $n): SolarMonth
     {
         if ($n == 0) {
-            return self::fromYm($this->year->getYear(), $this->month);
+            return self::fromYm($this->getYear(), $this->month);
         }
         $m = $this->month + $n;
-        $y = $this->year->getYear() + intdiv($m, 12);
+        $y = $this->getYear() + intdiv($m, 12);
         $m %= 12;
         if ($m < 1) {
             $m += 12;
@@ -146,7 +155,7 @@ class SolarMonth extends AbstractTyme
     function getWeeks(int $start): array
     {
         $size = $this->getWeekCount($start);
-        $y = $this->year->getYear();
+        $y = $this->getYear();
         $l = array();
         for ($i = 0; $i < $size; $i++) {
             $l[] = SolarWeek::fromYm($y, $this->month, $i, $start);
@@ -162,7 +171,7 @@ class SolarMonth extends AbstractTyme
     function getDays(): array
     {
         $size = $this->getDayCount();
-        $y = $this->year->getYear();
+        $y = $this->getYear();
         $l = array();
         for ($i = 0; $i < $size; $i++) {
             $l[] = SolarDay::fromYmd($y, $this->month, $i + 1);

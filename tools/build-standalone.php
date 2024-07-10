@@ -66,7 +66,7 @@ function parseDirectory($path): void
     if ('../src' == $path) {
         usort($files, function ($a, $b) {
             $sorts = array();
-            foreach (['Culture', 'Tyme', 'AbstractCulture', 'AbstractCultureDay', 'AbstractTyme', 'LoopTyme'] as $name) {
+            foreach (['ExtendTrait', 'Culture', 'Tyme', 'AbstractCulture', 'AbstractCultureDay', 'AbstractTyme', 'LoopTyme'] as $name) {
                 $sorts[] = '../src/'. $name . '.php';
             }
             return array_search($a, $sorts) - array_search($b, $sorts);

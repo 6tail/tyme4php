@@ -12,6 +12,8 @@ use InvalidArgumentException;
  */
 abstract class AbstractCulture implements Culture
 {
+    use ExtendTrait;
+
     function __toString(): string
     {
         return $this->getName();

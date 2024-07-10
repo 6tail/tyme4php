@@ -20,6 +20,13 @@ Tyme是一个非常强大的日历工具库，可以看作 [Lunar](https://6tail
     // 农历丙寅年四月廿一
     echo $solarDay->getLunarDay();
 
+    // 扩展方法
+    SolarDay::extend('myMethod', function () {
+        return sprintf('%04d-%02d-%02d', $this->getYear(), $this->getMonth(), $this->getDay());
+    });
+    // 1986-05-29
+    echo $solarDay->myMethod();
+
 ## 单文件版本
 
 > 1. 下载本源代码，执行<code>tools/build-standalone.php</code>，可在tools目录下生成<code>Tyme.php</code>单文件。

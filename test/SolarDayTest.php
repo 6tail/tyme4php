@@ -82,11 +82,21 @@ class SolarDayTest extends TestCase
 
     function test22()
     {
-        $this->assertEquals('甲辰', SolarDay::fromYmd(2024, 2, 10)->getLunarDay()->getMonth()->getYear()->getSixtyCycle()->getName());
+        $this->assertEquals('甲辰', SolarDay::fromYmd(2024, 2, 10)->getLunarDay()->getLunarMonth()->getLunarYear()->getSixtyCycle()->getName());
     }
 
     function test23()
     {
-        $this->assertEquals('癸卯', SolarDay::fromYmd(2024, 2, 9)->getLunarDay()->getMonth()->getYear()->getSixtyCycle()->getName());
+        $this->assertEquals('癸卯', SolarDay::fromYmd(2024, 2, 9)->getLunarDay()->getLunarMonth()->getLunarYear()->getSixtyCycle()->getName());
+    }
+
+    function test24()
+    {
+        // 扩展方法
+        SolarDay::extend('myMethod', function () {
+            return sprintf('%04d-%02d-%02d', $this->getYear(), $this->getMonth(), $this->getDay());
+        });
+
+        $this->assertEquals('2024-02-09', SolarDay::fromYmd(2024, 2, 9)->myMethod());
     }
 }

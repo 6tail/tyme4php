@@ -1,9 +1,7 @@
 <?php
 
-use com\tyme\culture\Week;
 use com\tyme\lunar\LunarWeek;
 use com\tyme\solar\SolarDay;
-use com\tyme\solar\SolarMonth;
 use com\tyme\solar\SolarWeek;
 use PHPUnit\Framework\TestCase;
 
@@ -170,96 +168,5 @@ class WeekTest extends TestCase
 
         $week = SolarDay::fromYmd(2024, 2, 18)->getSolarWeek($start);
         $this->assertEquals('2024年2月第四周', $week->__toString());
-    }
-
-    public function show()
-    {
-        $this->getMonthDayList(2024, 6, 20, 1);
-    }
-
-
-    /**
-     * 获取日历
-     */
-    protected function getMonthDayList(int $yyyy, int $mmmm, int $dddd, int $weekStart = 0): array
-    {
-        $month = SolarMonth::fromYm($yyyy, $mmmm);
-        $weekHeads = [];
-        $w = Week::fromIndex($weekStart);
-        for ($i = 0; $i < 7; $i++) {
-            $weekHeads[] = [
-                'isWeekend' => $w->getIndex() === 6 || $w->getIndex() === 0,
-                'name' => $w->getName()
-            ];
-            $w = $w->next(1);
-        }
-        $weeks = [];
-        $monthWeeks = $month->getWeeks($weekStart);
-        for ($i = 0, $j = count($monthWeeks); $i < $j; $i++) {
-            $days = [];
-            $weekDays = $monthWeeks[$i]->getDays();
-            for ($x = 0, $y = count($weekDays); $x < $y; $x++) {
-                $solarDay = $weekDays[$x];
-
-                $lunar_day  = $solarDay->getLunarDay();
-
-                $holiday = $solarDay->getLegalHoliday();
-                $weekIndex = $solarDay->getWeek()->getIndex();
-                $weekend = $weekIndex === 6 || $weekIndex === 0;
-                if ($holiday && $holiday->isWork()) {
-                    $weekend = false;
-                }
-
-                $text = $lunar_day->getName();
-
-                $f = $solarDay->getFestival();
-                if ($f) {
-                    $text = $f->getName();
-                }
-
-                $f = $lunar_day->getFestival();
-                if ($f) {
-                    $text = $f->getName();
-                }
-
-                if (1 === $lunar_day->getDay()) {
-                    $lunarMonth = $lunar_day->getMonth();
-                    $text = $lunarMonth->getName();
-                    if (1 === $lunarMonth->getMonthWithLeap()) {
-                        $text = $lunarMonth->getYear()->getSixtyCycle()->getName() . '年' . $text;
-                    }
-                }
-
-                $jq = $solarDay->getTermDay();
-                if ($jq->getDayIndex() == 0) {
-                    $text = $jq->getName();
-                }
-                $days[] = [
-                    'date' => $solarDay->__toString(),
-                    'day' => $solarDay->getDay(),
-                    'solar_month' => $solarDay->getMonth(),
-                    'month' => $month,
-                    'holiday' => $holiday ? ['isWork' => $holiday->isWork()] : null,
-                    'isCurrentMonth' => $solarDay->getMonth()->equals($month),
-                    'isToday' => $solarDay->getDay() == 20 && $solarDay->getMonth()->getMonth() == 6,
-                    'isCurrentDay' => $solarDay->getDay() == 20 && $solarDay->getMonth()->equals($month),
-                    'isWeekend' => $weekend,
-                    'text' => $text
-                ];
-            }
-            $weeks[] = ['days' => $days];
-        }
-        return [
-            'month' => [
-                'name' => $month->__toString(),
-                'weeks' => $weeks
-            ],
-            'weeks' => $weekHeads
-        ];
-    }
-
-    function test24() {
-        $this->show();
-        $this->assertTrue(!false);
     }
 }

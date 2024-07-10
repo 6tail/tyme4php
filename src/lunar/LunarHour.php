@@ -5,6 +5,7 @@ namespace com\tyme\lunar;
 
 use com\tyme\AbstractTyme;
 use com\tyme\culture\star\nine\NineStar;
+use com\tyme\culture\Taboo;
 use com\tyme\eightchar\EightChar;
 use com\tyme\sixtycycle\EarthBranch;
 use com\tyme\sixtycycle\HeavenStem;
@@ -67,9 +68,39 @@ class LunarHour extends AbstractTyme
      *
      * @return LunarDay 农历日
      */
-    function getDay(): LunarDay
+    function getLunarDay(): LunarDay
     {
         return $this->day;
+    }
+
+    /**
+     * 年
+     *
+     * @return int 年
+     */
+    function getYear(): int
+    {
+        return $this->day->getYear();
+    }
+
+    /**
+     * 月
+     *
+     * @return int 月，闰月为负数
+     */
+    function getMonth(): int
+    {
+        return $this->day->getMonth();
+    }
+
+    /**
+     * 日
+     *
+     * @return int 日
+     */
+    function getDay(): int
+    {
+        return $this->day->getDay();
     }
 
     /**
@@ -125,8 +156,8 @@ class LunarHour extends AbstractTyme
      */
     function isBefore(LunarHour $target): bool
     {
-        if (!$this->day->equals($target->getDay())) {
-            return $this->day->isBefore($target->getDay());
+        if (!$this->day->equals($target->getLunarDay())) {
+            return $this->day->isBefore($target->getLunarDay());
         }
         if ($this->hour != $target->getHour()) {
             return $this->hour < $target->getHour();
@@ -142,8 +173,8 @@ class LunarHour extends AbstractTyme
      */
     function isAfter(LunarHour $target): bool
     {
-        if (!$this->day->equals($target->getDay())) {
-            return $this->day->isAfter($target->getDay());
+        if (!$this->day->equals($target->getLunarDay())) {
+            return $this->day->isAfter($target->getLunarDay());
         }
         if ($this->hour != $target->getHour()) {
             return $this->hour > $target->getHour();
@@ -163,8 +194,7 @@ class LunarHour extends AbstractTyme
             $days--;
         }
         $d = $this->day->next($days);
-        $month = $d->getMonth();
-        return self::fromYmdHms($month->getYear()->getYear(), $month->getMonthWithLeap(), $d->getDay(), $hour, $this->minute, $this->second);
+        return self::fromYmdHms($d->getYear(), $d->getMonth(), $d->getDay(), $hour, $this->minute, $this->second);
     }
 
     /**
@@ -175,9 +205,9 @@ class LunarHour extends AbstractTyme
     function getYearSixtyCycle(): SixtyCycle
     {
         $solarTime = $this->getSolarTime();
-        $solarYear = $this->day->getSolarDay()->getMonth()->getYear()->getYear();
+        $solarYear = $this->day->getSolarDay()->getYear();
         $springSolarTime = SolarTerm::fromIndex($solarYear, 3)->getJulianDay()->getSolarTime();
-        $lunarYear = $this->day->getMonth()->getYear();
+        $lunarYear = $this->day->getLunarMonth()->getLunarYear();
         $year = $lunarYear->getYear();
         $sixtyCycle = $lunarYear->getSixtyCycle();
         if ($year == $solarYear) {
@@ -200,7 +230,7 @@ class LunarHour extends AbstractTyme
     function getMonthSixtyCycle(): SixtyCycle
     {
         $solarTime = $this->getSolarTime();
-        $year = $solarTime->getDay()->getMonth()->getYear()->getYear();
+        $year = $solarTime->getYear();
         $term = $solarTime->getTerm();
         $index = $term->getIndex() - 3;
         if ($index < 0 && $term->getJulianDay()->getSolarTime()->isAfter(SolarTerm::fromIndex($year, 3)->getJulianDay()->getSolarTime())) {
@@ -240,7 +270,7 @@ class LunarHour extends AbstractTyme
     function getNineStar(): NineStar
     {
         $solar = $this->day->getSolarDay();
-        $dongZhi = SolarTerm::fromIndex($solar->getMonth()->getYear()->getYear(), 0);
+        $dongZhi = SolarTerm::fromIndex($solar->getYear(), 0);
         $xiaZhi = $dongZhi->next(12);
         $asc = !$solar->isBefore($dongZhi->getJulianDay()->getSolarDay()) && $solar->isBefore($xiaZhi->getJulianDay()->getSolarDay());
         $start = [8, 5, 2][$this->day->getSixtyCycle()->getEarthBranch()->getIndex() % 3];
@@ -259,8 +289,7 @@ class LunarHour extends AbstractTyme
     function getSolarTime(): SolarTime
     {
         $d = $this->day->getSolarDay();
-        $m = $d->getMonth();
-        return SolarTime::fromYmdHms($m->getYear()->getYear(), $m->getMonth(), $d->getDay(), $this->hour, $this->minute, $this->second);
+        return SolarTime::fromYmdHms($d->getYear(), $d->getMonth(), $d->getDay(), $this->hour, $this->minute, $this->second);
     }
 
     /**
@@ -271,6 +300,24 @@ class LunarHour extends AbstractTyme
     function getEightChar(): EightChar
     {
         return new EightChar($this->getYearSixtyCycle(), $this->getMonthSixtyCycle(), $this->getDaySixtyCycle(), $this->getSixtyCycle());
+    }
+
+    /**
+     * 宜
+     * @return Taboo[] 宜忌列表
+     */
+    function getRecommends(): array
+    {
+        return Taboo::getHourRecommends($this->getDaySixtyCycle(), $this->getSixtyCycle());
+    }
+
+    /**
+     * 忌
+     * @return Taboo[] 宜忌列表
+     */
+    function getAvoids(): array
+    {
+        return Taboo::getHourAvoids($this->getDaySixtyCycle(), $this->getSixtyCycle());
     }
 
     function equals(mixed $o): bool

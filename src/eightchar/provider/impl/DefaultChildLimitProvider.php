@@ -35,10 +35,7 @@ class DefaultChildLimitProvider implements ChildLimitProvider
         // 1秒 = 2分，1秒/2=0.5秒 = 1分
         $minute = $seconds * 2;
 
-        $birthday = $birthTime->getDay();
-        $birthMonth = $birthday->getMonth();
-
-        $d = $birthday->getDay() + $day;
+        $d = $birthTime->getDay() + $day;
         $h = $birthTime->getHour() + $hour;
         $mi = $birthTime->getMinute() + $minute;
         $h += intdiv($mi, 60);
@@ -46,7 +43,7 @@ class DefaultChildLimitProvider implements ChildLimitProvider
         $d += intdiv($h, 24);
         $h %= 24;
 
-        $sm = SolarMonth::fromYm($birthMonth->getYear()->getYear() + $year, $birthMonth->getMonth())->next($month);
+        $sm = SolarMonth::fromYm($birthTime->getYear() + $year, $birthTime->getMonth())->next($month);
 
         $dc = $sm->getDayCount();
         if ($d > $dc) {
@@ -54,6 +51,6 @@ class DefaultChildLimitProvider implements ChildLimitProvider
             $sm = $sm->next(1);
         }
 
-        return new ChildLimitInfo($birthTime, SolarTime::fromYmdHms($sm->getYear()->getYear(), $sm->getMonth(), $d, $h, $mi, $birthTime->getSecond()), $year, $month, $day, $hour, $minute);
+        return new ChildLimitInfo($birthTime, SolarTime::fromYmdHms($sm->getYear(), $sm->getMonth(), $d, $h, $mi, $birthTime->getSecond()), $year, $month, $day, $hour, $minute);
     }
 }

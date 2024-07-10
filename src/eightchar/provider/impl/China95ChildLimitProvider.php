@@ -26,17 +26,15 @@ class China95ChildLimitProvider implements ChildLimitProvider
         $minutes %= 360;
         $day = intdiv($minutes, 12);
 
-        $birthday = $birthTime->getDay();
-        $birthMonth = $birthday->getMonth();
-        $sm = SolarMonth::fromYm($birthMonth->getYear()->getYear() + $year, $birthMonth->getMonth())->next($month);
+        $sm = SolarMonth::fromYm($birthTime->getYear() + $year, $birthTime->getMonth())->next($month);
 
-        $d = $birthday->getDay() + $day;
+        $d = $birthTime->getDay() + $day;
         $dc = $sm->getDayCount();
         if ($d > $dc) {
             $d -= $dc;
             $sm = $sm->next(1);
         }
 
-        return new ChildLimitInfo($birthTime, SolarTime::fromYmdHms($sm->getYear()->getYear(), $sm->getMonth(), $d, $birthTime->getHour(), $birthTime->getMinute(), $birthTime->getSecond()), $year, $month, $day, 0, 0);
+        return new ChildLimitInfo($birthTime, SolarTime::fromYmdHms($sm->getYear(), $sm->getMonth(), $d, $birthTime->getHour(), $birthTime->getMinute(), $birthTime->getSecond()), $year, $month, $day, 0, 0);
     }
 }

@@ -163,36 +163,36 @@ class LunarMonthTest extends TestCase
     function test29()
     {
         $d = SolarDay::fromYmd(2023, 10, 7)->getLunarDay();
-        $this->assertEquals('壬戌', $d->getMonth()->getSixtyCycle()->__toString());
+        $this->assertEquals('壬戌', $d->getLunarMonth()->getSixtyCycle()->__toString());
         $this->assertEquals('辛酉', $d->getMonthSixtyCycle()->__toString());
     }
 
     function test30()
     {
         $d = SolarDay::fromYmd(2023, 10, 8)->getLunarDay();
-        $this->assertEquals('壬戌', $d->getMonth()->getSixtyCycle()->__toString());
+        $this->assertEquals('壬戌', $d->getLunarMonth()->getSixtyCycle()->__toString());
         $this->assertEquals('壬戌', $d->getMonthSixtyCycle()->__toString());
     }
 
     function test31()
     {
         $d = SolarDay::fromYmd(2023, 10, 15)->getLunarDay();
-        $this->assertEquals('九月', $d->getMonth()->getName());
-        $this->assertEquals('癸亥', $d->getMonth()->getSixtyCycle()->__toString());
+        $this->assertEquals('九月', $d->getLunarMonth()->getName());
+        $this->assertEquals('癸亥', $d->getLunarMonth()->getSixtyCycle()->__toString());
         $this->assertEquals('壬戌', $d->getMonthSixtyCycle()->__toString());
     }
 
     function test32()
     {
         $d = SolarDay::fromYmd(2023, 11, 7)->getLunarDay();
-        $this->assertEquals('癸亥', $d->getMonth()->getSixtyCycle()->__toString());
+        $this->assertEquals('癸亥', $d->getLunarMonth()->getSixtyCycle()->__toString());
         $this->assertEquals('壬戌', $d->getMonthSixtyCycle()->__toString());
     }
 
     function test33()
     {
         $d = SolarDay::fromYmd(2023, 11, 8)->getLunarDay();
-        $this->assertEquals('癸亥', $d->getMonth()->getSixtyCycle()->__toString());
+        $this->assertEquals('癸亥', $d->getLunarMonth()->getSixtyCycle()->__toString());
         $this->assertEquals('癸亥', $d->getMonthSixtyCycle()->__toString());
     }
 
@@ -220,21 +220,21 @@ class LunarMonthTest extends TestCase
     function test36()
     {
         $d = SolarDay::fromYmd(1983, 2, 15)->getLunarDay();
-        $this->assertEquals('甲寅', $d->getMonth()->getSixtyCycle()->__toString());
+        $this->assertEquals('甲寅', $d->getLunarMonth()->getSixtyCycle()->__toString());
         $this->assertEquals('甲寅', $d->getMonthSixtyCycle()->__toString());
     }
 
     function test37()
     {
         $d = SolarDay::fromYmd(2023, 10, 30)->getLunarDay();
-        $this->assertEquals('癸亥', $d->getMonth()->getSixtyCycle()->__toString());
+        $this->assertEquals('癸亥', $d->getLunarMonth()->getSixtyCycle()->__toString());
         $this->assertEquals('壬戌', $d->getMonthSixtyCycle()->__toString());
     }
 
     function test38()
     {
         $d = SolarDay::fromYmd(2023, 10, 19)->getLunarDay();
-        $this->assertEquals('癸亥', $d->getMonth()->getSixtyCycle()->__toString());
+        $this->assertEquals('癸亥', $d->getLunarMonth()->getSixtyCycle()->__toString());
         $this->assertEquals('壬戌', $d->getMonthSixtyCycle()->__toString());
     }
 

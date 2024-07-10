@@ -70,13 +70,13 @@ class SolarTermTest extends TestCase
     function test4()
     {
         // 大雪当天
-        $this->assertEquals("大雪第1天", SolarDay::fromYmd(2023, 12, 7)->getTermDay()->__toString());
+        $this->assertEquals('大雪第1天', SolarDay::fromYmd(2023, 12, 7)->getTermDay()->__toString());
         // 天数索引
         $this->assertEquals(0, SolarDay::fromYmd(2023, 12, 7)->getTermDay()->getDayIndex());
 
-        $this->assertEquals("大雪第2天", SolarDay::fromYmd(2023, 12, 8)->getTermDay()->__toString());
-        $this->assertEquals("大雪第15天", SolarDay::fromYmd(2023, 12, 21)->getTermDay()->__toString());
+        $this->assertEquals('大雪第2天', SolarDay::fromYmd(2023, 12, 8)->getTermDay()->__toString());
+        $this->assertEquals('大雪第15天', SolarDay::fromYmd(2023, 12, 21)->getTermDay()->__toString());
 
-        $this->assertEquals("冬至第1天", SolarDay::fromYmd(2023, 12, 22)->getTermDay()->__toString());
+        $this->assertEquals('冬至第1天', SolarDay::fromYmd(2023, 12, 22)->getTermDay()->__toString());
     }
 }

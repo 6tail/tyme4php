@@ -7,11 +7,13 @@ use com\tyme\AbstractTyme;
 use com\tyme\culture\Direction;
 use com\tyme\culture\Duty;
 use com\tyme\culture\fetus\FetusDay;
+use com\tyme\culture\God;
 use com\tyme\culture\Phase;
 use com\tyme\culture\star\nine\NineStar;
 use com\tyme\culture\star\six\SixStar;
 use com\tyme\culture\star\twelve\TwelveStar;
 use com\tyme\culture\star\twentyeight\TwentyEightStar;
+use com\tyme\culture\Taboo;
 use com\tyme\culture\Week;
 use com\tyme\festival\LunarFestival;
 use com\tyme\sixtycycle\EarthBranch;
@@ -56,13 +58,33 @@ class LunarDay extends AbstractTyme
     }
 
     /**
-     * 月
+     * 农历月
      *
-     * @return LunarMonth 月
+     * @return LunarMonth 农历月
      */
-    function getMonth(): LunarMonth
+    function getLunarMonth(): LunarMonth
     {
         return $this->month;
+    }
+
+    /**
+     * 年
+     *
+     * @return int 年
+     */
+    function getYear(): int
+    {
+        return $this->month->getYear();
+    }
+
+    /**
+     * 月
+     *
+     * @return int 月，闰月为负数
+     */
+    function getMonth(): int
+    {
+        return $this->month->getMonthWithLeap();
     }
 
     /**
@@ -88,24 +110,24 @@ class LunarDay extends AbstractTyme
     function next(int $n): LunarDay
     {
         if ($n == 0) {
-            return self::fromYmd($this->month->getYear()->getYear(), $this->month->getMonthWithLeap(), $this->day);
+            return self::fromYmd($this->getYear(), $this->getMonth(), $this->day);
         }
         $d = $this->day + $n;
         $m = $this->month;
-        $daysInMonth = $m->getDayCount();
+        $dayCount = $m->getDayCount();
         $forward = $n > 0;
         $add = $forward ? 1 : -1;
-        while ($forward ? ($d > $daysInMonth) : ($d <= 0)) {
+        while ($forward ? ($d > $dayCount) : ($d <= 0)) {
             if ($forward) {
-                $d -= $daysInMonth;
+                $d -= $dayCount;
             }
             $m = $m->next($add);
-            $daysInMonth = $m->getDayCount();
+            $dayCount = $m->getDayCount();
             if (!$forward) {
-                $d += $daysInMonth;
+                $d += $dayCount;
             }
         }
-        return self::fromYmd($m->getYear()->getYear(), $m->getMonthWithLeap(), $d);
+        return self::fromYmd($m->getYear(), $m->getMonthWithLeap(), $d);
     }
 
     /**
@@ -116,17 +138,15 @@ class LunarDay extends AbstractTyme
      */
     function isBefore(LunarDay $target): bool
     {
-        $bMonth = $target->getMonth();
-        $aYear = $this->month->getYear()->getYear();
-        $bYear = $bMonth->getYear()->getYear();
+        $aYear = $this->getYear();
+        $bYear = $target->getYear();
         if ($aYear != $bYear) {
             return $aYear < $bYear;
         }
-        if ($this->month->getMonth() != $bMonth->getMonth()) {
-            return $this->month->getMonth() < $bMonth->getMonth();
-        }
-        if ($this->month->isLeap() && !$bMonth->isLeap()) {
-            return false;
+        $aMonth = $this->getMonth();
+        $bMonth = $target->getMonth();
+        if ($aMonth != $bMonth) {
+            return abs($aMonth) < abs($bMonth);
         }
         return $this->day < $target->getDay();
     }
@@ -139,17 +159,15 @@ class LunarDay extends AbstractTyme
      */
     function isAfter(LunarDay $target): bool
     {
-        $targetMonth = $target->getMonth();
-        $aYear = $this->month->getYear()->getYear();
-        $bYear = $targetMonth->getYear()->getYear();
+        $aYear = $this->getYear();
+        $bYear = $target->getYear();
         if ($aYear != $bYear) {
             return $aYear > $bYear;
         }
-        if ($this->month->getMonth() != $targetMonth->getMonth()) {
-            return $this->month->getMonth() > $targetMonth->getMonth();
-        }
-        if ($this->month->isLeap() && !$targetMonth->isLeap()) {
-            return true;
+        $aMonth = $this->getMonth();
+        $bMonth = $target->getMonth();
+        if ($aMonth != $bMonth) {
+            return abs($aMonth) >= abs($bMonth);
         }
         return $this->day > $target->getDay();
     }
@@ -172,9 +190,9 @@ class LunarDay extends AbstractTyme
     function getYearSixtyCycle(): SixtyCycle
     {
         $solarDay = $this->getSolarDay();
-        $solarYear = $solarDay->getMonth()->getYear()->getYear();
+        $solarYear = $solarDay->getYear();
         $springSolarDay = SolarTerm::fromIndex($solarYear, 3)->getJulianDay()->getSolarDay();
-        $lunarYear = $this->month->getYear();
+        $lunarYear = $this->month->getLunarYear();
         $year = $lunarYear->getYear();
         $sixtyCycle = $lunarYear->getSixtyCycle();
         if ($year == $solarYear) {
@@ -197,7 +215,7 @@ class LunarDay extends AbstractTyme
     function getMonthSixtyCycle(): SixtyCycle
     {
         $solarDay = $this->getSolarDay();
-        $year = $solarDay->getMonth()->getYear()->getYear();
+        $year = $solarDay->getYear();
         $term = $solarDay->getTerm();
         $index = $term->getIndex() - 3;
         if ($index < 0 && $term->getJulianDay()->getSolarDay()->isAfter(SolarTerm::fromIndex($year, 3)->getJulianDay()->getSolarDay())) {
@@ -245,7 +263,7 @@ class LunarDay extends AbstractTyme
     function getNineStar(): NineStar
     {
         $solar = $this->getSolarDay();
-        $dongZhi = SolarTerm::fromIndex($solar->getMonth()->getYear()->getYear(), 0);
+        $dongZhi = SolarTerm::fromIndex($solar->getYear(), 0);
         $xiaZhi = $dongZhi->next(12);
         $dongZhi2 = $dongZhi->next(24);
         $dongZhiSolar = $dongZhi->getJulianDay()->getSolarDay();
@@ -281,7 +299,7 @@ class LunarDay extends AbstractTyme
         if ($index % 12 < 6) {
             return Direction::fromIndex([2, 8, 4, 6, 0][intdiv($index, 12)]);
         }
-        return $this->month->getYear()->getJupiterDirection();
+        return $this->month->getLunarYear()->getJupiterDirection();
     }
 
     /**
@@ -331,7 +349,7 @@ class LunarDay extends AbstractTyme
      */
     function getFestival(): ?LunarFestival
     {
-        return LunarFestival::fromYmd($this->month->getYear()->getYear(), $this->month->getMonthWithLeap(), $this->day);
+        return LunarFestival::fromYmd($this->getYear(), $this->getMonth(), $this->day);
     }
 
     /**
@@ -340,14 +358,41 @@ class LunarDay extends AbstractTyme
      */
     function getHours(): array
     {
-        $y = $this->month->getYear()->getYear();
-        $m = $this->month->getMonth();
+        $y = $this->getYear();
+        $m = $this->getMonth();
         $l = array();
         $l[] = LunarHour::fromYmdHms($y, $m, $this->day, 0, 0, 0);
         for ($i = 0; $i < 24; $i += 2) {
             $l[] = LunarHour::fromYmdHms($y, $m, $this->day, $i + 1, 0, 0);
         }
         return $l;
+    }
+
+    /**
+     * 神煞列表(吉神宜趋，凶神宜忌)
+     * @return God[] 神煞列表
+     */
+    function getGods(): array
+    {
+        return God::getDayGods($this->getMonthSixtyCycle(), $this->getSixtyCycle());
+    }
+
+    /**
+     * 宜
+     * @return Taboo[] 宜忌列表
+     */
+    function getRecommends(): array
+    {
+        return Taboo::getDayRecommends($this->getMonthSixtyCycle(), $this->getSixtyCycle());
+    }
+
+    /**
+     * 忌
+     * @return Taboo[] 宜忌列表
+     */
+    function getAvoids(): array
+    {
+        return Taboo::getDayAvoids($this->getMonthSixtyCycle(), $this->getSixtyCycle());
     }
 
     /**

@@ -40,12 +40,21 @@ class SolarSeason extends AbstractTyme
     }
 
     /**
-     * 年
-     * @return SolarYear 年
+     * 公历年
+     * @return SolarYear 公历年
      */
-    function getYear(): SolarYear
+    function getSolarYear(): SolarYear
     {
         return $this->year;
+    }
+
+    /**
+     * 年
+     * @return int 年
+     */
+    function getYear(): int
+    {
+        return $this->year->getYear();
     }
 
     /**
@@ -71,10 +80,10 @@ class SolarSeason extends AbstractTyme
     function next(int $n): static
     {
         if ($n == 0) {
-            return self::fromIndex($this->year->getYear(), $this->index);
+            return self::fromIndex($this->getYear(), $this->index);
         }
         $i = $this->index + $n;
-        $y = $this->year->getYear() + intdiv($i, 4);
+        $y = $this->getYear() + intdiv($i, 4);
         $i %= 4;
         if ($i < 0) {
             $i += 4;
@@ -91,7 +100,7 @@ class SolarSeason extends AbstractTyme
     function getMonths(): array
     {
         $l = array();
-        $y = $this->year->getYear();
+        $y = $this->getYear();
         for ($i = 0; $i < 3; $i++) {
             $l[] = SolarMonth::fromYm($y, $this->index * 3 + $i + 1);
         }
