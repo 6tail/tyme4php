@@ -5,6 +5,7 @@ namespace com\tyme\lunar;
 
 use com\tyme\AbstractTyme;
 use com\tyme\culture\star\nine\NineStar;
+use com\tyme\culture\star\twelve\TwelveStar;
 use com\tyme\culture\Taboo;
 use com\tyme\eightchar\EightChar;
 use com\tyme\sixtycycle\EarthBranch;
@@ -263,6 +264,16 @@ class LunarHour extends AbstractTyme
     }
 
     /**
+     * 黄道黑道十二神
+     *
+     * @return TwelveStar 黄道黑道十二神
+     */
+    function getTwelveStar(): TwelveStar
+    {
+        return TwelveStar::fromIndex($this->getSixtyCycle()->getEarthBranch()->getIndex() + (8 - $this->getDaySixtyCycle()->getEarthBranch()->getIndex() % 6) * 2);
+    }
+
+    /**
      * 九星（时家紫白星歌诀：三元时白最为佳，冬至阳生顺莫差，孟日七宫仲一白，季日四绿发萌芽，每把时辰起甲子，本时星耀照光华，时星移入中宫去，顺飞八方逐细查。夏至阴生逆回首，孟归三碧季加六，仲在九宫时起甲，依然掌中逆轮跨。）
      *
      * @return NineStar 九星
@@ -318,13 +329,5 @@ class LunarHour extends AbstractTyme
     function getAvoids(): array
     {
         return Taboo::getHourAvoids($this->getDaySixtyCycle(), $this->getSixtyCycle());
-    }
-
-    function equals(mixed $o): bool
-    {
-        if (!($o instanceof LunarHour)) {
-            return false;
-        }
-        return $this->day->equals($o->getDay()) && $this->hour == $o->getHour() && $this->minute == $o->getMinute() && $this->second == $o->getSecond();
     }
 }

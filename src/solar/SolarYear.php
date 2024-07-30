@@ -84,8 +84,8 @@ class SolarYear extends AbstractTyme
     function getMonths(): array
     {
         $l = array();
-        for ($i = 0; $i < 12; $i++) {
-            $l[] = SolarMonth::fromYm($this->year, $i + 1);
+        for ($i = 1; $i < 13; $i++) {
+            $l[] = SolarMonth::fromYm($this->year, $i);
         }
         return $l;
     }

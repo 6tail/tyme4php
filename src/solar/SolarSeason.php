@@ -101,8 +101,8 @@ class SolarSeason extends AbstractTyme
     {
         $l = array();
         $y = $this->getYear();
-        for ($i = 0; $i < 3; $i++) {
-            $l[] = SolarMonth::fromYm($y, $this->index * 3 + $i + 1);
+        for ($i = 1; $i < 4; $i++) {
+            $l[] = SolarMonth::fromYm($y, $this->index * 3 + $i);
         }
         return $l;
     }

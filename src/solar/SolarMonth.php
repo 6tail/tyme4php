@@ -173,8 +173,8 @@ class SolarMonth extends AbstractTyme
         $size = $this->getDayCount();
         $y = $this->getYear();
         $l = array();
-        for ($i = 0; $i < $size; $i++) {
-            $l[] = SolarDay::fromYmd($y, $this->month, $i + 1);
+        for ($i = 1; $i <= $size; $i++) {
+            $l[] = SolarDay::fromYmd($y, $this->month, $i);
         }
         return $l;
     }

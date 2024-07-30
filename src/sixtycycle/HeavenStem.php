@@ -95,7 +95,7 @@ class HeavenStem extends LoopTyme
      */
     function getDirection(): Direction
     {
-        return Direction::fromIndex([2, 8, 4, 6, 0][intdiv($this->index, 2)]);
+        return $this->getElement()->getDirection();
     }
 
     /**
@@ -168,5 +168,25 @@ class HeavenStem extends LoopTyme
     {
         $earthBranchIndex = $earthBranch->getIndex();
         return Terrain::fromIndex([1, 6, 10, 9, 10, 9, 7, 0, 4, 3][$this->index] + (YinYang::YANG == $this->getYinYang() ? $earthBranchIndex : -$earthBranchIndex));
+    }
+
+    /**
+     * 五合（甲己合，乙庚合，丙辛合，丁壬合，戊癸合）
+     *
+     * @return HeavenStem 天干
+     */
+    function getCombine(): static
+    {
+        return $this->next(5);
+    }
+
+    /**
+     * 合化（甲己合化土，乙庚合化金，丙辛合化水，丁壬合化木，戊癸合化火）
+     * @param HeavenStem $target 天干
+     * @return Element|null 五行，如果无法合化，返回null
+     */
+    function combine(HeavenStem $target): ?Element
+    {
+        return $this->getCombine()->equals($target) ? Element::fromIndex($this->index + 2) : null;
     }
 }

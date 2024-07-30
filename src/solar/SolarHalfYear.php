@@ -101,8 +101,8 @@ class SolarHalfYear extends AbstractTyme
     {
         $l = array();
         $y = $this->getYear();
-        for ($i = 0; $i < 6; $i++) {
-            $l[] = SolarMonth::fromYm($y, $this->index * 6 + $i + 1);
+        for ($i = 1; $i < 7; $i++) {
+            $l[] = SolarMonth::fromYm($y, $this->index * 6 + $i);
         }
         return $l;
     }

@@ -72,21 +72,28 @@ class LegalHoliday
         }
         $index += $n;
         $y = $year;
-        $forward = $n > 0;
-        $add = $forward ? 1 : -1;
-        while ($forward ? ($index >= $size) : ($index < 0)) {
-            if ($forward) {
+        if ($n > 0) {
+            while ($index >= $size) {
                 $index -= $size;
+                $y += 1;
+                $size = 0;
+                if(preg_match_all(sprintf($reg, $y), static::$DATA, $matches)) {
+                    $size = count($matches[0]);
+                }
+                if ($size < 1) {
+                    return null;
+                }
             }
-            $y += $add;
-            $size = 0;
-            if(preg_match_all(sprintf($reg, $y), static::$DATA, $matches)) {
-                $size = count($matches[0]);
-            }
-            if ($size < 1) {
-                return null;
-            }
-            if (!$forward) {
+        } else {
+            while ($index < 0) {
+                $y -= 1;
+                $size = 0;
+                if(preg_match_all(sprintf($reg, $y), static::$DATA, $matches)) {
+                    $size = count($matches[0]);
+                }
+                if ($size < 1) {
+                    return null;
+                }
                 $index += $size;
             }
         }

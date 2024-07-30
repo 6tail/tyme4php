@@ -95,6 +95,16 @@ class LunarYear extends AbstractTyme
     }
 
     /**
+     * 月数
+     *
+     * @return int 月数
+     */
+    function getMonthCount(): int
+    {
+        return $this->getLeapMonth() > 0 ? 13 : 12;
+    }
+
+    /**
      * 依据国家标准《农历的编算和颁行》GB/T 33661-2017，农历年有2种命名方法：干支纪年法和生肖纪年法，这里默认采用干支纪年法。
      *
      * @return string 名称
@@ -176,16 +186,10 @@ class LunarYear extends AbstractTyme
     {
         $l = array();
         $m = LunarMonth::fromYm($this->year, 1);
-        while ($m->getYear()->getYear() == $this->year) {
+        while ($m->getYear() == $this->year) {
             $l[] = $m;
             $m = $m->next(1);
         }
         return $l;
     }
-
-    function equals(mixed $o): bool
-    {
-        return $o instanceof LunarYear && $o->getYear() == $this->year;
-    }
-
 }

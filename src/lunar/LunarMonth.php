@@ -22,6 +22,11 @@ use InvalidArgumentException;
  */
 class LunarMonth extends AbstractTyme
 {
+    /**
+     * @var array 缓存
+     */
+    private static array $cache = array();
+
     static array $NAMES = ['正月', '二月', '三月', '四月', '五月', '六月', '七月', '八月', '九月', '十月', '十一月', '十二月'];
 
 
@@ -55,58 +60,85 @@ class LunarMonth extends AbstractTyme
      */
     protected JulianDay $firstJulianDay;
 
-    protected function __construct(int $year, int $month)
+    protected function __construct(int $year, int $month, array $cache = null)
     {
-        $currentYear = LunarYear::fromYear($year);
-        $currentLeapMonth = $currentYear->getLeapMonth();
-        if ($month == 0 || $month > 12 || $month < -12) {
-            throw new InvalidArgumentException(sprintf('illegal lunar month: %d', $month));
-        }
-        $leap = $month < 0;
-        $m = abs($month);
-        if ($leap && $m != $currentLeapMonth) {
-            throw new InvalidArgumentException(sprintf('illegal leap month %d in lunar year %d', $m, $year));
-        }
+        if ($cache !== null) {
+            $m = (int)$cache[1];
+            $this->year = LunarYear::fromYear((int)$cache[0]);
+            $this->month = abs($m);
+            $this->leap = $m < 0;
+            $this->dayCount = (int)$cache[2];
+            $this->indexInYear = (int)$cache[3];
+            $this->firstJulianDay = JulianDay::fromJulianDay((double)$cache[4]);
+        } else {
+            $currentYear = LunarYear::fromYear($year);
+            $currentLeapMonth = $currentYear->getLeapMonth();
+            if ($month == 0 || $month > 12 || $month < -12) {
+                throw new InvalidArgumentException(sprintf('illegal lunar month: %d', $month));
+            }
+            $leap = $month < 0;
+            $m = abs($month);
+            if ($leap && $m != $currentLeapMonth) {
+                throw new InvalidArgumentException(sprintf('illegal leap month %d in lunar year %d', $m, $year));
+            }
 
-        // 冬至
-        $dongZhi = SolarTerm::fromIndex($year, 0);
-        $dongZhiJd = $dongZhi->getCursoryJulianDay();
+            // 冬至
+            $dongZhi = SolarTerm::fromIndex($year, 0);
+            $dongZhiJd = $dongZhi->getCursoryJulianDay();
 
-        // 冬至前的初一，今年首朔的日月黄经差
-        $w = ShouXingUtil::calcShuo($dongZhiJd);
-        if ($w > $dongZhiJd) {
-            $w -= 29.53;
+            // 冬至前的初一，今年首朔的日月黄经差
+            $w = ShouXingUtil::calcShuo($dongZhiJd);
+            if ($w > $dongZhiJd) {
+                $w -= 29.53;
+            }
+
+            // 正常情况正月初一为第3个朔日，但有些特殊的
+            $offset = 2;
+            if ($year > 8 && $year < 24) {
+                $offset = 1;
+            } else if (LunarYear::fromYear($year - 1)->getLeapMonth() > 10 && $year != 239 && $year != 240) {
+                $offset = 3;
+            }
+
+            // 位于当年的索引
+            $index = $m - 1;
+            if ($leap || ($currentLeapMonth > 0 && $m > $currentLeapMonth)) {
+                $index += 1;
+            }
+            $this->indexInYear = $index;
+
+            // 本月初一
+            $w += 29.5306 * ($offset + $index);
+            $firstDay = ShouXingUtil::calcShuo($w);
+            $this->firstJulianDay = JulianDay::fromJulianDay(JulianDay::J2000 + $firstDay);
+            // 本月天数 = 下月初一 - 本月初一
+            $this->dayCount = (int)(ShouXingUtil::calcShuo($w + 29.5306) - $firstDay);
+            $this->year = $currentYear;
+            $this->month = $m;
+            $this->leap = $leap;
         }
-
-        // 正常情况正月初一为第3个朔日，但有些特殊的
-        $offset = 2;
-        if ($year > 8 && $year < 24) {
-            $offset = 1;
-        } else if (LunarYear::fromYear($year - 1)->getLeapMonth() > 10 && $year != 239 && $year != 240) {
-            $offset = 3;
-        }
-
-        // 位于当年的索引
-        $index = $m - 1;
-        if ($leap || ($currentLeapMonth > 0 && $m > $currentLeapMonth)) {
-            $index += 1;
-        }
-        $this->indexInYear = $index;
-
-        // 本月初一
-        $w += 29.5306 * ($offset + $index);
-        $firstDay = ShouXingUtil::calcShuo($w);
-        $this->firstJulianDay = JulianDay::fromJulianDay(JulianDay::J2000 + $firstDay);
-        // 本月天数 = 下月初一 - 本月初一
-        $this->dayCount = (int)(ShouXingUtil::calcShuo($w + 29.5306) - $firstDay);
-        $this->year = $currentYear;
-        $this->month = $m;
-        $this->leap = $leap;
     }
 
     static function fromYm(int $year, int $month): static
     {
-        return new static($year, $month);
+        $c = null;
+        $key = sprintf("%d%d", $year, $month);
+        if (!empty(static::$cache[$key])) {
+            $c = static::$cache[$key];
+        }
+        if (null != $c) {
+            $m = new static(0, 0, $c);
+        } else {
+            $m = new static($year, $month);
+            static::$cache[$key] = [
+                $m->getYear(),
+                $m->getMonthWithLeap(),
+                $m->getDayCount(),
+                $m->getIndexInYear(),
+                $m->getFirstJulianDay()->getDay()
+            ];
+        }
+        return $m;
     }
 
     /**
@@ -233,18 +265,19 @@ class LunarMonth extends AbstractTyme
         $m = $this->indexInYear + 1 + $n;
         $y = $this->year;
         $leapMonth = $y->getLeapMonth();
-        $monthSize = 12 + ($leapMonth > 0 ? 1 : 0);
-        $forward = $n > 0;
-        $add = $forward ? 1 : -1;
-        while ($forward ? ($m > $monthSize) : ($m <= 0)) {
-            if ($forward) {
-                $m -= $monthSize;
+        if ($n > 0) {
+            $monthCount = $leapMonth > 0 ? 13 : 12;
+            while ($m > $monthCount) {
+                $m -= $monthCount;
+                $y = $y->next(1);
+                $leapMonth = $y->getLeapMonth();
+                $monthCount = $leapMonth > 0 ? 13 : 12;
             }
-            $y = $y->next($add);
-            $leapMonth = $y->getLeapMonth();
-            $monthSize = 12 + ($leapMonth > 0 ? 1 : 0);
-            if (!$forward) {
-                $m += $monthSize;
+        } else {
+            while ($m <= 0) {
+                $y = $y->next(-1);
+                $leapMonth = $y->getLeapMonth();
+                $m += $leapMonth > 0 ? 13 : 12;
             }
         }
         $leap = false;
@@ -335,13 +368,4 @@ class LunarMonth extends AbstractTyme
     {
         return FetusMonth::fromLunarMonth($this);
     }
-
-    function equals(mixed $o): bool
-    {
-        if (!($o instanceof LunarMonth)) {
-            return false;
-        }
-        return $this->getYear() == $o->getYear() && $this->getMonthWithLeap() == $o->getMonthWithLeap();
-    }
-
 }

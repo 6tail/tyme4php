@@ -116,13 +116,43 @@ class EarthBranch extends LoopTyme
     }
 
     /**
-     * 相冲的地支（子午冲，丑未冲，寅申冲，辰戌冲，卯酉冲，巳亥冲）
+     * 六冲（子午冲，丑未冲，寅申冲，辰戌冲，卯酉冲，巳亥冲）
      *
      * @return EarthBranch 地支
      */
     function getOpposite(): static
     {
         return $this->next(6);
+    }
+
+    /**
+     * 六合（子丑合，寅亥合，卯戌合，辰酉合，巳申合，午未合）
+     *
+     * @return EarthBranch 地支
+     */
+    function getCombine(): static
+    {
+        return $this->fromIndex(1 - $this->index);
+    }
+
+    /**
+     * 合化（子丑合化土，寅亥合化木，卯戌合化火，辰酉合化金，巳申合化水，午未合化土）
+     * @param EarthBranch $target 地支
+     * @return Element|null 五行，如果无法合化，返回null
+     */
+    function combine(EarthBranch $target): ?Element
+    {
+        return $this->getCombine()->equals($target) ? Element::fromIndex([2, 2, 0, 1, 3, 4, 2, 2, 4, 3, 1, 0][$this->index]) : null;
+    }
+
+    /**
+     * 六害（子未害、丑午害、寅巳害、卯辰害、申亥害、酉戌害）
+     *
+     * @return EarthBranch 地支
+     */
+    function getHarm(): static
+    {
+        return $this->fromIndex(19 - $this->index);
     }
 
     /**

@@ -402,7 +402,7 @@ class SolarDay extends AbstractTyme
         $days = $this->subtract($m->getFirstJulianDay()->getSolarDay());
         while ($days < 0) {
             $m = $m->next(-1);
-            $days = $this->subtract($m->getFirstJulianDay()->getSolarDay());
+            $days += $m->getDayCount();
         }
         return LunarDay::fromYmd($m->getYear(), $m->getMonthWithLeap(), $days + 1);
     }

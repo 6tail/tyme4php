@@ -50,4 +50,14 @@ class Direction extends LoopTyme
     {
         return Land::fromIndex($this->index);
     }
+
+    /**
+     * 五行
+     *
+     * @return Element 五行
+     */
+    function getElement(): Element
+    {
+        return Element::fromIndex([4, 2, 0, 0, 2, 3, 3, 2, 1][$this->index]);
+    }
 }

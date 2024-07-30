@@ -6,6 +6,7 @@ namespace com\tyme\lunar;
 use com\tyme\AbstractTyme;
 use com\tyme\culture\Direction;
 use com\tyme\culture\Duty;
+use com\tyme\culture\Element;
 use com\tyme\culture\fetus\FetusDay;
 use com\tyme\culture\God;
 use com\tyme\culture\Phase;
@@ -109,25 +110,7 @@ class LunarDay extends AbstractTyme
 
     function next(int $n): LunarDay
     {
-        if ($n == 0) {
-            return self::fromYmd($this->getYear(), $this->getMonth(), $this->day);
-        }
-        $d = $this->day + $n;
-        $m = $this->month;
-        $dayCount = $m->getDayCount();
-        $forward = $n > 0;
-        $add = $forward ? 1 : -1;
-        while ($forward ? ($d > $dayCount) : ($d <= 0)) {
-            if ($forward) {
-                $d -= $dayCount;
-            }
-            $m = $m->next($add);
-            $dayCount = $m->getDayCount();
-            if (!$forward) {
-                $d += $dayCount;
-            }
-        }
-        return self::fromYmd($m->getYear(), $m->getMonthWithLeap(), $d);
+        return $n == 0 ? self::fromYmd($this->getYear(), $this->getMonth(), $this->day) : $this->getSolarDay()->next($n)->getLunarDay();
     }
 
     /**
@@ -296,10 +279,7 @@ class LunarDay extends AbstractTyme
     function getJupiterDirection(): Direction
     {
         $index = $this->getSixtyCycle()->getIndex();
-        if ($index % 12 < 6) {
-            return Direction::fromIndex([2, 8, 4, 6, 0][intdiv($index, 12)]);
-        }
-        return $this->month->getLunarYear()->getJupiterDirection();
+        return $index % 12 < 6 ? Element::fromIndex(intdiv($index, 12))->getDirection() : $this->month->getLunarYear()->getJupiterDirection();
     }
 
     /**
@@ -403,13 +383,4 @@ class LunarDay extends AbstractTyme
     {
         return SixStar::fromIndex(($this->month->getMonth() + $this->day - 2) % 6);
     }
-
-    function equals(mixed $o): bool
-    {
-        if (!($o instanceof LunarDay)) {
-            return false;
-        }
-        return $this->month->equals($o->getMonth()) && $this->day == $o->getDay();
-    }
-
 }

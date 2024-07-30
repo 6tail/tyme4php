@@ -77,4 +77,13 @@ class Element extends LoopTyme
     {
         return $this->next(-2);
     }
+
+    /**
+     * 方位
+     * @return Direction 方位
+     */
+    function getDirection(): Direction
+    {
+        return Direction::fromIndex([2, 8, 4, 6, 0][$this->index]);
+    }
 }
