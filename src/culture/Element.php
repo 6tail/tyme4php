@@ -39,7 +39,7 @@ class Element extends LoopTyme
     }
 
     /**
-     * 我生者（生）
+     * 我生者
      *
      * @return Element 五行
      */
@@ -49,7 +49,7 @@ class Element extends LoopTyme
     }
 
     /**
-     * 我克者（克）
+     * 我克者
      *
      * @return Element 五行
      */
@@ -59,7 +59,7 @@ class Element extends LoopTyme
     }
 
     /**
-     * 生我者（泄）
+     * 生我者
      *
      * @return Element 五行
      */
@@ -69,7 +69,7 @@ class Element extends LoopTyme
     }
 
     /**
-     * 克我者（耗）
+     * 克我者
      *
      * @return Element 五行
      */

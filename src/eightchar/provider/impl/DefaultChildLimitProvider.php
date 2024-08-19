@@ -46,9 +46,10 @@ class DefaultChildLimitProvider implements ChildLimitProvider
         $sm = SolarMonth::fromYm($birthTime->getYear() + $year, $birthTime->getMonth())->next($month);
 
         $dc = $sm->getDayCount();
-        if ($d > $dc) {
+        while ($d > $dc) {
             $d -= $dc;
             $sm = $sm->next(1);
+            $dc = $sm->getDayCount();
         }
 
         return new ChildLimitInfo($birthTime, SolarTime::fromYmdHms($sm->getYear(), $sm->getMonth(), $d, $h, $mi, $birthTime->getSecond()), $year, $month, $day, $hour, $minute);

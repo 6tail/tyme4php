@@ -72,20 +72,12 @@ class HeavenStem extends LoopTyme
      */
     function getTenStar(HeavenStem $target): TenStar
     {
-        $hostElement = $this->getElement();
-        $guestElement = $target->getElement();
-        $index = 0;
-        $sameYinYang = $this->getYinYang()->equals($target->getYinYang());
-        if ($hostElement->getReinforce()->equals($guestElement)) {
-            $index = 1;
-        } else if ($hostElement->getRestrain()->equals($guestElement)) {
-            $index = 2;
-        } else if ($guestElement->getRestrain()->equals($hostElement)) {
-            $index = 3;
-        } else if ($guestElement->getReinforce()->equals($hostElement)) {
-            $index = 4;
+        $targetIndex = $target->getIndex();
+        $offset = $targetIndex - $this->index;
+        if ($this->index % 2 != 0 && $targetIndex % 2 == 0) {
+            $offset += 2;
         }
-        return TenStar::fromIndex($index * 2 + ($sameYinYang ? 0 : 1));
+        return TenStar::fromIndex($offset);
     }
 
     /**
