@@ -133,15 +133,16 @@ class SolarMonth extends AbstractTyme
 
     function next(int $n): SolarMonth
     {
-        if ($n == 0) {
-            return self::fromYm($this->getYear(), $this->month);
-        }
-        $m = $this->month + $n;
-        $y = $this->getYear() + intdiv($m, 12);
-        $m %= 12;
-        if ($m < 1) {
-            $m += 12;
-            $y--;
+        $m = $this->month;
+        $y = $this->getYear();
+        if ($n != 0) {
+            $m += $n;
+            $y += intdiv($m, 12);
+            $m %= 12;
+            if ($m < 1) {
+                $m += 12;
+                $y--;
+            }
         }
         return self::fromYm($y, $m);
     }

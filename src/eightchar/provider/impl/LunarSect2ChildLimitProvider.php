@@ -8,11 +8,11 @@ use com\tyme\solar\SolarTerm;
 use com\tyme\solar\SolarTime;
 
 /**
- * 元亨利贞的童限计算
+ * Lunar的流派2童限计算（按分钟数计算）
  * @author 6tail
  * @package com\tyme\eightchar\provider\impl
  */
-class China95ChildLimitProvider extends AbstractChildLimitProvider
+class LunarSect2ChildLimitProvider extends AbstractChildLimitProvider
 {
     function getInfo(SolarTime $birthTime, SolarTerm $term): ChildLimitInfo
     {
@@ -23,6 +23,8 @@ class China95ChildLimitProvider extends AbstractChildLimitProvider
         $month = intdiv($minutes, 360);
         $minutes %= 360;
         $day = intdiv($minutes, 12);
-        return $this->next($birthTime, $year, $month, $day, 0, 0, 0);
+        $minutes %= 12;
+        $hour = $minutes * 2;
+        return $this->next($birthTime, $year, $month, $day, $hour, 0, 0);
     }
 }

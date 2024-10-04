@@ -78,46 +78,7 @@ class JulianDay extends AbstractTyme
      */
     function getSolarDay(): SolarDay
     {
-        $d = (int)($this->day + 0.5);
-        $f = $this->day + 0.5 - $d;
-
-        if ($d >= 2299161) {
-            $c = (int)(($d - 1867216.25) / 36524.25);
-            $d += 1 + $c - intdiv($c, 4);
-        }
-        $d += 1524;
-        $year = (int)(($d - 122.1) / 365.25);
-        $d -= (int)(365.25 * $year);
-        $month = (int)($d / 30.601);
-        $d -= (int)(30.601 * $month);
-        $day = $d;
-        if ($month > 13) {
-            $month -= 13;
-            $year -= 4715;
-        } else {
-            $month -= 1;
-            $year -= 4716;
-        }
-        $f *= 24;
-        $hour = (int)$f;
-
-        $f -= $hour;
-        $f *= 60;
-        $minute = (int)$f;
-
-        $f -= $minute;
-        $f *= 60;
-        $second = (int)(round($f));
-        if ($second > 59) {
-            $minute++;
-        }
-        if ($minute > 59) {
-            $hour++;
-        }
-        if ($hour > 23) {
-            $day += 1;
-        }
-        return SolarDay::fromYmd($year, $month, $day);
+        return $this->getSolarTime()->getSolarDay();
     }
 
     /**

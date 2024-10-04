@@ -85,6 +85,24 @@ class Taboo extends LoopTyme
     }
 
     /**
+     * 宜忌
+     * @param string[] $data 数据
+     * @param int $supIndex 主下标
+     * @param int $subIndex 次下标
+     * @param int $index 宜忌下标
+     * @return Taboo[] 宜忌列表
+     */
+    private static function getTaboos(array $data, int $supIndex, int $subIndex, int $index): array
+    {
+        $l = array();
+        $d = explode(',', explode(';', $data[$supIndex])[$subIndex])[$index];
+        for ($i = 0, $j = strlen($d); $i < $j; $i += 2) {
+            $l[] = static::fromIndex(hexdec(substr($d, $i, 2)));
+        }
+        return $l;
+    }
+
+    /**
      * 日宜
      * @param SixtyCycle $month 月干支
      * @param SixtyCycle $day 日干支
@@ -92,12 +110,7 @@ class Taboo extends LoopTyme
      */
     static function getDayRecommends(SixtyCycle $month, SixtyCycle $day): array
     {
-        $l = array();
-        $data = explode(',', explode(';', static::$dayTaboo[$month->getEarthBranch()->getIndex()])[$day->getIndex()])[0];
-        for ($i = 0, $j = strlen($data); $i < $j; $i += 2) {
-            $l[] = static::fromIndex(hexdec(substr($data, $i, 2)));
-        }
-        return $l;
+        return self::getTaboos(static::$dayTaboo, $month->getEarthBranch()->getIndex(), $day->getIndex(), 0);
     }
 
     /**
@@ -108,12 +121,7 @@ class Taboo extends LoopTyme
      */
     static function getDayAvoids(SixtyCycle $month, SixtyCycle $day): array
     {
-        $l = array();
-        $data = explode(',', explode(';', static::$dayTaboo[$month->getEarthBranch()->getIndex()])[$day->getIndex()])[1];
-        for ($i = 0, $j = strlen($data); $i < $j; $i += 2) {
-            $l[] = static::fromIndex(hexdec(substr($data, $i, 2)));
-        }
-        return $l;
+        return self::getTaboos(static::$dayTaboo, $month->getEarthBranch()->getIndex(), $day->getIndex(), 1);
     }
 
     /**
@@ -124,12 +132,7 @@ class Taboo extends LoopTyme
      */
     static function getHourRecommends(SixtyCycle $day, SixtyCycle $hour): array
     {
-        $l = array();
-        $data = explode(',', explode(';', static::$hourTaboo[$hour->getEarthBranch()->getIndex()])[$day->getIndex()])[0];
-        for ($i = 0, $j = strlen($data); $i < $j; $i += 2) {
-            $l[] = static::fromIndex(hexdec(substr($data, $i, 2)));
-        }
-        return $l;
+        return self::getTaboos(static::$hourTaboo, $hour->getEarthBranch()->getIndex(), $day->getIndex(), 0);
     }
 
     /**
@@ -140,11 +143,6 @@ class Taboo extends LoopTyme
      */
     static function getHourAvoids(SixtyCycle $day, SixtyCycle $hour): array
     {
-        $l = array();
-        $data = explode(',', explode(';', static::$hourTaboo[$hour->getEarthBranch()->getIndex()])[$day->getIndex()])[1];
-        for ($i = 0, $j = strlen($data); $i < $j; $i += 2) {
-            $l[] = static::fromIndex(hexdec(substr($data, $i, 2)));
-        }
-        return $l;
+        return self::getTaboos(static::$hourTaboo, $hour->getEarthBranch()->getIndex(), $day->getIndex(), 1);
     }
 }

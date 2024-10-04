@@ -20,6 +20,7 @@ class ChildLimit
      * @var ChildLimitProvider|null 童限计算接口
      */
     static ?ChildLimitProvider $provider = null;
+
     /**
      * @var EightChar 八字
      */

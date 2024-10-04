@@ -134,12 +134,10 @@ class SolarWeek extends AbstractTyme
     function next(int $n): static
     {
         $startIndex = $this->start->getIndex();
-        if ($n == 0) {
-            return static::fromYm($this->getYear(), $this->getMonth(), $this->index, $startIndex);
-        }
-        $d = $this->index + $n;
+        $d = $this->index;
         $m = $this->month;
         if ($n > 0) {
+            $d += $n;
             $weekCount = $m->getWeekCount($startIndex);
             while ($d >= $weekCount) {
                 $d -= $weekCount;
@@ -149,7 +147,8 @@ class SolarWeek extends AbstractTyme
                 }
                 $weekCount = $m->getWeekCount($startIndex);
             }
-        } else {
+        } else if ($n < 0) {
+            $d += $n;
             while ($d < 0) {
                 if (!SolarDay::fromYmd($m->getYear(), $m->getMonth(), 1)->getWeek()->equals($this->start)) {
                     $d -= 1;

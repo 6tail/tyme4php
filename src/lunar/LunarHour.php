@@ -8,6 +8,8 @@ use com\tyme\culture\star\nine\NineStar;
 use com\tyme\culture\star\twelve\TwelveStar;
 use com\tyme\culture\Taboo;
 use com\tyme\eightchar\EightChar;
+use com\tyme\eightchar\provider\EightCharProvider;
+use com\tyme\eightchar\provider\impl\DefaultEightCharProvider;
 use com\tyme\sixtycycle\EarthBranch;
 use com\tyme\sixtycycle\HeavenStem;
 use com\tyme\sixtycycle\SixtyCycle;
@@ -22,6 +24,11 @@ use InvalidArgumentException;
  */
 class LunarHour extends AbstractTyme
 {
+    /**
+     * @var EightCharProvider|null 八字计算接口
+     */
+    static ?EightCharProvider $provider = null;
+
     /**
      * @var LunarDay 农历日
      */
@@ -42,8 +49,16 @@ class LunarHour extends AbstractTyme
      */
     protected int $second;
 
+    private static function init(): void
+    {
+        self::$provider = new DefaultEightCharProvider();
+    }
+
     protected function __construct(int $year, int $month, int $day, int $hour, int $minute, int $second)
     {
+        if (null == self::$provider) {
+            self::init();
+        }
         if ($hour < 0 || $hour > 23) {
             throw new InvalidArgumentException(sprintf('illegal hour: %d', $hour));
         }
@@ -310,7 +325,7 @@ class LunarHour extends AbstractTyme
      */
     function getEightChar(): EightChar
     {
-        return new EightChar($this->getYearSixtyCycle(), $this->getMonthSixtyCycle(), $this->getDaySixtyCycle(), $this->getSixtyCycle());
+        return self::$provider->getEightChar($this);
     }
 
     /**

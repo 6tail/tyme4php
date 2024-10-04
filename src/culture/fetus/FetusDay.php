@@ -81,7 +81,7 @@ class FetusDay extends AbstractCulture
     /**
      * 内外
      *
-     * @return Side 侧
+     * @return Side 内外
      */
     function getSide(): Side
     {

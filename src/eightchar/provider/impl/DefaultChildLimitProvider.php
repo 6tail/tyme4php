@@ -4,8 +4,6 @@ namespace com\tyme\eightchar\provider\impl;
 
 
 use com\tyme\eightchar\ChildLimitInfo;
-use com\tyme\eightchar\provider\ChildLimitProvider;
-use com\tyme\solar\SolarMonth;
 use com\tyme\solar\SolarTerm;
 use com\tyme\solar\SolarTime;
 
@@ -14,7 +12,7 @@ use com\tyme\solar\SolarTime;
  * @author 6tail
  * @package com\tyme\eightchar\provider\impl
  */
-class DefaultChildLimitProvider implements ChildLimitProvider
+class DefaultChildLimitProvider extends AbstractChildLimitProvider
 {
     function getInfo(SolarTime $birthTime, SolarTerm $term): ChildLimitInfo
     {
@@ -34,24 +32,6 @@ class DefaultChildLimitProvider implements ChildLimitProvider
         $seconds %= 30;
         // 1秒 = 2分，1秒/2=0.5秒 = 1分
         $minute = $seconds * 2;
-
-        $d = $birthTime->getDay() + $day;
-        $h = $birthTime->getHour() + $hour;
-        $mi = $birthTime->getMinute() + $minute;
-        $h += intdiv($mi, 60);
-        $mi %= 60;
-        $d += intdiv($h, 24);
-        $h %= 24;
-
-        $sm = SolarMonth::fromYm($birthTime->getYear() + $year, $birthTime->getMonth())->next($month);
-
-        $dc = $sm->getDayCount();
-        while ($d > $dc) {
-            $d -= $dc;
-            $sm = $sm->next(1);
-            $dc = $sm->getDayCount();
-        }
-
-        return new ChildLimitInfo($birthTime, SolarTime::fromYmdHms($sm->getYear(), $sm->getMonth(), $d, $h, $mi, $birthTime->getSecond()), $year, $month, $day, $hour, $minute);
+        return $this->next($birthTime, $year, $month, $day, $hour, $minute, 0);
     }
 }
