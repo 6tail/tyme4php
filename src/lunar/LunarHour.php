@@ -4,6 +4,7 @@ namespace com\tyme\lunar;
 
 
 use com\tyme\AbstractTyme;
+use com\tyme\culture\ren\MinorRen;
 use com\tyme\culture\star\nine\NineStar;
 use com\tyme\culture\star\twelve\TwelveStar;
 use com\tyme\culture\Taboo;
@@ -344,5 +345,14 @@ class LunarHour extends AbstractTyme
     function getAvoids(): array
     {
         return Taboo::getHourAvoids($this->getDaySixtyCycle(), $this->getSixtyCycle());
+    }
+
+    /**
+     * 小六壬
+     * @return MinorRen 小六壬
+     */
+    function getMinorRen(): MinorRen
+    {
+        return $this->getLunarDay()->getMinorRen()->next($this->getIndexInDay());
     }
 }

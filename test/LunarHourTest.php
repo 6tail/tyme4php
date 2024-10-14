@@ -93,4 +93,10 @@ class LunarHourTest extends TestCase
         $this->assertEquals('农历癸卯年', $h->getLunarDay()->getLunarMonth()->getLunarYear()->__toString());
         $this->assertEquals('癸卯', $h->getLunarDay()->getLunarMonth()->getLunarYear()->getSixtyCycle()->getName());
     }
+
+    function test28()
+    {
+        $h = LunarHour::fromYmdHms(2024, 9, 7, 10, 0, 0);
+        $this->assertEquals('留连', $h->getMinorRen()->getName());
+    }
 }

@@ -10,6 +10,7 @@ use com\tyme\culture\Element;
 use com\tyme\culture\fetus\FetusDay;
 use com\tyme\culture\God;
 use com\tyme\culture\Phase;
+use com\tyme\culture\ren\MinorRen;
 use com\tyme\culture\star\nine\NineStar;
 use com\tyme\culture\star\six\SixStar;
 use com\tyme\culture\star\twelve\TwelveStar;
@@ -382,5 +383,14 @@ class LunarDay extends AbstractTyme
     function getSixStar(): SixStar
     {
         return SixStar::fromIndex(($this->month->getMonth() + $this->day - 2) % 6);
+    }
+
+    /**
+     * 小六壬
+     * @return MinorRen 小六壬
+     */
+    function getMinorRen(): MinorRen
+    {
+        return $this->getLunarMonth()->getMinorRen()->next($this->day - 1);
     }
 }

@@ -6,6 +6,7 @@ namespace com\tyme\lunar;
 use com\tyme\AbstractTyme;
 use com\tyme\culture\Direction;
 use com\tyme\culture\fetus\FetusMonth;
+use com\tyme\culture\ren\MinorRen;
 use com\tyme\culture\star\nine\NineStar;
 use com\tyme\jd\JulianDay;
 use com\tyme\sixtycycle\EarthBranch;
@@ -122,7 +123,7 @@ class LunarMonth extends AbstractTyme
     static function fromYm(int $year, int $month): static
     {
         $c = null;
-        $key = sprintf("%d%d", $year, $month);
+        $key = sprintf('%d%d', $year, $month);
         if (!empty(static::$cache[$key])) {
             $c = static::$cache[$key];
         }
@@ -367,5 +368,14 @@ class LunarMonth extends AbstractTyme
     function getFetus(): FetusMonth
     {
         return FetusMonth::fromLunarMonth($this);
+    }
+
+    /**
+     * 小六壬
+     * @return MinorRen 小六壬
+     */
+    function getMinorRen(): MinorRen
+    {
+        return MinorRen::fromIndex(($this->month - 1) % 6);
     }
 }

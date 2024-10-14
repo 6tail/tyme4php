@@ -163,4 +163,10 @@ class LunarDayTest extends TestCase
         $this->assertEquals('戊子', $lunar->getLunarMonth()->getSixtyCycle()->getName());
         $this->assertEquals('戊子', $lunar->getMonthSixtyCycle()->getName());
     }
+
+    function test28()
+    {
+        $lunar = LunarDay::fromYmd(2024, 3, 5);
+        $this->assertEquals('大安', $lunar->getMinorRen()->getName());
+    }
 }

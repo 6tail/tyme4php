@@ -4,6 +4,8 @@ use com\tyme\eightchar\ChildLimit;
 use com\tyme\eightchar\EightChar;
 use com\tyme\eightchar\provider\impl\China95ChildLimitProvider;
 use com\tyme\eightchar\provider\impl\DefaultChildLimitProvider;
+use com\tyme\eightchar\provider\impl\DefaultEightCharProvider;
+use com\tyme\eightchar\provider\impl\LunarSect2EightCharProvider;
 use com\tyme\enums\Gender;
 use com\tyme\lunar\LunarHour;
 use com\tyme\sixtycycle\HeavenStem;
@@ -646,5 +648,22 @@ class EightCharTest extends TestCase
 
         $expected = array('1903年3月29日 18:00:00', '1963年3月14日 18:00:00');
         $this->assertEquals($expected, $actual);
+    }
+
+    public function test46()
+    {
+        LunarHour::$provider = new LunarSect2EightCharProvider();
+
+        $eightChar = new EightChar('壬寅', '丙午', '己亥', '丙子');
+        $solarTimes = $eightChar->getSolarTimes(1900, 2024);
+        $actual = array();
+        foreach ($solarTimes as $solarTime) {
+            $actual[] = $solarTime->__toString();
+        }
+
+        $expected = array('1962年6月30日 23:00:00', '2022年6月15日 23:00:00');
+        $this->assertEquals($expected, $actual);
+
+        LunarHour::$provider = new DefaultEightCharProvider();
     }
 }
