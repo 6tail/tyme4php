@@ -7,11 +7,12 @@ use com\tyme\culture\Direction;
 use com\tyme\culture\Element;
 use com\tyme\culture\pengzu\PengZuEarthBranch;
 use com\tyme\culture\Zodiac;
+use com\tyme\enums\HideHeavenStemType;
 use com\tyme\enums\YinYang;
 use com\tyme\LoopTyme;
 
 /**
- * 地支
+ * 地支（地元）
  * @author 6tail
  * @package com\tyme\sixtycycle
  */
@@ -93,6 +94,26 @@ class EarthBranch extends LoopTyme
     {
         $n = [-1, 7, 4, -1, 9, 4, -1, 1, 4, -1, 3, -1][$this->index];
         return $n == -1 ? null : HeavenStem::fromIndex($n);
+    }
+
+    /**
+     * 藏干列表
+     *
+     * @return HideHeavenStem[] 藏干列表
+     */
+    function getHideHeavenStems(): array
+    {
+        $l = array();
+        $l[] = new HideHeavenStem($this->getHideHeavenStemMain(), HideHeavenStemType::MAIN);
+        $o = $this->getHideHeavenStemMiddle();
+        if (null != $o) {
+            $l[] = new HideHeavenStem($o, HideHeavenStemType::MIDDLE);
+        }
+        $o = $this->getHideHeavenStemResidual();
+        if (null != $o) {
+            $l[] = new HideHeavenStem($o, HideHeavenStemType::RESIDUAL);
+        }
+        return $l;
     }
 
     /**

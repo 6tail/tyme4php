@@ -12,7 +12,7 @@ use com\tyme\enums\YinYang;
 use com\tyme\LoopTyme;
 
 /**
- * 天干
+ * 天干（天元）
  * @author 6tail
  * @package com\tyme\sixtycycle
  */

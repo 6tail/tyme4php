@@ -42,7 +42,7 @@ class Fortune extends AbstractTyme
      */
     function getAge(): int
     {
-        return $this->childLimit->getYearCount() + 1 + $this->index;
+        return $this->childLimit->getEndTime()->getYear() - $this->childLimit->getStartTime()->getYear() + 1 + $this->index;
     }
 
     /**
@@ -52,7 +52,7 @@ class Fortune extends AbstractTyme
      */
     function getLunarYear(): LunarYear
     {
-        return $this->childLimit->getEndTime()->getLunarHour()->getLunarDay()->getLunarMonth()->getLunarYear()->next($this->index);
+        return $this->childLimit->getEndLunarYear()->next($this->index);
     }
 
     /**

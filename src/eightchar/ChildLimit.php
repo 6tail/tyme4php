@@ -7,6 +7,9 @@ use com\tyme\eightchar\provider\ChildLimitProvider;
 use com\tyme\eightchar\provider\impl\DefaultChildLimitProvider;
 use com\tyme\enums\Gender;
 use com\tyme\enums\YinYang;
+use com\tyme\lunar\LunarHour;
+use com\tyme\lunar\LunarYear;
+use com\tyme\solar\SolarTerm;
 use com\tyme\solar\SolarTime;
 
 /**
@@ -197,6 +200,25 @@ class ChildLimit
     function getStartFortune(): Fortune
     {
         return Fortune::fromChildLimit($this, 0);
+    }
+
+    /**
+     * 结束农历年
+     *
+     * @return LunarYear 农历年
+     */
+    function getEndLunarYear(): LunarYear
+    {
+        $endTime = $this->getEndTime();
+        $solarYear = $endTime->getYear();
+        $y = $endTime->getLunarHour()->getLunarDay()->getLunarMonth()->getLunarYear();
+        if ($y->getYear() < $solarYear) {
+            // 正月初一在立春之后的，农历年往后推一年
+            if (LunarHour::fromYmdHms($solarYear, 1, 1, 0, 0, 0)->getSolarTime()->isAfter(SolarTerm::fromIndex($solarYear, 3)->getJulianDay()->getSolarTime())) {
+                $y = $y->next(1);
+            }
+        }
+        return $y;
     }
 
 }

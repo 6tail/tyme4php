@@ -380,7 +380,7 @@ class EightCharTest extends TestCase
         // 小运
         $fortune = $childLimit->getStartFortune();
         // 年龄
-        $this->assertEquals(7, $fortune->getAge());
+        $this->assertEquals(8, $fortune->getAge());
     }
 
     function test17()

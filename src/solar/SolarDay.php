@@ -14,11 +14,14 @@ use com\tyme\culture\phenology\PhenologyDay;
 use com\tyme\culture\plumrain\PlumRain;
 use com\tyme\culture\plumrain\PlumRainDay;
 use com\tyme\culture\Week;
+use com\tyme\enums\HideHeavenStemType;
 use com\tyme\festival\SolarFestival;
 use com\tyme\holiday\LegalHoliday;
 use com\tyme\jd\JulianDay;
 use com\tyme\lunar\LunarDay;
 use com\tyme\lunar\LunarMonth;
+use com\tyme\sixtycycle\HideHeavenStem;
+use com\tyme\sixtycycle\HideHeavenStemDay;
 use InvalidArgumentException;
 
 /**
@@ -326,6 +329,42 @@ class SolarDay extends AbstractTyme
         }
         $days = $this->subtract($start);
         return new NineDay(Nine::fromIndex(intdiv($days, 9)), $days % 9);
+    }
+
+    /**
+     * 人元司令分野
+     *
+     * @return HideHeavenStemDay 人元司令分野
+     */
+    function getHideHeavenStemDay(): HideHeavenStemDay
+    {
+        $dayCounts = [3, 5, 7, 9, 10, 30];
+        $term = $this->getTerm();
+        if ($term->isQi()) {
+            $term = $term->next(-1);
+        }
+        $dayIndex = $this->subtract($term->getJulianDay()->getSolarDay());
+        $startIndex = ($term->getIndex() - 1) * 3;
+        $data = substr('93705542220504xx1513904541632524533533105544806564xx7573304542018584xx95', $startIndex, 6);
+        $days = 0;
+        $heavenStemIndex = 0;
+        $typeIndex = 0;
+        while ($typeIndex < 3) {
+            $i = $typeIndex * 2;
+            $d = substr($data, $i, 1);
+            $count = 0;
+            if ($d != 'x') {
+                $heavenStemIndex = intval($d);
+                $count = $dayCounts[intval(substr($data, $i + 1, 1))];
+                $days += $count;
+            }
+            if ($dayIndex <= $days) {
+                $dayIndex -= $days - $count;
+                break;
+            }
+            $typeIndex++;
+        }
+        return new HideHeavenStemDay(new HideHeavenStem($heavenStemIndex, HideHeavenStemType::fromCode($typeIndex)), $dayIndex);
     }
 
     /**

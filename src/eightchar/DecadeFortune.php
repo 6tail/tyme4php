@@ -42,7 +42,7 @@ class DecadeFortune extends AbstractTyme
      */
     function getStartAge(): int
     {
-        return $this->childLimit->getYearCount() + 1 + $this->index * 10;
+        return $this->childLimit->getEndTime()->getYear() - $this->childLimit->getStartTime()->getYear() + 1 + $this->index * 10;
     }
 
     /**
@@ -62,7 +62,7 @@ class DecadeFortune extends AbstractTyme
      */
     function getStartLunarYear(): LunarYear
     {
-        return $this->childLimit->getEndTime()->getLunarHour()->getLunarDay()->getLunarMonth()->getLunarYear()->next($this->index * 10);
+        return $this->childLimit->getEndLunarYear()->next($this->index * 10);
     }
 
     /**

@@ -57,7 +57,7 @@ class ChildLimitInfo
      * @param int $hourCount 小时数
      * @param int $minuteCount 分钟数
      */
-    public function __construct(SolarTime $startTime, SolarTime $endTime, int $yearCount, int $monthCount, int $dayCount, int $hourCount, int $minuteCount)
+    function __construct(SolarTime $startTime, SolarTime $endTime, int $yearCount, int $monthCount, int $dayCount, int $hourCount, int $minuteCount)
     {
         $this->startTime = $startTime;
         $this->endTime = $endTime;

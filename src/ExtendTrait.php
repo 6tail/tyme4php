@@ -23,7 +23,7 @@ trait ExtendTrait
      * @param Closure $function 方法体
      * @return void
      */
-    public static function extend(string $methodName, Closure $function): void
+    static function extend(string $methodName, Closure $function): void
     {
         static::$methods[$methodName] = $function;
     }
@@ -35,7 +35,7 @@ trait ExtendTrait
      * @return mixed
      * @throws BadMethodCallException
      */
-    public function __call(string $method, mixed $parameters)
+    function __call(string $method, mixed $parameters)
     {
         if (!isset(static::$methods[$method])) {
             throw new BadMethodCallException(sprintf('Method %s not exist in %s', $method, static::class));
