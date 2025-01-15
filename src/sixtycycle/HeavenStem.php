@@ -20,7 +20,7 @@ class HeavenStem extends LoopTyme
 {
     static array $NAMES = ['甲', '乙', '丙', '丁', '戊', '己', '庚', '辛', '壬', '癸'];
 
-    protected function __construct(int $index = null, string $name = null)
+    protected function __construct(?int $index = null, ?string $name = null)
     {
         if ($index !== null) {
             parent::__construct(self::$NAMES, $index);

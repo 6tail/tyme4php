@@ -14,7 +14,7 @@ class Land extends LoopTyme
 {
     static array $NAMES = ['玄天', '朱天', '苍天', '阳天', '钧天', '幽天', '颢天', '变天', '炎天'];
 
-    protected function __construct(int $index = null, string $name = null)
+    protected function __construct(?int $index = null, ?string $name = null)
     {
         if ($index !== null) {
             parent::__construct(self::$NAMES, $index);

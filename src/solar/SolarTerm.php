@@ -21,7 +21,7 @@ class SolarTerm extends LoopTyme
      */
     protected float $cursoryJulianDay;
 
-    protected function __construct(int $year = null, int $index = null, string $name = null, float $cursoryJulianDay = null)
+    protected function __construct(?int $year = null, ?int $index = null, ?string $name = null, ?float $cursoryJulianDay = null)
     {
         $idx = $index;
         if ($index !== null) {

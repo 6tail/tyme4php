@@ -14,7 +14,7 @@ class Ten extends LoopTyme
 {
     static array $NAMES = ['甲子', '甲戌', '甲申', '甲午', '甲辰', '甲寅'];
 
-    protected function __construct(int $index = null, string $name = null)
+    protected function __construct(?int $index = null, ?string $name = null)
     {
         if ($index !== null) {
             parent::__construct(self::$NAMES, $index);

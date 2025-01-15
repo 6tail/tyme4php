@@ -30,7 +30,7 @@ abstract class LoopTyme extends AbstractTyme
      * @param int|null $index 索引，支持负数，自动轮转
      * @param string|null $name 名称
      */
-    protected function __construct(array $names, int $index = null, string $name = null)
+    protected function __construct(array $names, ?int $index = null, ?string $name = null)
     {
         $this->names = $names;
         if ($index !== null) {
@@ -70,7 +70,7 @@ abstract class LoopTyme extends AbstractTyme
         return count($this->names);
     }
 
-    protected function indexOf(int $index = null, string $name = null, int $size = null): int
+    protected function indexOf(?int $index = null, ?string $name = null, ?int $size = null): int
     {
         if ($index !== null) {
             if ($size === null) {

@@ -14,7 +14,7 @@ class Terrain extends LoopTyme
 {
     static array $NAMES = ['长生', '沐浴', '冠带', '临官', '帝旺', '衰', '病', '死', '墓', '绝', '胎', '养'];
 
-    protected function __construct(int $index = null, string $name = null)
+    protected function __construct(?int $index = null, ?string $name = null)
     {
         if ($index !== null) {
             parent::__construct(self::$NAMES, $index);

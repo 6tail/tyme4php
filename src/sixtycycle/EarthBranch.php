@@ -20,7 +20,7 @@ class EarthBranch extends LoopTyme
 {
     static array $NAMES = ['子', '丑', '寅', '卯', '辰', '巳', '午', '未', '申', '酉', '戌', '亥'];
 
-    protected function __construct(int $index = null, string $name = null)
+    protected function __construct(?int $index = null, ?string $name = null)
     {
         if ($index !== null) {
             parent::__construct(self::$NAMES, $index);

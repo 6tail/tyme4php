@@ -61,7 +61,7 @@ class LunarMonth extends AbstractTyme
      */
     protected JulianDay $firstJulianDay;
 
-    protected function __construct(int $year, int $month, array $cache = null)
+    protected function __construct(int $year, int $month, ?array $cache = null)
     {
         if ($cache !== null) {
             $m = (int)$cache[1];

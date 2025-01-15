@@ -15,7 +15,7 @@ class SevenStar extends LoopTyme
 {
     static array $NAMES = ['日', '月', '火', '水', '木', '金', '土'];
 
-    protected function __construct(int $index = null, string $name = null)
+    protected function __construct(?int $index = null, ?string $name = null)
     {
         if ($index !== null) {
             parent::__construct(self::$NAMES, $index);

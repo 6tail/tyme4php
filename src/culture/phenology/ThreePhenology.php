@@ -14,7 +14,7 @@ class ThreePhenology extends LoopTyme
 {
     static array $NAMES = ['初候', '二候', '三候'];
 
-    protected function __construct(int $index = null, string $name = null)
+    protected function __construct(?int $index = null, ?string $name = null)
     {
         if ($index !== null) {
             parent::__construct(self::$NAMES, $index);

@@ -14,7 +14,7 @@ class Twenty extends LoopTyme
 {
     static array $NAMES = ['一运', '二运', '三运', '四运', '五运', '六运', '七运', '八运', '九运'];
 
-    protected function __construct(int $index = null, string $name = null)
+    protected function __construct(?int $index = null, ?string $name = null)
     {
         if ($index !== null) {
             parent::__construct(self::$NAMES, $index);

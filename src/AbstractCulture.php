@@ -36,7 +36,7 @@ abstract class AbstractCulture implements Culture
      * @param int|null $size 数量
      * @return int 索引，从0开始
      */
-    protected function indexOf(int $index = null, string $name = null, int $size = null): int
+    protected function indexOf(?int $index = null, ?string $name = null, ?int $size = null): int
     {
         if ($index !== null && $size !== null) {
             $i = $index % $size;

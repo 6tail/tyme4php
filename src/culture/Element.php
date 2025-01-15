@@ -14,7 +14,7 @@ class Element extends LoopTyme
 {
     static array $NAMES = ['木', '火', '土', '金', '水'];
 
-    protected function __construct(int $index = null, string $name = null)
+    protected function __construct(?int $index = null, ?string $name = null)
     {
         if ($index !== null) {
             parent::__construct(self::$NAMES, $index);

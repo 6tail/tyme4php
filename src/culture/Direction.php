@@ -17,7 +17,7 @@ class Direction extends LoopTyme
      */
     static array $NAMES = ['北', '西南', '东', '东南', '中', '西北', '西', '东北', '南'];
 
-    protected function __construct(int $index = null, string $name = null)
+    protected function __construct(?int $index = null, ?string $name = null)
     {
         if ($index !== null) {
             parent::__construct(self::$NAMES, $index);

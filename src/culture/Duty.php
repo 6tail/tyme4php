@@ -14,7 +14,7 @@ class Duty extends LoopTyme
 {
     static array $NAMES = ['建', '除', '满', '平', '定', '执', '破', '危', '成', '收', '开', '闭'];
 
-    protected function __construct(int $index = null, string $name = null)
+    protected function __construct(?int $index = null, ?string $name = null)
     {
         if ($index !== null) {
             parent::__construct(self::$NAMES, $index);

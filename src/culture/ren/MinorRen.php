@@ -16,7 +16,7 @@ class MinorRen extends LoopTyme
 {
     static array $NAMES = ['大安', '留连', '速喜', '赤口', '小吉', '空亡'];
 
-    protected function __construct(int $index = null, string $name = null)
+    protected function __construct(?int $index = null, ?string $name = null)
     {
         if ($index !== null) {
             parent::__construct(self::$NAMES, $index);
