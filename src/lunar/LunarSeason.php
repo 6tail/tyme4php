@@ -16,9 +16,9 @@ class LunarSeason extends LoopTyme
 
     protected function __construct(int $index = null, string $name = null)
     {
-        if ($index != null) {
+        if ($index !== null) {
             parent::__construct(self::$NAMES, $index);
-        } else if ($name != null) {
+        } else if ($name !== null) {
             parent::__construct(self::$NAMES, $name);
         }
     }

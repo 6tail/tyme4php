@@ -255,4 +255,8 @@ class LunarMonthTest extends TestCase
         $this->assertEquals('辛丑', LunarMonth::fromYm(1991, 12)->getSixtyCycle()->__toString());
     }
 
+    function test42()
+    {
+        $this->assertEquals('孟春', LunarMonth::fromYm(2025, 1)->getSeason()->getName());
+    }
 }
