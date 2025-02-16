@@ -101,4 +101,15 @@ abstract class LoopTyme extends AbstractTyme
         return $this->indexOf($this->index + $n);
     }
 
+    /**
+     * 到目标索引的步数
+     *
+     * @param int $targetIndex 目标索引
+     * @return int 步数
+     */
+    function stepsTo(int $targetIndex): int
+    {
+        return $this->indexOf($targetIndex - $this->index);
+    }
+
 }

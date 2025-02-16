@@ -51,7 +51,7 @@ class NineStarTest extends TestCase
     function test5()
     {
         $nineStar = LunarMonth::fromYm(2022, 1)->getNineStar();
-        $this->assertEquals('二黒土', $nineStar->__toString());
+        $this->assertEquals('二黑土', $nineStar->__toString());
         $this->assertEquals('天璇', $nineStar->getDipper()->__toString());
     }
 

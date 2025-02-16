@@ -345,7 +345,11 @@ class LunarMonth extends AbstractTyme
      */
     function getNineStar(): NineStar
     {
-        return NineStar::fromIndex(27 - $this->year->getSixtyCycle()->getEarthBranch()->getIndex() % 3 * 3 - $this->getSixtyCycle()->getEarthBranch()->getIndex());
+        $index = $this->getSixtyCycle()->getEarthBranch()->getIndex();
+        if ($index < 2) {
+            $index += 3;
+        }
+        return NineStar::fromIndex(27 - $this->year->getSixtyCycle()->getEarthBranch()->getIndex() % 3 * 3 - $index);
     }
 
     /**

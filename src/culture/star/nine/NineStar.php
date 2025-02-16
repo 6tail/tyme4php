@@ -47,7 +47,7 @@ class NineStar extends LoopTyme
      */
     function getColor(): string
     {
-        return ['白', '黒', '碧', '绿', '黄', '白', '赤', '白', '紫'][$this->index];
+        return ['白', '黑', '碧', '绿', '黄', '白', '赤', '白', '紫'][$this->index];
     }
 
     /**

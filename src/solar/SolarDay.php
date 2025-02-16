@@ -270,16 +270,12 @@ class SolarDay extends AbstractTyme
      */
     function getDogDay(): ?DogDay
     {
+        // 夏至
         $xiaZhi = SolarTerm::fromIndex($this->getYear(), 12);
         // 第1个庚日
         $start = $xiaZhi->getJulianDay()->getSolarDay();
-        $add = 6 - $start->getLunarDay()->getSixtyCycle()->getHeavenStem()->getIndex();
-        if ($add < 0) {
-            $add += 10;
-        }
         // 第3个庚日，即初伏第1天
-        $add += 20;
-        $start = $start->next($add);
+        $start = $start->next($start->getLunarDay()->getSixtyCycle()->getHeavenStem()->stepsTo(6) + 20);
         $days = $this->subtract($start);
         // 初伏以前
         if ($days < 0) {
@@ -376,22 +372,14 @@ class SolarDay extends AbstractTyme
         // 芒种
         $grainInEar = SolarTerm::fromIndex($this->getYear(), 11);
         $start = $grainInEar->getJulianDay()->getSolarDay();
-        $add = 2 - $start->getLunarDay()->getSixtyCycle()->getHeavenStem()->getIndex();
-        if ($add < 0) {
-            $add += 10;
-        }
         // 芒种后的第1个丙日
-        $start = $start->next($add);
+        $start = $start->next($start->getLunarDay()->getSixtyCycle()->getHeavenStem()->stepsTo(2));
 
         // 小暑
         $slightHeat = $grainInEar->next(2);
         $end = $slightHeat->getJulianDay()->getSolarDay();
-        $add = 7 - $end->getLunarDay()->getSixtyCycle()->getEarthBranch()->getIndex();
-        if ($add < 0) {
-            $add += 12;
-        }
         // 小暑后的第1个未日
-        $end = $end->next($add);
+        $end = $end->next($end->getLunarDay()->getSixtyCycle()->getEarthBranch()->stepsTo(7));
 
         if ($this->isBefore($start) || $this->isAfter($end)) {
             return null;

@@ -5,6 +5,7 @@ namespace com\tyme\lunar;
 
 use com\tyme\AbstractTyme;
 use com\tyme\culture\Direction;
+use com\tyme\culture\KitchenGodSteed;
 use com\tyme\culture\star\nine\NineStar;
 use com\tyme\culture\Twenty;
 use com\tyme\sixtycycle\SixtyCycle;
@@ -191,5 +192,15 @@ class LunarYear extends AbstractTyme
             $m = $m->next(1);
         }
         return $l;
+    }
+
+    /**
+     * 灶马头
+     *
+     * @return KitchenGodSteed 灶马头
+     */
+    function getKitchenGodSteed(): KitchenGodSteed
+    {
+        return KitchenGodSteed::fromLunarYear($this->year);
     }
 }
