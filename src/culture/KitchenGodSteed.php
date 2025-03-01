@@ -13,7 +13,7 @@ use com\tyme\sixtycycle\SixtyCycle;
  */
 class KitchenGodSteed extends AbstractCulture
 {
-    static array $NUMBERS = ["一", "二", "三", "四", "五", "六", "七", "八", "九", "十", "十一", "十二"];
+    static array $NUMBERS = ['一', '二', '三', '四', '五', '六', '七', '八', '九', '十', '十一', '十二'];
 
     /**
      * 正月初一的干支
@@ -48,7 +48,7 @@ class KitchenGodSteed extends AbstractCulture
      */
     function getMouse(): string
     {
-        return sprintf("%s鼠偷粮", $this->byEarthBranch(0));
+        return sprintf('%s鼠偷粮', $this->byEarthBranch(0));
     }
 
     /**
@@ -58,7 +58,7 @@ class KitchenGodSteed extends AbstractCulture
      */
     function getGrass(): string
     {
-        return sprintf("草子%s分", $this->byEarthBranch(0));
+        return sprintf('草子%s分', $this->byEarthBranch(0));
     }
 
     /**
@@ -68,7 +68,7 @@ class KitchenGodSteed extends AbstractCulture
      */
     function getCattle(): string
     {
-        return sprintf("%s牛耕田", $this->byEarthBranch(1));
+        return sprintf('%s牛耕田', $this->byEarthBranch(1));
     }
 
     /**
@@ -78,7 +78,7 @@ class KitchenGodSteed extends AbstractCulture
      */
     function getFlower(): string
     {
-        return sprintf("花收%s分", $this->byEarthBranch(3));
+        return sprintf('花收%s分', $this->byEarthBranch(3));
     }
 
     /**
@@ -88,7 +88,7 @@ class KitchenGodSteed extends AbstractCulture
      */
     function getDragon(): string
     {
-        return sprintf("%s龙治水", $this->byEarthBranch(4));
+        return sprintf('%s龙治水', $this->byEarthBranch(4));
     }
 
     /**
@@ -98,7 +98,7 @@ class KitchenGodSteed extends AbstractCulture
      */
     function getHorse(): string
     {
-        return sprintf("%s马驮谷", $this->byEarthBranch(6));
+        return sprintf('%s马驮谷', $this->byEarthBranch(6));
     }
 
     /**
@@ -108,7 +108,7 @@ class KitchenGodSteed extends AbstractCulture
      */
     function getChicken(): string
     {
-        return sprintf("%s鸡抢米", $this->byEarthBranch(9));
+        return sprintf('%s鸡抢米', $this->byEarthBranch(9));
     }
 
     /**
@@ -118,7 +118,7 @@ class KitchenGodSteed extends AbstractCulture
      */
     function getSilkworm(): string
     {
-        return sprintf("%s姑看蚕", $this->byEarthBranch(9));
+        return sprintf('%s姑看蚕', $this->byEarthBranch(9));
     }
 
     /**
@@ -128,7 +128,7 @@ class KitchenGodSteed extends AbstractCulture
      */
     function getPig(): string
     {
-        return sprintf("%s屠共猪", $this->byEarthBranch(11));
+        return sprintf('%s屠共猪', $this->byEarthBranch(11));
     }
 
     /**
@@ -138,7 +138,7 @@ class KitchenGodSteed extends AbstractCulture
      */
     function getField(): string
     {
-        return sprintf("甲田%s分", $this->byHeavenStem(0));
+        return sprintf('甲田%s分', $this->byHeavenStem(0));
     }
 
     /**
@@ -148,7 +148,7 @@ class KitchenGodSteed extends AbstractCulture
      */
     function getCake(): string
     {
-        return sprintf("%s人分饼", $this->byHeavenStem(2));
+        return sprintf('%s人分饼', $this->byHeavenStem(2));
     }
 
     /**
@@ -158,7 +158,7 @@ class KitchenGodSteed extends AbstractCulture
      */
     function getGold(): string
     {
-        return sprintf("%s日得金", $this->byHeavenStem(7));
+        return sprintf('%s日得金', $this->byHeavenStem(7));
     }
 
     /**
@@ -168,7 +168,7 @@ class KitchenGodSteed extends AbstractCulture
      */
     function getPeopleCakes(): string
     {
-        return sprintf("%s人%s丙", $this->byEarthBranch(2), $this->byHeavenStem(2));
+        return sprintf('%s人%s丙', $this->byEarthBranch(2), $this->byHeavenStem(2));
     }
 
     /**
@@ -178,11 +178,11 @@ class KitchenGodSteed extends AbstractCulture
      */
     function getPeopleHoes(): string
     {
-        return sprintf("%s人%s锄", $this->byEarthBranch(2), $this->byHeavenStem(3));
+        return sprintf('%s人%s锄', $this->byEarthBranch(2), $this->byHeavenStem(3));
     }
 
     function getName(): string
     {
-        return "灶马头";
+        return '灶马头';
     }
 }

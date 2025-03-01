@@ -79,18 +79,8 @@ class SolarSeason extends AbstractTyme
 
     function next(int $n): static
     {
-        $i = $this->index;
-        $y = $this->getYear();
-        if ($n != 0) {
-            $i += $n;
-            $y += intdiv($i, 4);
-            $i %= 4;
-            if ($i < 0) {
-                $i += 4;
-                $y -= 1;
-            }
-        }
-        return self::fromIndex($y, $i);
+        $i = $this->index + $n;
+        return self::fromIndex(intdiv($this->getYear() * 4 + $i, 4), $this->indexOf($i, null, 4));
     }
 
     /**

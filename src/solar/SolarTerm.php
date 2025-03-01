@@ -17,35 +17,34 @@ class SolarTerm extends LoopTyme
     static array $NAMES = ['冬至', '小寒', '大寒', '立春', '雨水', '惊蛰', '春分', '清明', '谷雨', '立夏', '小满', '芒种', '夏至', '小暑', '大暑', '立秋', '处暑', '白露', '秋分', '寒露', '霜降', '立冬', '小雪', '大雪'];
 
     /**
+     * @var int 年
+     */
+    protected int $year;
+
+    /**
      * @var float 月
      */
     protected float $cursoryJulianDay;
 
-    protected function __construct(?int $year = null, ?int $index = null, ?string $name = null, ?float $cursoryJulianDay = null)
+    protected function __construct(int $year, ?int $index = null, ?string $name = null)
     {
-        $idx = $index;
+        $y = $year;
         if ($index !== null) {
             parent::__construct(self::$NAMES, $index);
+            $size = count(self::$NAMES);
+            $y = intdiv($year * $size + $index, $size);
         } else if ($name != null) {
             parent::__construct(self::$NAMES, null, $name);
-            $idx = $this->index;
         }
-        if ($year !== null) {
-            $this->initByYear($year, $idx);
-        } else if ($cursoryJulianDay !== null) {
-            $this->cursoryJulianDay = $cursoryJulianDay;
-        }
-    }
 
-    protected function initByYear(int $year, int $offset): void
-    {
-        $jd = floor(($year - 2000) * 365.2422 + 180);
+        $jd = floor(($y - 2000) * 365.2422 + 180);
         // 355是2000.12冬至，得到较靠近jd的冬至估计值
         $w = floor(($jd - 355 + 183) / 365.2422) * 365.2422 + 355;
         if (ShouXingUtil::calcQi($w) > $jd) {
             $w -= 365.2422;
         }
-        $this->cursoryJulianDay = ShouXingUtil::calcQi($w + 15.2184 * $offset);
+        $this->year = $y;
+        $this->cursoryJulianDay = ShouXingUtil::calcQi($w + 15.2184 * $this->index);
     }
 
     static function fromIndex(int $year, int $index): static
@@ -60,7 +59,9 @@ class SolarTerm extends LoopTyme
 
     function next(int $n): SolarTerm
     {
-        return new static(null, $this->nextIndex($n), null, $this->cursoryJulianDay + 15.2184 * $n);
+        $size = $this->getSize();
+        $i = $this->index + $n;
+        return static::fromIndex(intdiv($this->year * $size + $i, $size), $this->indexOf($i));
     }
 
     /**
@@ -91,6 +92,16 @@ class SolarTerm extends LoopTyme
     function getJulianDay(): JulianDay
     {
         return JulianDay::fromJulianDay(ShouXingUtil::qiAccurate2($this->cursoryJulianDay) + JulianDay::J2000);
+    }
+
+    /**
+     * 年
+     *
+     * @return int 年
+     */
+    function getYear(): int
+    {
+        return $this->year;
     }
 
     /**

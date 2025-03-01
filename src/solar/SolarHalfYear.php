@@ -79,18 +79,8 @@ class SolarHalfYear extends AbstractTyme
 
     function next(int $n): static
     {
-        $i = $this->index;
-        $y = $this->getYear();
-        if ($n != 0) {
-            $i += $n;
-            $y += intdiv($i, 2);
-            $i %= 2;
-            if ($i < 0) {
-                $i += 2;
-                $y -= 1;
-            }
-        }
-        return self::fromIndex($y, $i);
+        $i = $this->index + $n;
+        return self::fromIndex(intdiv($this->getYear() * 2 + $i, 2), $this->indexOf($i, null, 2));
     }
 
     /**
