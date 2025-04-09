@@ -294,7 +294,7 @@ class LunarMonth extends AbstractTyme
     }
 
     /**
-     * 获取本月的农历日列表
+     * 本月的农历日列表
      *
      * @return LunarDay[] 农历日列表
      */
@@ -311,7 +311,7 @@ class LunarMonth extends AbstractTyme
     }
 
     /**
-     * 获取本月的农历周列表
+     * 本月的农历周列表
      *
      * @param int $start 星期几作为一周的开始，1234560分别代表星期一至星期天
      * @return LunarWeek[] 周列表

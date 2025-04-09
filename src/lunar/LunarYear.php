@@ -117,7 +117,7 @@ class LunarYear extends AbstractTyme
 
     function next(int $n): LunarYear
     {
-        return $this->fromYear($this->year + $n);
+        return self::fromYear($this->year + $n);
     }
 
     /**
@@ -179,6 +179,16 @@ class LunarYear extends AbstractTyme
     }
 
     /**
+     * 首月（农历月，即一月，俗称正月）
+     *
+     * @return LunarMonth 农历月
+     */
+    public function getFirstMonth(): LunarMonth
+    {
+        return LunarMonth::fromYm($this->year, 1);
+    }
+
+    /**
      * 月份列表
      *
      * @return LunarMonth[] 月份列表，一般有12个月，当年有闰月时，有13个月。
@@ -186,7 +196,7 @@ class LunarYear extends AbstractTyme
     function getMonths(): array
     {
         $l = array();
-        $m = LunarMonth::fromYm($this->year, 1);
+        $m = $this->getFirstMonth();
         while ($m->getYear() == $this->year) {
             $l[] = $m;
             $m = $m->next(1);

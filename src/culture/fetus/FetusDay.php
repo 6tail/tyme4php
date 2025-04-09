@@ -7,6 +7,8 @@ use com\tyme\AbstractCulture;
 use com\tyme\culture\Direction;
 use com\tyme\enums\Side;
 use com\tyme\lunar\LunarDay;
+use com\tyme\sixtycycle\SixtyCycle;
+use com\tyme\sixtycycle\SixtyCycleDay;
 
 /**
  * 逐日胎神
@@ -35,9 +37,8 @@ class FetusDay extends AbstractCulture
      */
     protected Direction $direction;
 
-    protected function __construct(LunarDay $lunarDay)
+    protected function __construct(SixtyCycle $sixtyCycle)
     {
-        $sixtyCycle = $lunarDay->getSixtyCycle();
         $this->fetusHeavenStem = new FetusHeavenStem($sixtyCycle->getHeavenStem()->getIndex() % 5);
         $this->fetusEarthBranch = new FetusEarthBranch($sixtyCycle->getEarthBranch()->getIndex() % 6);
         $index = [3, 3, 8, 8, 8, 8, 8, 1, 1, 1, 1, 1, 1, 6, 6, 6, 6, 6, 5, 5, 5, 5, 5, 5, 0, 0, 0, 0, 0, -9, -9, -9, -9, -9, -5, -5, -1, -1, -1, -3, -7, -7, -7, -7, -5, 7, 7, 7, 7, 7, 7, 2, 2, 2, 2, 2, 3, 3, 3, 3][$sixtyCycle->getIndex()];
@@ -47,7 +48,12 @@ class FetusDay extends AbstractCulture
 
     static function fromLunarDay(LunarDay $lunarDay): static
     {
-        return new static($lunarDay);
+        return new static($lunarDay->getSixtyCycle());
+    }
+
+    static function fromSixtyCycleDay(SixtyCycleDay $sixtyCycleDay): static
+    {
+        return new static($sixtyCycleDay->getSixtyCycle());
     }
 
     function getName(): string

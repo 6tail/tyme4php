@@ -6,6 +6,7 @@ namespace com\tyme\eightchar;
 use com\tyme\AbstractTyme;
 use com\tyme\lunar\LunarYear;
 use com\tyme\sixtycycle\SixtyCycle;
+use com\tyme\sixtycycle\SixtyCycleYear;
 
 /**
  * 大运（10年1大运）
@@ -42,7 +43,7 @@ class DecadeFortune extends AbstractTyme
      */
     function getStartAge(): int
     {
-        return $this->childLimit->getEndTime()->getYear() - $this->childLimit->getStartTime()->getYear() + 1 + $this->index * 10;
+        return $this->childLimit->getEndSixtyCycleYear()->getYear() - $this->childLimit->getStartSixtyCycleYear()->getYear() + 1 + $this->index * 10;
     }
 
     /**
@@ -59,6 +60,8 @@ class DecadeFortune extends AbstractTyme
      * 开始农历年
      *
      * @return LunarYear 农历年
+     * @deprecated
+     * @see getStartSixtyCycleYear()
      */
     function getStartLunarYear(): LunarYear
     {
@@ -66,13 +69,35 @@ class DecadeFortune extends AbstractTyme
     }
 
     /**
+     * 开始干支年
+     *
+     * @return SixtyCycleYear 干支年
+     */
+    function getStartSixtyCycleYear(): SixtyCycleYear
+    {
+        return $this->childLimit->getEndSixtyCycleYear()->next($this->index * 10);
+    }
+
+    /**
      * 结束农历年
      *
      * @return LunarYear 农历年
+     * @deprecated
+     * @see getEndSixtyCycleYear()
      */
     function getEndLunarYear(): LunarYear
     {
         return $this->getStartLunarYear()->next(9);
+    }
+
+    /**
+     * 结束干支年
+     *
+     * @return SixtyCycleYear 干支年
+     */
+    function getEndSixtyCycleYear(): SixtyCycleYear
+    {
+        return $this->getStartSixtyCycleYear()->next(9);
     }
 
     /**
@@ -82,8 +107,7 @@ class DecadeFortune extends AbstractTyme
      */
     function getSixtyCycle(): SixtyCycle
     {
-        $n = $this->index + 1;
-        return $this->childLimit->getEightChar()->getMonth()->next($this->childLimit->isForward() ? $n : -$n);
+        return $this->childLimit->getEightChar()->getMonth()->next($this->childLimit->isForward() ? $this->index + 1 : -$this->index - 1);
     }
 
     function getName(): string

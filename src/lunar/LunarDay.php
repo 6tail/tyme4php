@@ -21,6 +21,7 @@ use com\tyme\festival\LunarFestival;
 use com\tyme\sixtycycle\EarthBranch;
 use com\tyme\sixtycycle\HeavenStem;
 use com\tyme\sixtycycle\SixtyCycle;
+use com\tyme\sixtycycle\SixtyCycleDay;
 use com\tyme\solar\SolarDay;
 use com\tyme\solar\SolarTerm;
 use InvalidArgumentException;
@@ -43,6 +44,16 @@ class LunarDay extends AbstractTyme
      * @var int 日
      */
     protected int $day;
+
+    /**
+     * @var SolarDay|null 公历日（第一次使用时才会初始化）
+     */
+    protected ?SolarDay $solarDay = null;
+
+    /**
+     * @var SixtyCycleDay|null 干支日（第一次使用时才会初始化）
+     */
+    protected ?SixtyCycleDay $sixtyCycleDay = null;
 
     protected function __construct(int $year, int $month, int $day)
     {
@@ -111,7 +122,7 @@ class LunarDay extends AbstractTyme
 
     function next(int $n): LunarDay
     {
-        return $n == 0 ? self::fromYmd($this->getYear(), $this->getMonth(), $this->day) : $this->getSolarDay()->next($n)->getLunarDay();
+        return $this->getSolarDay()->next($n)->getLunarDay();
     }
 
     /**
@@ -170,42 +181,24 @@ class LunarDay extends AbstractTyme
      * 当天的年干支
      *
      * @return SixtyCycle 干支
+     * @deprecated
+     * @see SixtyCycleDay
      */
     function getYearSixtyCycle(): SixtyCycle
     {
-        $solarDay = $this->getSolarDay();
-        $solarYear = $solarDay->getYear();
-        $springSolarDay = SolarTerm::fromIndex($solarYear, 3)->getJulianDay()->getSolarDay();
-        $lunarYear = $this->month->getLunarYear();
-        $year = $lunarYear->getYear();
-        $sixtyCycle = $lunarYear->getSixtyCycle();
-        if ($year == $solarYear) {
-            if ($solarDay->isBefore($springSolarDay)) {
-                $sixtyCycle = $sixtyCycle->next(-1);
-            }
-        } else if ($year < $solarYear) {
-            if (!$solarDay->isBefore($springSolarDay)) {
-                $sixtyCycle = $sixtyCycle->next(1);
-            }
-        }
-        return $sixtyCycle;
+        return $this->getSixtyCycleDay()->getYear();
     }
 
     /**
      * 当天的月干支
      *
      * @return SixtyCycle 干支
+     * @deprecated
+     * @see SixtyCycleDay
      */
     function getMonthSixtyCycle(): SixtyCycle
     {
-        $solarDay = $this->getSolarDay();
-        $year = $solarDay->getYear();
-        $term = $solarDay->getTerm();
-        $index = $term->getIndex() - 3;
-        if ($index < 0 && $term->getJulianDay()->getSolarDay()->isAfter(SolarTerm::fromIndex($year, 3)->getJulianDay()->getSolarDay())) {
-            $index += 24;
-        }
-        return LunarMonth::fromYm($year, 1)->getSixtyCycle()->next((int)floor($index / 2));
+        return $this->getSixtyCycleDay()->getMonth();
     }
 
     /**
@@ -223,20 +216,22 @@ class LunarDay extends AbstractTyme
      * 建除十二值神
      *
      * @return Duty 建除十二值神
+     * @see SixtyCycleDay
      */
     function getDuty(): Duty
     {
-        return Duty::fromIndex($this->getSixtyCycle()->getEarthBranch()->getIndex() - $this->getMonthSixtyCycle()->getEarthBranch()->getIndex());
+        return $this->getSixtyCycleDay()->getDuty();
     }
 
     /**
      * 黄道黑道十二神
      *
      * @return TwelveStar 黄道黑道十二神
+     * @see SixtyCycleDay
      */
     function getTwelveStar(): TwelveStar
     {
-        return TwelveStar::fromIndex($this->getSixtyCycle()->getEarthBranch()->getIndex() + (8 - $this->getMonthSixtyCycle()->getEarthBranch()->getIndex() % 6) * 2);
+        return $this->getSixtyCycleDay()->getTwelveStar();
     }
 
     /**
@@ -246,8 +241,8 @@ class LunarDay extends AbstractTyme
      */
     function getNineStar(): NineStar
     {
-        $solar = $this->getSolarDay();
-        $dongZhi = SolarTerm::fromIndex($solar->getYear(), 0);
+        $d = $this->getSolarDay();
+        $dongZhi = SolarTerm::fromIndex($d->getYear(), 0);
         $xiaZhi = $dongZhi->next(12);
         $dongZhi2 = $dongZhi->next(24);
         $dongZhiSolar = $dongZhi->getJulianDay()->getSolarDay();
@@ -260,14 +255,14 @@ class LunarDay extends AbstractTyme
         $solarShunBai2 = $dongZhiSolar2->next($dongZhiIndex2 > 29 ? 60 - $dongZhiIndex2 : -$dongZhiIndex2);
         $solarNiZi = $xiaZhiSolar->next($xiaZhiIndex > 29 ? 60 - $xiaZhiIndex : -$xiaZhiIndex);
         $offset = 0;
-        if (!$solar->isBefore($solarShunBai) && $solar->isBefore($solarNiZi)) {
-            $offset = $solar->subtract($solarShunBai);
-        } else if (!$solar->isBefore($solarNiZi) && $solar->isBefore($solarShunBai2)) {
-            $offset = 8 - $solar->subtract($solarNiZi);
-        } else if (!$solar->isBefore($solarShunBai2)) {
-            $offset = $solar->subtract($solarShunBai2);
-        } else if ($solar->isBefore($solarShunBai)) {
-            $offset = 8 + $solarShunBai->subtract($solar);
+        if (!$d->isBefore($solarShunBai) && $d->isBefore($solarNiZi)) {
+            $offset = $d->subtract($solarShunBai);
+        } else if (!$d->isBefore($solarNiZi) && $d->isBefore($solarShunBai2)) {
+            $offset = 8 - $d->subtract($solarNiZi);
+        } else if (!$d->isBefore($solarShunBai2)) {
+            $offset = $d->subtract($solarShunBai2);
+        } else if ($d->isBefore($solarShunBai)) {
+            $offset = 8 + $solarShunBai->subtract($d);
         }
         return NineStar::fromIndex($offset);
     }
@@ -310,7 +305,25 @@ class LunarDay extends AbstractTyme
      */
     function getSolarDay(): SolarDay
     {
-        return $this->month->getFirstJulianDay()->next($this->day - 1)->getSolarDay();
+        if ($this->solarDay == null)
+        {
+            $this->solarDay = $this->month->getFirstJulianDay()->next($this->day - 1)->getSolarDay();
+        }
+        return $this->solarDay;
+    }
+
+    /**
+     * 干支日
+     *
+     * @return SixtyCycleDay 干支日
+     */
+    function getSixtyCycleDay(): SixtyCycleDay
+    {
+        if ($this->sixtyCycleDay == null)
+        {
+            $this->sixtyCycleDay = $this->getSolarDay()->getSixtyCycleDay();
+        }
+        return $this->sixtyCycleDay;
     }
 
     /**
@@ -352,28 +365,31 @@ class LunarDay extends AbstractTyme
     /**
      * 神煞列表(吉神宜趋，凶神宜忌)
      * @return God[] 神煞列表
+     * @see SixtyCycleDay
      */
     function getGods(): array
     {
-        return God::getDayGods($this->getMonthSixtyCycle(), $this->getSixtyCycle());
+        return $this->getSixtyCycleDay()->getGods();
     }
 
     /**
      * 宜
      * @return Taboo[] 宜忌列表
+     * @see SixtyCycleDay
      */
     function getRecommends(): array
     {
-        return Taboo::getDayRecommends($this->getMonthSixtyCycle(), $this->getSixtyCycle());
+        return $this->getSixtyCycleDay()->getRecommends();
     }
 
     /**
      * 忌
      * @return Taboo[] 宜忌列表
+     * @see SixtyCycleDay
      */
     function getAvoids(): array
     {
-        return Taboo::getDayAvoids($this->getMonthSixtyCycle(), $this->getSixtyCycle());
+        return $this->getSixtyCycleDay()->getAvoids();
     }
 
     /**

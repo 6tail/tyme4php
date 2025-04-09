@@ -287,9 +287,9 @@ class EightCharTest extends TestCase
         // 结束年龄
         $this->assertEquals(16, $decadeFortune->getEndAge());
         // 开始年
-        $this->assertEquals(1989, $decadeFortune->getStartLunarYear()->getYear());
+        $this->assertEquals(1989, $decadeFortune->getStartSixtyCycleYear()->getYear());
         // 结束年
-        $this->assertEquals(1998, $decadeFortune->getEndLunarYear()->getYear());
+        $this->assertEquals(1998, $decadeFortune->getEndSixtyCycleYear()->getYear());
         // 干支
         $this->assertEquals('乙卯', $decadeFortune->getName());
         // 下一大运
@@ -304,12 +304,12 @@ class EightCharTest extends TestCase
         // 年龄
         $this->assertEquals(7, $fortune->getAge());
         // 农历年
-        $this->assertEquals(1989, $fortune->getLunarYear()->getYear());
+        $this->assertEquals(1989, $fortune->getSixtyCycleYear()->getYear());
         // 干支
         $this->assertEquals('辛巳', $fortune->getName());
 
         // 流年
-        $this->assertEquals('己巳', $fortune->getLunarYear()->getSixtyCycle()->getName());
+        $this->assertEquals('己巳', $fortune->getSixtyCycleYear()->getSixtyCycle()->getName());
     }
 
     function test14()
@@ -338,9 +338,9 @@ class EightCharTest extends TestCase
         // 结束年龄
         $this->assertEquals(19, $decadeFortune->getEndAge());
         // 开始年
-        $this->assertEquals(2000, $decadeFortune->getStartLunarYear()->getYear());
+        $this->assertEquals(2001, $decadeFortune->getStartSixtyCycleYear()->getYear());
         // 结束年
-        $this->assertEquals(2009, $decadeFortune->getEndLunarYear()->getYear());
+        $this->assertEquals(2010, $decadeFortune->getEndSixtyCycleYear()->getYear());
         // 干支
         $this->assertEquals('庚子', $decadeFortune->getName());
         // 下一大运
@@ -351,7 +351,7 @@ class EightCharTest extends TestCase
         // 年龄
         $this->assertEquals(10, $fortune->getAge());
         // 农历年
-        $this->assertEquals(2000, $fortune->getLunarYear()->getYear());
+        $this->assertEquals(2001, $fortune->getSixtyCycleYear()->getYear());
         // 干支
         $this->assertEquals('戊申', $fortune->getName());
         // 小运推移
@@ -359,7 +359,7 @@ class EightCharTest extends TestCase
         $this->assertEquals('庚戌', $fortune->next(-2)->getName());
 
         // 流年
-        $this->assertEquals('庚辰', $fortune->getLunarYear()->getSixtyCycle()->getName());
+        $this->assertEquals('辛巳', $fortune->getSixtyCycleYear()->getSixtyCycle()->getName());
     }
 
     function test16()
@@ -456,12 +456,12 @@ class EightCharTest extends TestCase
 
     function test26()
     {
-        $this->assertEquals('己丑', SolarTime::fromYmdHms(1986, 5, 29, 13, 37, 0)->getLunarHour()->getEightChar()->getBodySign()->getName());
+        $this->assertEquals('辛丑', SolarTime::fromYmdHms(1986, 5, 29, 13, 37, 0)->getLunarHour()->getEightChar()->getBodySign()->getName());
     }
 
     function test27()
     {
-        $this->assertEquals('乙丑', SolarTime::fromYmdHms(1994, 12, 6, 2, 0, 0)->getLunarHour()->getEightChar()->getBodySign()->getName());
+        $this->assertEquals('丁丑', SolarTime::fromYmdHms(1994, 12, 6, 2, 0, 0)->getLunarHour()->getEightChar()->getBodySign()->getName());
     }
 
     function test28()

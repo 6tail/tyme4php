@@ -6,6 +6,7 @@ namespace com\tyme\solar;
 use com\tyme\AbstractTyme;
 use com\tyme\jd\JulianDay;
 use com\tyme\lunar\LunarHour;
+use com\tyme\sixtycycle\SixtyCycleHour;
 use InvalidArgumentException;
 
 /**
@@ -257,7 +258,7 @@ class SolarTime extends AbstractTyme
     }
 
     /**
-     * 时辰
+     * 农历时辰
      *
      * @return LunarHour 农历时辰
      */
@@ -267,4 +268,13 @@ class SolarTime extends AbstractTyme
         return LunarHour::fromYmdHms($d->getYear(), $d->getMonth(), $d->getDay(), $this->hour, $this->minute, $this->second);
     }
 
+    /**
+     * 干支时辰
+     *
+     * @return SixtyCycleHour 干支时辰
+     */
+    function getSixtyCycleHour(): SixtyCycleHour
+    {
+        return SixtyCycleHour::fromSolarTime($this);
+    }
 }

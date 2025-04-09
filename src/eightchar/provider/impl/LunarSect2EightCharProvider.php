@@ -19,6 +19,7 @@ class LunarSect2EightCharProvider implements EightCharProvider
 
     function getEightChar(LunarHour $hour): EightChar
     {
-        return new EightChar($hour->getYearSixtyCycle(), $hour->getMonthSixtyCycle(), $hour->getLunarDay()->getSixtyCycle(), $hour->getSixtyCycle());
+        $h = $hour->getSixtyCycleHour();
+        return new EightChar($h->getYear(), $h->getMonth(), $hour->getLunarDay()->getSixtyCycle(), $h->getSixtyCycle());
     }
 }

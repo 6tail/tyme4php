@@ -8,6 +8,7 @@ use com\tyme\culture\Duty;
 use com\tyme\sixtycycle\EarthBranch;
 use com\tyme\sixtycycle\HeavenStem;
 use com\tyme\sixtycycle\SixtyCycle;
+use com\tyme\sixtycycle\SixtyCycleDay;
 use com\tyme\solar\SolarTerm;
 use com\tyme\solar\SolarTime;
 
@@ -126,9 +127,7 @@ class EightChar extends AbstractCulture
      */
     function getBodySign(): SixtyCycle
     {
-        $offset = $this->month->getEarthBranch()->getIndex() + $this->hour->getEarthBranch()->getIndex();
-        $offset %= 12;
-        $offset -= 1;
+        $offset = ($this->month->getEarthBranch()->getIndex() + $this->hour->getEarthBranch()->getIndex() - 1) % 12;
         return SixtyCycle::fromName(sprintf('%s%s', HeavenStem::fromIndex(($this->year->getHeavenStem()->getIndex() + 1) * 2 + $offset)->getName(), EarthBranch::fromIndex(2 + $offset)->getName()));
     }
 
@@ -136,6 +135,8 @@ class EightChar extends AbstractCulture
      * 建除十二值神
      *
      * @return Duty 建除十二值神
+     * @deprecated
+     * @see SixtyCycleDay
      */
     function getDuty(): Duty
     {

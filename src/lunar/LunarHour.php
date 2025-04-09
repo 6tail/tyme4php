@@ -14,12 +14,13 @@ use com\tyme\eightchar\provider\impl\DefaultEightCharProvider;
 use com\tyme\sixtycycle\EarthBranch;
 use com\tyme\sixtycycle\HeavenStem;
 use com\tyme\sixtycycle\SixtyCycle;
+use com\tyme\sixtycycle\SixtyCycleHour;
 use com\tyme\solar\SolarTerm;
 use com\tyme\solar\SolarTime;
 use InvalidArgumentException;
 
 /**
- * 时辰
+ * 农历时辰
  * @author 6tail
  * @package com\tyme\lunar
  */
@@ -49,6 +50,16 @@ class LunarHour extends AbstractTyme
      * @var int 秒
      */
     protected int $second;
+
+    /**
+     * @var SolarTime|null 公历时刻（第一次使用时才会初始化）
+     */
+    protected ?SolarTime $solarTime = null;
+
+    /**
+     * @var SixtyCycleHour|null 干支时辰（第一次使用时才会初始化）
+     */
+    protected ?SixtyCycleHour $sixtyCycleHour = null;
 
     private static function init(): void
     {
@@ -218,53 +229,36 @@ class LunarHour extends AbstractTyme
      * 当时的年干支（立春换）
      *
      * @return SixtyCycle 干支
+     * @deprecated
+     * @see SixtyCycleHour
      */
     function getYearSixtyCycle(): SixtyCycle
     {
-        $solarTime = $this->getSolarTime();
-        $solarYear = $this->day->getSolarDay()->getYear();
-        $springSolarTime = SolarTerm::fromIndex($solarYear, 3)->getJulianDay()->getSolarTime();
-        $lunarYear = $this->day->getLunarMonth()->getLunarYear();
-        $year = $lunarYear->getYear();
-        $sixtyCycle = $lunarYear->getSixtyCycle();
-        if ($year == $solarYear) {
-            if ($solarTime->isBefore($springSolarTime)) {
-                $sixtyCycle = $sixtyCycle->next(-1);
-            }
-        } else if ($year < $solarYear) {
-            if (!$solarTime->isBefore($springSolarTime)) {
-                $sixtyCycle = $sixtyCycle->next(1);
-            }
-        }
-        return $sixtyCycle;
+        return $this->getSixtyCycleHour()->getYear();
     }
 
     /**
      * 当时的月干支（节气换）
      *
      * @return SixtyCycle 干支
+     * @deprecated
+     * @see SixtyCycleHour
      */
     function getMonthSixtyCycle(): SixtyCycle
     {
-        $solarTime = $this->getSolarTime();
-        $year = $solarTime->getYear();
-        $term = $solarTime->getTerm();
-        $index = $term->getIndex() - 3;
-        if ($index < 0 && $term->getJulianDay()->getSolarTime()->isAfter(SolarTerm::fromIndex($year, 3)->getJulianDay()->getSolarTime())) {
-            $index += 24;
-        }
-        return LunarMonth::fromYm($year, 1)->getSixtyCycle()->next((int)floor($index / 2));
+        return $this->getSixtyCycleHour()->getMonth();
     }
 
     /**
      * 当时的日干支（23:00开始算做第二天）
      *
      * @return SixtyCycle 干支
+     * @deprecated
+     * @see SixtyCycleHour
      */
     function getDaySixtyCycle(): SixtyCycle
     {
-        $d = $this->day->getSixtyCycle();
-        return $this->hour < 23 ? $d : $d->next(1);
+        return $this->getSixtyCycleHour()->getDay();
     }
 
     /**
@@ -275,7 +269,11 @@ class LunarHour extends AbstractTyme
     function getSixtyCycle(): SixtyCycle
     {
         $earthBranchIndex = $this->getIndexInDay() % 12;
-        $heavenStemIndex = $this->getDaySixtyCycle()->getHeavenStem()->getIndex() % 5 * 2 + $earthBranchIndex;
+        $d = $this->day->getSixtyCycle();
+        if ($this->hour >= 23) {
+            $d = $d->next(1);
+        }
+        $heavenStemIndex = $d->getHeavenStem()->getIndex() % 5 * 2 + $earthBranchIndex;
         return SixtyCycle::fromName(sprintf('%s%s', HeavenStem::fromIndex($heavenStemIndex)->getName(), EarthBranch::fromIndex($earthBranchIndex)->getName()));
     }
 
@@ -286,7 +284,7 @@ class LunarHour extends AbstractTyme
      */
     function getTwelveStar(): TwelveStar
     {
-        return TwelveStar::fromIndex($this->getSixtyCycle()->getEarthBranch()->getIndex() + (8 - $this->getDaySixtyCycle()->getEarthBranch()->getIndex() % 6) * 2);
+        return TwelveStar::fromIndex($this->getSixtyCycle()->getEarthBranch()->getIndex() + (8 - $this->getSixtyCycleHour()->getDay()->getEarthBranch()->getIndex() % 6) * 2);
     }
 
     /**
@@ -315,8 +313,21 @@ class LunarHour extends AbstractTyme
      */
     function getSolarTime(): SolarTime
     {
-        $d = $this->day->getSolarDay();
-        return SolarTime::fromYmdHms($d->getYear(), $d->getMonth(), $d->getDay(), $this->hour, $this->minute, $this->second);
+        if ($this->solarTime == null)
+        {
+            $d = $this->day->getSolarDay();
+            $this->solarTime = SolarTime::fromYmdHms($d->getYear(), $d->getMonth(), $d->getDay(), $this->hour, $this->minute, $this->second);
+        }
+        return $this->solarTime;
+    }
+
+    function getSixtyCycleHour(): SixtyCycleHour
+    {
+        if ($this->sixtyCycleHour == null)
+        {
+            $this->sixtyCycleHour = $this->getSolarTime()->getSixtyCycleHour();
+        }
+        return $this->sixtyCycleHour;
     }
 
     /**
@@ -335,7 +346,7 @@ class LunarHour extends AbstractTyme
      */
     function getRecommends(): array
     {
-        return Taboo::getHourRecommends($this->getDaySixtyCycle(), $this->getSixtyCycle());
+        return Taboo::getHourRecommends($this->getSixtyCycleHour()->getDay(), $this->getSixtyCycle());
     }
 
     /**
@@ -344,7 +355,7 @@ class LunarHour extends AbstractTyme
      */
     function getAvoids(): array
     {
-        return Taboo::getHourAvoids($this->getDaySixtyCycle(), $this->getSixtyCycle());
+        return Taboo::getHourAvoids($this->getSixtyCycleHour()->getDay(), $this->getSixtyCycle());
     }
 
     /**

@@ -6,6 +6,7 @@ namespace com\tyme\eightchar;
 use com\tyme\AbstractTyme;
 use com\tyme\lunar\LunarYear;
 use com\tyme\sixtycycle\SixtyCycle;
+use com\tyme\sixtycycle\SixtyCycleYear;
 
 /**
  * 小运
@@ -42,17 +43,29 @@ class Fortune extends AbstractTyme
      */
     function getAge(): int
     {
-        return $this->childLimit->getEndTime()->getYear() - $this->childLimit->getStartTime()->getYear() + 1 + $this->index;
+        return $this->childLimit->getEndSixtyCycleYear()->getYear() - $this->childLimit->getStartSixtyCycleYear()->getYear() + 1 + $this->index;
     }
 
     /**
      * 农历年
      *
      * @return LunarYear 农历年
+     * @deprecated
+     * @see getSixtyCycleYear()
      */
     function getLunarYear(): LunarYear
     {
         return $this->childLimit->getEndLunarYear()->next($this->index);
+    }
+
+    /**
+     * 干支年
+     *
+     * @return SixtyCycleYear 干支年
+     */
+    function getSixtyCycleYear(): SixtyCycleYear
+    {
+        return $this->childLimit->getEndSixtyCycleYear()->next($this->index);
     }
 
     /**

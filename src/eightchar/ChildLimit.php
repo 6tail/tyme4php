@@ -8,6 +8,7 @@ use com\tyme\eightchar\provider\impl\DefaultChildLimitProvider;
 use com\tyme\enums\Gender;
 use com\tyme\enums\YinYang;
 use com\tyme\lunar\LunarYear;
+use com\tyme\sixtycycle\SixtyCycleYear;
 use com\tyme\solar\SolarTime;
 
 /**
@@ -181,13 +182,23 @@ class ChildLimit
     }
 
     /**
-     * 大运
+     * 起运大运
      *
      * @return DecadeFortune 大运
      */
     function getStartDecadeFortune(): DecadeFortune
     {
         return DecadeFortune::fromChildLimit($this, 0);
+    }
+
+    /**
+     * 所属大运
+     *
+     * @return DecadeFortune 大运
+     */
+    function getDecadeFortune(): DecadeFortune
+    {
+        return DecadeFortune::fromChildLimit($this, -1);
     }
 
     /**
@@ -204,10 +215,52 @@ class ChildLimit
      * 结束农历年
      *
      * @return LunarYear 农历年
+     * @deprecated
+     * @see getEndSixtyCycleYear()
      */
     function getEndLunarYear(): LunarYear
     {
         return LunarYear::fromYear($this->getStartTime()->getLunarHour()->getYear() + $this->getEndTime()->getYear() - $this->getStartTime()->getYear());
     }
 
+    /**
+     * 开始(即出生)干支年
+     *
+     * @return SixtyCycleYear 干支年
+     */
+    function getStartSixtyCycleYear(): SixtyCycleYear
+    {
+        return SixtyCycleYear::fromYear($this->getStartTime()->getYear());
+    }
+
+    /**
+     * 结束(即起运)干支年
+     *
+     * @return SixtyCycleYear 干支年
+     */
+    function getEndSixtyCycleYear(): SixtyCycleYear
+    {
+        return SixtyCycleYear::fromYear($this->getEndTime()->getYear());
+    }
+
+    /**
+     * 开始年龄
+     *
+     * @return int 开始年龄
+     */
+    function getStartAge(): int
+    {
+        return 1;
+    }
+
+    /**
+     * 结束年龄
+     *
+     * @return int 结束年龄
+     */
+    function getEndAge(): int
+    {
+        $n = $this->getEndSixtyCycleYear()->getYear() - $this->getStartSixtyCycleYear()->getYear();
+        return max($n, 1);
+    }
 }

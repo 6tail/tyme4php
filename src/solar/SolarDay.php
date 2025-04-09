@@ -22,6 +22,7 @@ use com\tyme\lunar\LunarDay;
 use com\tyme\lunar\LunarMonth;
 use com\tyme\sixtycycle\HideHeavenStem;
 use com\tyme\sixtycycle\HideHeavenStemDay;
+use com\tyme\sixtycycle\SixtyCycleDay;
 use InvalidArgumentException;
 
 /**
@@ -408,6 +409,16 @@ class SolarDay extends AbstractTyme
             $days += $m->getDayCount();
         }
         return LunarDay::fromYmd($m->getYear(), $m->getMonthWithLeap(), $days + 1);
+    }
+
+    /**
+     * 干支日
+     *
+     * @return SixtyCycleDay 干支日
+     */
+    function getSixtyCycleDay(): SixtyCycleDay
+    {
+        return SixtyCycleDay::fromSolarDay($this);
     }
 
     /**

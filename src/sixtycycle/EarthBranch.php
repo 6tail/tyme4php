@@ -153,7 +153,7 @@ class EarthBranch extends LoopTyme
      */
     function getCombine(): static
     {
-        return $this->fromIndex(1 - $this->index);
+        return self::fromIndex(1 - $this->index);
     }
 
     /**
@@ -173,7 +173,7 @@ class EarthBranch extends LoopTyme
      */
     function getHarm(): static
     {
-        return $this->fromIndex(19 - $this->index);
+        return self::fromIndex(19 - $this->index);
     }
 
     /**

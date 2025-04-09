@@ -19,6 +19,6 @@ class DefaultEightCharProvider implements EightCharProvider
 
     function getEightChar(LunarHour $hour): EightChar
     {
-        return new EightChar($hour->getYearSixtyCycle(), $hour->getMonthSixtyCycle(), $hour->getDaySixtyCycle(), $hour->getSixtyCycle());
+        return $hour->getSixtyCycleHour()->getEightChar();
     }
 }
