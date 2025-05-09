@@ -100,7 +100,7 @@ class LunarFestival extends AbstractTyme
 
     function next(int $n): static
     {
-        $size = count(self::$NAMES);
+        $size = count(static::$NAMES);
         $i = $this->index + $n;
         return static::fromIndex(intdiv($this->day->getYear() * $size + $i, $size), $this->indexOf($i, null, $size));
     }

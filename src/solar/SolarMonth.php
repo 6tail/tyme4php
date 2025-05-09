@@ -82,7 +82,7 @@ class SolarMonth extends AbstractTyme
         if (1582 == $this->getYear() && 10 == $this->month) {
             return 21;
         }
-        $d = self::$DAYS[$this->getIndexInYear()];
+        $d = static::$DAYS[$this->getIndexInYear()];
         //公历闰年2月多一天
         if (2 == $this->month && $this->year->isLeap()) {
             $d++;
@@ -123,7 +123,7 @@ class SolarMonth extends AbstractTyme
 
     function getName(): string
     {
-        return self::$NAMES[$this->getIndexInYear()];
+        return static::$NAMES[$this->getIndexInYear()];
     }
 
     function __toString(): string
@@ -134,7 +134,7 @@ class SolarMonth extends AbstractTyme
     function next(int $n): SolarMonth
     {
         $i = $this->month - 1 + $n;
-        return self::fromYm(intdiv($this->getYear() * 12 + $i, 12), $this->indexOf($i, null, 12) + 1);
+        return static::fromYm(intdiv($this->getYear() * 12 + $i, 12), $this->indexOf($i, null, 12) + 1);
     }
 
     /**

@@ -45,13 +45,13 @@ class ChildLimit
 
     private static function init(): void
     {
-        self::$provider = new DefaultChildLimitProvider();
+        static::$provider = new DefaultChildLimitProvider();
     }
 
     protected function __construct(SolarTime $birthTime, Gender $gender)
     {
-        if (null == self::$provider) {
-            self::init();
+        if (null == static::$provider) {
+            static::init();
         }
         $this->gender = $gender;
         $this->eightChar = $birthTime->getLunarHour()->getEightChar();
@@ -66,7 +66,7 @@ class ChildLimit
         if ($this->forward) {
             $term = $term->next(2);
         }
-        $this->info = self::$provider->getInfo($birthTime, $term);
+        $this->info = static::$provider->getInfo($birthTime, $term);
     }
 
     /**

@@ -30,11 +30,11 @@ class SolarTerm extends LoopTyme
     {
         $y = $year;
         if ($index !== null) {
-            parent::__construct(self::$NAMES, $index);
-            $size = count(self::$NAMES);
+            parent::__construct(static::$NAMES, $index);
+            $size = count(static::$NAMES);
             $y = intdiv($year * $size + $index, $size);
         } else if ($name != null) {
-            parent::__construct(self::$NAMES, null, $name);
+            parent::__construct(static::$NAMES, null, $name);
         }
 
         $jd = floor(($y - 2000) * 365.2422 + 180);

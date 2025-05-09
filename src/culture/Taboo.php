@@ -54,9 +54,9 @@ class Taboo extends LoopTyme
     protected function __construct(?int $index = null, ?string $name = null)
     {
         if ($index !== null) {
-            parent::__construct(self::$NAMES, $index);
+            parent::__construct(static::$NAMES, $index);
         } else if ($name !== null) {
-            parent::__construct(self::$NAMES, null, $name);
+            parent::__construct(static::$NAMES, null, $name);
         }
     }
 
@@ -72,7 +72,7 @@ class Taboo extends LoopTyme
 
     function next(int $n): static
     {
-        return self::fromIndex($this->nextIndex($n));
+        return static::fromIndex($this->nextIndex($n));
     }
 
     /**
@@ -110,7 +110,7 @@ class Taboo extends LoopTyme
      */
     static function getDayRecommends(SixtyCycle $month, SixtyCycle $day): array
     {
-        return self::getTaboos(static::$dayTaboo, $month->getEarthBranch()->getIndex(), $day->getIndex(), 0);
+        return static::getTaboos(static::$dayTaboo, $month->getEarthBranch()->getIndex(), $day->getIndex(), 0);
     }
 
     /**
@@ -121,7 +121,7 @@ class Taboo extends LoopTyme
      */
     static function getDayAvoids(SixtyCycle $month, SixtyCycle $day): array
     {
-        return self::getTaboos(static::$dayTaboo, $month->getEarthBranch()->getIndex(), $day->getIndex(), 1);
+        return static::getTaboos(static::$dayTaboo, $month->getEarthBranch()->getIndex(), $day->getIndex(), 1);
     }
 
     /**
@@ -132,7 +132,7 @@ class Taboo extends LoopTyme
      */
     static function getHourRecommends(SixtyCycle $day, SixtyCycle $hour): array
     {
-        return self::getTaboos(static::$hourTaboo, $hour->getEarthBranch()->getIndex(), $day->getIndex(), 0);
+        return static::getTaboos(static::$hourTaboo, $hour->getEarthBranch()->getIndex(), $day->getIndex(), 0);
     }
 
     /**
@@ -143,6 +143,6 @@ class Taboo extends LoopTyme
      */
     static function getHourAvoids(SixtyCycle $day, SixtyCycle $hour): array
     {
-        return self::getTaboos(static::$hourTaboo, $hour->getEarthBranch()->getIndex(), $day->getIndex(), 1);
+        return static::getTaboos(static::$hourTaboo, $hour->getEarthBranch()->getIndex(), $day->getIndex(), 1);
     }
 }

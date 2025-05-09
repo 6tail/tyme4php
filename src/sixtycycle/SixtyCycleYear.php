@@ -56,7 +56,7 @@ class SixtyCycleYear extends AbstractTyme
 
     function next(int $n): SixtyCycleYear
     {
-        return self::fromYear($this->year + $n);
+        return static::fromYear($this->year + $n);
     }
 
     /**

@@ -17,7 +17,7 @@ class FetusMonth extends LoopTyme
 
     protected function __construct(int $index)
     {
-        parent::__construct(self::$NAMES, $index);
+        parent::__construct(static::$NAMES, $index);
     }
 
     static function fromIndex(int $index): static
@@ -38,6 +38,6 @@ class FetusMonth extends LoopTyme
 
     function next(int $n): static
     {
-        return self::fromIndex($this->nextIndex($n));
+        return static::fromIndex($this->nextIndex($n));
     }
 }

@@ -52,13 +52,13 @@ class LunarYear extends AbstractTyme
             }
             $leap[$i + 1] = $l;
         }
-        self::$LEAP = $leap;
+        static::$LEAP = $leap;
     }
 
     protected function __construct(int $year)
     {
-        if (null == self::$LEAP) {
-            self::init();
+        if (null == static::$LEAP) {
+            static::init();
         }
         if ($year < -1 || $year > 9999) {
             throw new InvalidArgumentException(sprintf('illegal lunar year: %d', $year));
@@ -117,7 +117,7 @@ class LunarYear extends AbstractTyme
 
     function next(int $n): LunarYear
     {
-        return self::fromYear($this->year + $n);
+        return static::fromYear($this->year + $n);
     }
 
     /**
@@ -130,7 +130,7 @@ class LunarYear extends AbstractTyme
         if ($this->year == -1) {
             return 11;
         }
-        foreach (self::$LEAP as $key => $value) {
+        foreach (static::$LEAP as $key => $value) {
             if (in_array($this->year, $value)) {
                 return $key;
             }

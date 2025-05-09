@@ -4,6 +4,7 @@ namespace com\tyme\solar;
 
 
 use com\tyme\AbstractTyme;
+use com\tyme\rabbyung\RabByungYear;
 use InvalidArgumentException;
 
 /**
@@ -116,6 +117,16 @@ class SolarYear extends AbstractTyme
             $l[] = SolarHalfYear::fromIndex($this->year, $i);
         }
         return $l;
+    }
+
+    /**
+     * 藏历年
+     *
+     * @return RabByungYear 藏历年
+     */
+    function getRabByungYear(): RabByungYear
+    {
+        return RabByungYear::fromYear($this->year);
     }
 
 }

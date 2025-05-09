@@ -16,7 +16,7 @@ class FetusHeavenStem extends LoopTyme
 
     function __construct(int $index)
     {
-        parent::__construct(self::$NAMES, $index);
+        parent::__construct(static::$NAMES, $index);
     }
 
     function next(int $n): static

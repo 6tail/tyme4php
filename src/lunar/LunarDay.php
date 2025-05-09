@@ -112,7 +112,7 @@ class LunarDay extends AbstractTyme
 
     function getName(): string
     {
-        return self::$NAMES[$this->day - 1];
+        return static::$NAMES[$this->day - 1];
     }
 
     function __toString(): string

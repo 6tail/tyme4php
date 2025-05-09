@@ -1,25 +1,23 @@
 <?php
 
-namespace com\tyme\culture;
+namespace com\tyme\rabbyung;
 
 
-use com\tyme\LoopTyme;
+use com\tyme\culture\Element;
 
 /**
- * 五行
+ * 藏历五行
  * @author 6tail
- * @package com\tyme\culture
+ * @package com\tyme\rabbyung
  */
-class Element extends LoopTyme
+class RabByungElement extends Element
 {
-    static array $NAMES = ['木', '火', '土', '金', '水'];
-
     protected function __construct(?int $index = null, ?string $name = null)
     {
         if ($index !== null) {
-            parent::__construct(static::$NAMES, $index);
+            parent::__construct($index);
         } else if ($name !== null) {
-            parent::__construct(static::$NAMES, null, $name);
+            parent::__construct(null, str_replace('铁', '金', $name));
         }
     }
 
@@ -41,7 +39,7 @@ class Element extends LoopTyme
     /**
      * 我生者
      *
-     * @return Element 五行
+     * @return RabByungElement 藏历五行
      */
     function getReinforce(): static
     {
@@ -51,7 +49,7 @@ class Element extends LoopTyme
     /**
      * 我克者
      *
-     * @return Element 五行
+     * @return RabByungElement 藏历五行
      */
     function getRestrain(): static
     {
@@ -61,7 +59,7 @@ class Element extends LoopTyme
     /**
      * 生我者
      *
-     * @return Element 五行
+     * @return RabByungElement 藏历五行
      */
     function getReinforced(): static
     {
@@ -71,19 +69,15 @@ class Element extends LoopTyme
     /**
      * 克我者
      *
-     * @return Element 五行
+     * @return RabByungElement 藏历五行
      */
     function getRestrained(): static
     {
         return $this->next(-2);
     }
 
-    /**
-     * 方位
-     * @return Direction 方位
-     */
-    function getDirection(): Direction
+    function getName(): string
     {
-        return Direction::fromIndex([2, 8, 4, 6, 0][$this->index]);
+        return str_replace('金', '铁', parent::getName());
     }
 }

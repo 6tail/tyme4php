@@ -103,7 +103,7 @@ class SolarWeek extends AbstractTyme
         $i = 0;
         $firstDay = $this->getFirstDay();
         // 今年第1周
-        $w = self::fromYm($this->getYear(), 1, 0, $this->start->getIndex());
+        $w = static::fromYm($this->getYear(), 1, 0, $this->start->getIndex());
         while (!$w->getFirstDay()->equals($firstDay)) {
             $w = $w->next(1);
             $i += 1;
@@ -123,7 +123,7 @@ class SolarWeek extends AbstractTyme
 
     function getName(): string
     {
-        return self::$NAMES[$this->index];
+        return static::$NAMES[$this->index];
     }
 
     function __toString(): string

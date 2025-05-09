@@ -63,13 +63,13 @@ class LunarHour extends AbstractTyme
 
     private static function init(): void
     {
-        self::$provider = new DefaultEightCharProvider();
+        static::$provider = new DefaultEightCharProvider();
     }
 
     protected function __construct(int $year, int $month, int $day, int $hour, int $minute, int $second)
     {
-        if (null == self::$provider) {
-            self::init();
+        if (null == static::$provider) {
+            static::init();
         }
         if ($hour < 0 || $hour > 23) {
             throw new InvalidArgumentException(sprintf('illegal hour: %d', $hour));
@@ -222,7 +222,7 @@ class LunarHour extends AbstractTyme
             $days--;
         }
         $d = $this->day->next($days);
-        return self::fromYmdHms($d->getYear(), $d->getMonth(), $d->getDay(), $hour, $this->minute, $this->second);
+        return static::fromYmdHms($d->getYear(), $d->getMonth(), $d->getDay(), $hour, $this->minute, $this->second);
     }
 
     /**
@@ -337,7 +337,7 @@ class LunarHour extends AbstractTyme
      */
     function getEightChar(): EightChar
     {
-        return self::$provider->getEightChar($this);
+        return static::$provider->getEightChar($this);
     }
 
     /**

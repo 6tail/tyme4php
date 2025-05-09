@@ -20,6 +20,7 @@ use com\tyme\holiday\LegalHoliday;
 use com\tyme\jd\JulianDay;
 use com\tyme\lunar\LunarDay;
 use com\tyme\lunar\LunarMonth;
+use com\tyme\rabbyung\RabByungDay;
 use com\tyme\sixtycycle\HideHeavenStem;
 use com\tyme\sixtycycle\HideHeavenStemDay;
 use com\tyme\sixtycycle\SixtyCycleDay;
@@ -129,7 +130,7 @@ class SolarDay extends AbstractTyme
 
     function getName(): string
     {
-        return self::$NAMES[$this->day - 1];
+        return static::$NAMES[$this->day - 1];
     }
 
     function __toString(): string
@@ -371,7 +372,7 @@ class SolarDay extends AbstractTyme
      */
     function getIndexInYear(): int
     {
-        return $this->subtract(self::fromYmd($this->getYear(), 1, 1));
+        return $this->subtract(static::fromYmd($this->getYear(), 1, 1));
     }
 
     /**
@@ -439,6 +440,16 @@ class SolarDay extends AbstractTyme
     function getFestival(): ?SolarFestival
     {
         return SolarFestival::fromYmd($this->getYear(), $this->getMonth(), $this->day);
+    }
+
+    /**
+     * 藏历日
+     *
+     * @return RabByungDay 藏历日
+     */
+    function getRabByungDay(): RabByungDay
+    {
+        return RabByungDay::fromSolarDay($this);
     }
 
 }

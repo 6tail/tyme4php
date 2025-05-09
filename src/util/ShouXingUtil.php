@@ -340,11 +340,11 @@ class ShouXingUtil
     $a = -1.742 * $t;
     $t2 = $t * $t;
     $dl = 0;
-    for ($i = 0, $j = count(self::$NUT_B); $i < $j; $i += 5) {
-      $dl += (self::$NUT_B[$i + 3] + $a) * sin(self::$NUT_B[$i] + self::$NUT_B[$i + 1] * $t + self::$NUT_B[$i + 2] * $t2);
+    for ($i = 0, $j = count(static::$NUT_B); $i < $j; $i += 5) {
+      $dl += (static::$NUT_B[$i + 3] + $a) * sin(static::$NUT_B[$i] + static::$NUT_B[$i + 1] * $t + static::$NUT_B[$i + 2] * $t2);
       $a = 0;
     }
-    return $dl / 100 / self::SECOND_PER_RAD;
+    return $dl / 100 / static::SECOND_PER_RAD;
   }
 
   static function eLon($t, $n)
@@ -353,10 +353,10 @@ class ShouXingUtil
     $v = 0;
     $tn = 1;
     $pn = 1;
-    $m0 = self::$XL0[$pn + 1] - self::$XL0[$pn];
+    $m0 = static::$XL0[$pn + 1] - static::$XL0[$pn];
     for ($i = 0; $i < 6; $i++, $tn *= $t) {
-      $n1 = (int)(self::$XL0[$pn + $i]);
-      $n2 = (int)(self::$XL0[$pn + 1 + $i]);
+      $n1 = (int)(static::$XL0[$pn + $i]);
+      $n2 = (int)(static::$XL0[$pn + 1 + $i]);
       $n0 = $n2 - $n1;
       if ($n0 == 0) {
         continue;
@@ -374,19 +374,19 @@ class ShouXingUtil
       }
       $c = 0;
       for ($j = $n1; $j < $m; $j += 3) {
-        $c += self::$XL0[$j] * cos(self::$XL0[$j + 1] + $t * self::$XL0[$j + 2]);
+        $c += static::$XL0[$j] * cos(static::$XL0[$j + 1] + $t * static::$XL0[$j + 2]);
       }
       $v += $c * $tn;
     }
-    $v /= self::$XL0[0];
+    $v /= static::$XL0[0];
     $t2 = $t * $t;
-    $v += (-0.0728 - 2.7702 * $t - 1.1019 * $t2 - 0.0996 * $t2 * $t) / self::SECOND_PER_RAD;
+    $v += (-0.0728 - 2.7702 * $t - 1.1019 * $t2 - 0.0996 * $t2 * $t) / static::SECOND_PER_RAD;
     return $v;
   }
 
   static function mLon($t, $n): float
   {
-    $ob = self::$XL1;
+    $ob = static::$XL1;
     $obl = count($ob[0]);
     $tn = 1;
     $v = 0;
@@ -395,7 +395,7 @@ class ShouXingUtil
     $t4 = $t3 * $t;
     $t5 = $t4 * $t;
     $tx = $t - 10;
-    $v += (3.81034409 + 8399.684730072 * $t - 3.319e-05 * $t2 + 3.11e-08 * $t3 - 2.033e-10 * $t4) * self::SECOND_PER_RAD;
+    $v += (3.81034409 + 8399.684730072 * $t - 3.319e-05 * $t2 + 3.11e-08 * $t3 - 2.033e-10 * $t4) * static::SECOND_PER_RAD;
     $v += 5028.792262 * $t + 1.1124406 * $t2 + 0.00007699 * $t3 - 0.000023479 * $t4 - 0.0000000178 * $t5;
     if ($tx > 0) {
       $v += -0.866 + 1.43 * $tx + 0.054 * $tx * $tx;
@@ -423,7 +423,7 @@ class ShouXingUtil
       }
       $v += $c * $tn;
     }
-    $v /= self::SECOND_PER_RAD;
+    $v /= static::SECOND_PER_RAD;
     return $v;
   }
 
@@ -432,7 +432,7 @@ class ShouXingUtil
     $t2 = $t * $t;
     $v = -0.043126 + 628.301955 * $t - 0.000002732 * $t2;
     $e = 0.016708634 - 0.000042037 * $t - 0.0000001267 * $t2;
-    return -20.49552 * (1 + $e * cos($v)) / self::SECOND_PER_RAD;
+    return -20.49552 * (1 + $e * cos($v)) / static::SECOND_PER_RAD;
   }
 
   static function ev($t): float
@@ -443,7 +443,7 @@ class ShouXingUtil
 
   static function saLon($t, $n)
   {
-    return self::eLon($t, $n) + self::nutationLon2($t) + self::gxcSunLon($t) + M_PI;
+    return static::eLon($t, $n) + static::nutationLon2($t) + static::gxcSunLon($t) + M_PI;
   }
 
   static function dtExt($y, $jsd): float
@@ -454,30 +454,30 @@ class ShouXingUtil
 
   static function dtCalc($y)
   {
-    $size = count(self::$DT_AT);
-    $y0 = self::$DT_AT[$size - 2];
-    $t0 = self::$DT_AT[$size - 1];
+    $size = count(static::$DT_AT);
+    $y0 = static::$DT_AT[$size - 2];
+    $t0 = static::$DT_AT[$size - 1];
     if ($y >= $y0) {
       $jsd = 31;
       if ($y > $y0 + 100) {
-        return self::dtExt($y, $jsd);
+        return static::dtExt($y, $jsd);
       }
-      return self::dtExt($y, $jsd) - (self::dtExt($y0, $jsd) - $t0) * ($y0 + 100 - $y) / 100;
+      return static::dtExt($y, $jsd) - (static::dtExt($y0, $jsd) - $t0) * ($y0 + 100 - $y) / 100;
     }
     for ($i = 0; $i < $size; $i += 5) {
-      if ($y < self::$DT_AT[$i + 5]) {
+      if ($y < static::$DT_AT[$i + 5]) {
         break;
       }
     }
-    $t1 = ($y - self::$DT_AT[$i]) / (self::$DT_AT[$i + 5] - self::$DT_AT[$i]) * 10;
+    $t1 = ($y - static::$DT_AT[$i]) / (static::$DT_AT[$i + 5] - static::$DT_AT[$i]) * 10;
     $t2 = $t1 * $t1;
     $t3 = $t2 * $t1;
-    return self::$DT_AT[$i + 1] + self::$DT_AT[$i + 2] * $t1 + self::$DT_AT[$i + 3] * $t2 + self::$DT_AT[$i + 4] * $t3;
+    return static::$DT_AT[$i + 1] + static::$DT_AT[$i + 2] * $t1 + static::$DT_AT[$i + 3] * $t2 + static::$DT_AT[$i + 4] * $t3;
   }
 
   static function dtT($t): float
   {
-    return self::dtCalc($t / 365.2425 + 2000) / self::SECOND_PER_DAY;
+    return static::dtCalc($t / 365.2425 + 2000) / static::SECOND_PER_DAY;
   }
 
   static function mv($t): float
@@ -491,10 +491,10 @@ class ShouXingUtil
   {
     $v = 628.3319653318;
     $t = ($w - 1.75347 - M_PI) / $v;
-    $v = self::ev($t);
-    $t += ($w - self::saLon($t, 10)) / $v;
-    $v = self::ev($t);
-    $t += ($w - self::saLon($t, -1)) / $v;
+    $v = static::ev($t);
+    $t += ($w - static::saLon($t, 10)) / $v;
+    $v = static::ev($t);
+    $t += ($w - static::saLon($t, -1)) / $v;
     return $t;
   }
 
@@ -503,23 +503,23 @@ class ShouXingUtil
     $v = 628.3319653318;
     $t = ($w - 1.75347 - M_PI) / $v;
     $t -= (0.000005297 * $t * $t + 0.0334166 * cos(4.669257 + 628.307585 * $t) + 0.0002061 * cos(2.67823 + 628.307585 * $t) * $t) / $v;
-    $t += ($w - self::eLon($t, 8) - M_PI + (20.5 + 17.2 * sin(2.1824 - 33.75705 * $t)) / self::SECOND_PER_RAD) / $v;
+    $t += ($w - static::eLon($t, 8) - M_PI + (20.5 + 17.2 * sin(2.1824 - 33.75705 * $t)) / static::SECOND_PER_RAD) / $v;
     return $t;
   }
 
   static function msaLon($t, $mn, $sn): float
   {
-    return self::mLon($t, $mn) + (-3.4E-6) - (self::eLon($t, $sn) + self::gxcSunLon($t) + M_PI);
+    return static::mLon($t, $mn) + (-3.4E-6) - (static::eLon($t, $sn) + static::gxcSunLon($t) + M_PI);
   }
 
   static function msaLonT($w): float
   {
     $v = 7771.37714500204;
     $t = ($w + 1.08472) / $v;
-    $t += ($w - self::msaLon($t, 3, 3)) / $v;
-    $v = self::mv($t) - self::ev($t);
-    $t += ($w - self::msaLon($t, 20, 10)) / $v;
-    $t += ($w - self::msaLon($t, -1, 60)) / $v;
+    $t += ($w - static::msaLon($t, 3, 3)) / $v;
+    $v = static::mv($t) - static::ev($t);
+    $t += ($w - static::msaLon($t, 20, 10)) / $v;
+    $t += ($w - static::msaLon($t, -1, 60)) / $v;
     return $t;
   }
 
@@ -529,7 +529,7 @@ class ShouXingUtil
     $t = ($w + 1.08472) / $v;
     $t2 = $t * $t;
     $t -= (-0.00003309 * $t2 + 0.10976 * cos(0.784758 + 8328.6914246 * $t + 0.000152292 * $t2) + 0.02224 * cos(0.18740 + 7214.0628654 * $t - 0.00021848 * $t2) - 0.03342 * cos(4.669257 + 628.307585 * $t)) / $v;
-    $l = self::mLon($t, 20) - (4.8950632 + 628.3319653318 * $t + 0.000005297 * $t * $t + 0.0334166 * cos(4.669257 + 628.307585 * $t) + 0.0002061 * cos(2.67823 + 628.307585 * $t) * $t + 0.000349 * cos(4.6261 + 1256.61517 * $t) - 20.5 / self::SECOND_PER_RAD);
+    $l = static::mLon($t, 20) - (4.8950632 + 628.3319653318 * $t + 0.000005297 * $t * $t + 0.0334166 * cos(4.669257 + 628.307585 * $t) + 0.0002061 * cos(2.67823 + 628.307585 * $t) * $t + 0.000349 * cos(4.6261 + 1256.61517 * $t) - 20.5 / static::SECOND_PER_RAD);
     $v = 7771.38 - 914 * sin(0.7848 + 8328.691425 * $t + 0.0001523 * $t * $t) - 179 * sin(2.543 + 15542.7543 * $t) - 160 * sin(0.1874 + 7214.0629 * $t);
     $t += ($w - $l) / $v;
     return $t;
@@ -537,22 +537,22 @@ class ShouXingUtil
 
   static function qiHigh($w): float
   {
-    $t = self::saLonT2($w) * 36525;
-    $t = $t - self::dtT($t) + self::ONE_THIRD;
-    $v = ((int)($t + 0.5) % 1) * self::SECOND_PER_DAY;
-    if ($v < 1200 || $v > self::SECOND_PER_DAY - 1200) {
-      $t = self::saLonT($w) * 36525 - self::dtT($t) + self::ONE_THIRD;
+    $t = static::saLonT2($w) * 36525;
+    $t = $t - static::dtT($t) + static::ONE_THIRD;
+    $v = ((int)($t + 0.5) % 1) * static::SECOND_PER_DAY;
+    if ($v < 1200 || $v > static::SECOND_PER_DAY - 1200) {
+      $t = static::saLonT($w) * 36525 - static::dtT($t) + static::ONE_THIRD;
     }
     return $t;
   }
 
   static function shuoHigh($w): float
   {
-    $t = self::msaLonT2($w) * 36525;
-    $t = $t - self::dtT($t) + self::ONE_THIRD;
-    $v = ((int)($t + 0.5) % 1) * self::SECOND_PER_DAY;
-    if ($v < 1800 || $v > self::SECOND_PER_DAY - 1800) {
-      $t = self::msaLont($w) * 36525 - self::dtT($t) + self::ONE_THIRD;
+    $t = static::msaLonT2($w) * 36525;
+    $t = $t - static::dtT($t) + static::ONE_THIRD;
+    $v = ((int)($t + 0.5) % 1) * static::SECOND_PER_DAY;
+    if ($v < 1800 || $v > static::SECOND_PER_DAY - 1800) {
+      $t = static::msaLont($w) * 36525 - static::dtT($t) + static::ONE_THIRD;
     }
     return $t;
   }
@@ -563,48 +563,48 @@ class ShouXingUtil
     $t = ($w - 4.895062166) / $v;
     $t -= (53 * $t * $t + 334116 * cos(4.67 + 628.307585 * $t) + 2061 * cos(2.678 + 628.3076 * $t) * $t) / $v / 10000000;
     $n = 48950621.66 + 6283319653.318 * $t + 53 * $t * $t + 334166 * cos(4.669257 + 628.307585 * $t) + 3489 * cos(4.6261 + 1256.61517 * $t) + 2060.6 * cos(2.67823 + 628.307585 * $t) * $t - 994 - 834 * sin(2.1824 - 33.75705 * $t);
-    $t -= ($n / 10000000 - $w) / 628.332 + (32 * ($t + 1.8) * ($t + 1.8) - 20) / self::SECOND_PER_DAY / 36525;
-    return $t * 36525 + self::ONE_THIRD;
+    $t -= ($n / 10000000 - $w) / 628.332 + (32 * ($t + 1.8) * ($t + 1.8) - 20) / static::SECOND_PER_DAY / 36525;
+    return $t * 36525 + static::ONE_THIRD;
   }
 
   static function shuoLow($w): float
   {
     $v = 7771.37714500204;
     $t = ($w + 1.08472) / $v;
-    $t -= (-0.0000331 * $t * $t + 0.10976 * cos(0.785 + 8328.6914 * $t) + 0.02224 * cos(0.187 + 7214.0629 * $t) - 0.03342 * cos(4.669 + 628.3076 * $t)) / $v + (32 * ($t + 1.8) * ($t + 1.8) - 20) / self::SECOND_PER_DAY / 36525;
-    return $t * 36525 + self::ONE_THIRD;
+    $t -= (-0.0000331 * $t * $t + 0.10976 * cos(0.785 + 8328.6914 * $t) + 0.02224 * cos(0.187 + 7214.0629 * $t) - 0.03342 * cos(4.669 + 628.3076 * $t)) / $v + (32 * ($t + 1.8) * ($t + 1.8) - 20) / static::SECOND_PER_DAY / 36525;
+    return $t * 36525 + static::ONE_THIRD;
   }
 
   static function calcShuo($jd): float
   {
-    if (null == self::$SB) {
-      self::$SB = self::decode('EqoFscDcrFpmEsF2DfFideFelFpFfFfFiaipqti1ksttikptikqckstekqttgkqttgkqteksttikptikq2fjstgjqttjkqttgkqtekstfkptikq2tijstgjiFkirFsAeACoFsiDaDiADc1AFbBfgdfikijFifegF1FhaikgFag1E2btaieeibggiffdeigFfqDfaiBkF1kEaikhkigeidhhdiegcFfakF1ggkidbiaedksaFffckekidhhdhdikcikiakicjF1deedFhFccgicdekgiFbiaikcfi1kbFibefgEgFdcFkFeFkdcfkF1kfkcickEiFkDacFiEfbiaejcFfffkhkdgkaiei1ehigikhdFikfckF1dhhdikcfgjikhfjicjicgiehdikcikggcifgiejF1jkieFhegikggcikFegiegkfjebhigikggcikdgkaFkijcfkcikfkcifikiggkaeeigefkcdfcfkhkdgkegieidhijcFfakhfgeidieidiegikhfkfckfcjbdehdikggikgkfkicjicjF1dbidikFiggcifgiejkiegkigcdiegfggcikdbgfgefjF1kfegikggcikdgFkeeijcfkcikfkekcikdgkabhkFikaffcfkhkdgkegbiaekfkiakicjhfgqdq2fkiakgkfkhfkfcjiekgFebicggbedF1jikejbbbiakgbgkacgiejkijjgigfiakggfggcibFifjefjF1kfekdgjcibFeFkijcfkfhkfkeaieigekgbhkfikidfcjeaibgekgdkiffiffkiakF1jhbakgdki1dj1ikfkicjicjieeFkgdkicggkighdF1jfgkgfgbdkicggfggkidFkiekgijkeigfiskiggfaidheigF1jekijcikickiggkidhhdbgcfkFikikhkigeidieFikggikhkffaffijhidhhakgdkhkijF1kiakF1kfheakgdkifiggkigicjiejkieedikgdfcggkigieeiejfgkgkigbgikicggkiaideeijkefjeijikhkiggkiaidheigcikaikffikijgkiahi1hhdikgjfifaakekighie1hiaikggikhkffakicjhiahaikggikhkijF1kfejfeFhidikggiffiggkigicjiekgieeigikggiffiggkidheigkgfjkeigiegikifiggkidhedeijcfkFikikhkiggkidhh1ehigcikaffkhkiggkidhh1hhigikekfiFkFikcidhh1hitcikggikhkfkicjicghiediaikggikhkijbjfejfeFhaikggifikiggkigiejkikgkgieeigikggiffiggkigieeigekijcijikggifikiggkideedeijkefkfckikhkiggkidhh1ehijcikaffkhkiggkidhh1hhigikhkikFikfckcidhh1hiaikgjikhfjicjicgiehdikcikggifikigiejfejkieFhegikggifikiggfghigkfjeijkhigikggifikiggkigieeijcijcikfksikifikiggkidehdeijcfdckikhkiggkhghh1ehijikifffffkhsFngErD1pAfBoDd1BlEtFqA2AqoEpDqElAEsEeB2BmADlDkqBtC1FnEpDqnEmFsFsAFnllBbFmDsDiCtDmAB2BmtCgpEplCpAEiBiEoFqFtEqsDcCnFtADnFlEgdkEgmEtEsCtDmADqFtAFrAtEcCqAE1BoFqC1F1DrFtBmFtAC2ACnFaoCgADcADcCcFfoFtDlAFgmFqBq2bpEoAEmkqnEeCtAE1bAEqgDfFfCrgEcBrACfAAABqAAB1AAClEnFeCtCgAADqDoBmtAAACbFiAAADsEtBqAB2FsDqpFqEmFsCeDtFlCeDtoEpClEqAAFrAFoCgFmFsFqEnAEcCqFeCtFtEnAEeFtAAEkFnErAABbFkADnAAeCtFeAfBoAEpFtAABtFqAApDcCGJ');
+    if (null == static::$SB) {
+      static::$SB = static::decode('EqoFscDcrFpmEsF2DfFideFelFpFfFfFiaipqti1ksttikptikqckstekqttgkqttgkqteksttikptikq2fjstgjqttjkqttgkqtekstfkptikq2tijstgjiFkirFsAeACoFsiDaDiADc1AFbBfgdfikijFifegF1FhaikgFag1E2btaieeibggiffdeigFfqDfaiBkF1kEaikhkigeidhhdiegcFfakF1ggkidbiaedksaFffckekidhhdhdikcikiakicjF1deedFhFccgicdekgiFbiaikcfi1kbFibefgEgFdcFkFeFkdcfkF1kfkcickEiFkDacFiEfbiaejcFfffkhkdgkaiei1ehigikhdFikfckF1dhhdikcfgjikhfjicjicgiehdikcikggcifgiejF1jkieFhegikggcikFegiegkfjebhigikggcikdgkaFkijcfkcikfkcifikiggkaeeigefkcdfcfkhkdgkegieidhijcFfakhfgeidieidiegikhfkfckfcjbdehdikggikgkfkicjicjF1dbidikFiggcifgiejkiegkigcdiegfggcikdbgfgefjF1kfegikggcikdgFkeeijcfkcikfkekcikdgkabhkFikaffcfkhkdgkegbiaekfkiakicjhfgqdq2fkiakgkfkhfkfcjiekgFebicggbedF1jikejbbbiakgbgkacgiejkijjgigfiakggfggcibFifjefjF1kfekdgjcibFeFkijcfkfhkfkeaieigekgbhkfikidfcjeaibgekgdkiffiffkiakF1jhbakgdki1dj1ikfkicjicjieeFkgdkicggkighdF1jfgkgfgbdkicggfggkidFkiekgijkeigfiskiggfaidheigF1jekijcikickiggkidhhdbgcfkFikikhkigeidieFikggikhkffaffijhidhhakgdkhkijF1kiakF1kfheakgdkifiggkigicjiejkieedikgdfcggkigieeiejfgkgkigbgikicggkiaideeijkefjeijikhkiggkiaidheigcikaikffikijgkiahi1hhdikgjfifaakekighie1hiaikggikhkffakicjhiahaikggikhkijF1kfejfeFhidikggiffiggkigicjiekgieeigikggiffiggkidheigkgfjkeigiegikifiggkidhedeijcfkFikikhkiggkidhh1ehigcikaffkhkiggkidhh1hhigikekfiFkFikcidhh1hitcikggikhkfkicjicghiediaikggikhkijbjfejfeFhaikggifikiggkigiejkikgkgieeigikggiffiggkigieeigekijcijikggifikiggkideedeijkefkfckikhkiggkidhh1ehijcikaffkhkiggkidhh1hhigikhkikFikfckcidhh1hiaikgjikhfjicjicgiehdikcikggifikigiejfejkieFhegikggifikiggfghigkfjeijkhigikggifikiggkigieeijcijcikfksikifikiggkidehdeijcfdckikhkiggkhghh1ehijikifffffkhsFngErD1pAfBoDd1BlEtFqA2AqoEpDqElAEsEeB2BmADlDkqBtC1FnEpDqnEmFsFsAFnllBbFmDsDiCtDmAB2BmtCgpEplCpAEiBiEoFqFtEqsDcCnFtADnFlEgdkEgmEtEsCtDmADqFtAFrAtEcCqAE1BoFqC1F1DrFtBmFtAC2ACnFaoCgADcADcCcFfoFtDlAFgmFqBq2bpEoAEmkqnEeCtAE1bAEqgDfFfCrgEcBrACfAAABqAAB1AAClEnFeCtCgAADqDoBmtAAACbFiAAADsEtBqAB2FsDqpFqEmFsCeDtFlCeDtoEpClEqAAFrAFoCgFmFsFqEnAEcCqFeCtFtEnAEeFtAAEkFnErAABbFkADnAAeCtFeAfBoAEpFtAABtFqAApDcCGJ');
     }
-    $size = count(self::$SHUO_KB);
+    $size = count(static::$SHUO_KB);
     $d = 0;
     $pc = 14;
     $jd += 2451545;
-    $f1 = self::$SHUO_KB[0] - $pc;
-    $f2 = self::$SHUO_KB[$size - 1] - $pc;
+    $f1 = static::$SHUO_KB[0] - $pc;
+    $f2 = static::$SHUO_KB[$size - 1] - $pc;
     $f3 = 2436935;
     if ($jd < $f1 || $jd >= $f3) {
-      $d = floor(self::shuoHigh(floor(($jd + $pc - 2451551) / 29.5306) * M_PI * 2) + 0.5);
+      $d = floor(static::shuoHigh(floor(($jd + $pc - 2451551) / 29.5306) * M_PI * 2) + 0.5);
     } else if ($jd >= $f1 && $jd < $f2) {
       for ($i = 0; $i < $size; $i += 2) {
-        if ($jd + $pc < self::$SHUO_KB[$i + 2]) {
+        if ($jd + $pc < static::$SHUO_KB[$i + 2]) {
           break;
         }
       }
-      $d = self::$SHUO_KB[$i] + self::$SHUO_KB[$i + 1] * floor(($jd + $pc - self::$SHUO_KB[$i]) / self::$SHUO_KB[$i + 1]);
+      $d = static::$SHUO_KB[$i] + static::$SHUO_KB[$i + 1] * floor(($jd + $pc - static::$SHUO_KB[$i]) / static::$SHUO_KB[$i + 1]);
       $d = floor($d + 0.5);
       if ($d == 1683460) {
         $d++;
       }
       $d -= 2451545;
     } else if ($jd >= $f2) {
-      $d = floor(self::shuoLow(floor(($jd + $pc - 2451551) / 29.5306) * M_PI * 2) + 0.5);
+      $d = floor(static::shuoLow(floor(($jd + $pc - 2451551) / 29.5306) * M_PI * 2) + 0.5);
       $from = (int)(($jd - $f2) / 29.5306);
-      $n = substr(self::$SB, $from, 1);
+      $n = substr(static::$SB, $from, 1);
       if (strcmp('1', $n) == 0) {
         $d += 1;
       } elseif (strcmp('2', $n) == 0) {
@@ -616,34 +616,34 @@ class ShouXingUtil
 
   static function calcQi($jd): float
   {
-    if (null == self::$QB) {
-      self::$QB = self::decode('FrcFs22AFsckF2tsDtFqEtF1posFdFgiFseFtmelpsEfhkF2anmelpFlF1ikrotcnEqEq2FfqmcDsrFor22FgFrcgDscFs22FgEeFtE2sfFs22sCoEsaF2tsD1FpeE2eFsssEciFsFnmelpFcFhkF2tcnEqEpFgkrotcnEqrEtFermcDsrE222FgBmcmr22DaEfnaF222sD1FpeForeF2tssEfiFpEoeFssD1iFstEqFppDgFstcnEqEpFg11FscnEqrAoAF2ClAEsDmDtCtBaDlAFbAEpAAAAAD2FgBiBqoBbnBaBoAAAAAAAEgDqAdBqAFrBaBoACdAAf1AACgAAAeBbCamDgEifAE2AABa1C1BgFdiAAACoCeE1ADiEifDaAEqAAFe1AcFbcAAAAAF1iFaAAACpACmFmAAAAAAAACrDaAAADG0');
+    if (null == static::$QB) {
+      static::$QB = static::decode('FrcFs22AFsckF2tsDtFqEtF1posFdFgiFseFtmelpsEfhkF2anmelpFlF1ikrotcnEqEq2FfqmcDsrFor22FgFrcgDscFs22FgEeFtE2sfFs22sCoEsaF2tsD1FpeE2eFsssEciFsFnmelpFcFhkF2tcnEqEpFgkrotcnEqrEtFermcDsrE222FgBmcmr22DaEfnaF222sD1FpeForeF2tssEfiFpEoeFssD1iFstEqFppDgFstcnEqEpFg11FscnEqrAoAF2ClAEsDmDtCtBaDlAFbAEpAAAAAD2FgBiBqoBbnBaBoAAAAAAAEgDqAdBqAFrBaBoACdAAf1AACgAAAeBbCamDgEifAE2AABa1C1BgFdiAAACoCeE1ADiEifDaAEqAAFe1AcFbcAAAAAF1iFaAAACpACmFmAAAAAAAACrDaAAADG0');
     }
-    $size = count(self::$QI_KB);
+    $size = count(static::$QI_KB);
     $d = 0;
     $pc = 7;
     $jd += 2451545;
-    $f1 = self::$QI_KB[0] - $pc;
-    $f2 = self::$QI_KB[$size - 1] - $pc;
+    $f1 = static::$QI_KB[0] - $pc;
+    $f2 = static::$QI_KB[$size - 1] - $pc;
     $f3 = 2436935;
     if ($jd < $f1 || $jd >= $f3) {
-      $d = floor(self::qiHigh(floor(($jd + $pc - 2451259) / self::DAY_PER_YEAR * 24) * M_PI / 12) + 0.5);
+      $d = floor(static::qiHigh(floor(($jd + $pc - 2451259) / static::DAY_PER_YEAR * 24) * M_PI / 12) + 0.5);
     } else if ($jd >= $f1 && $jd < $f2) {
       for ($i = 0; $i < $size; $i += 2) {
-        if ($jd + $pc < self::$QI_KB[$i + 2]) {
+        if ($jd + $pc < static::$QI_KB[$i + 2]) {
           break;
         }
       }
-      $d = self::$QI_KB[$i] + self::$QI_KB[$i + 1] * floor(($jd + $pc - self::$QI_KB[$i]) / self::$QI_KB[$i + 1]);
+      $d = static::$QI_KB[$i] + static::$QI_KB[$i + 1] * floor(($jd + $pc - static::$QI_KB[$i]) / static::$QI_KB[$i + 1]);
       $d = floor($d + 0.5);
       if ($d == 1683460) {
         $d++;
       }
       $d -= 2451545;
     } else if ($jd >= $f2) {
-      $d = floor(self::qiLow(floor(($jd + $pc - 2451259) / self::DAY_PER_YEAR * 24) * M_PI / 12) + 0.5);
-      $from = (int)(($jd - $f2) / self::DAY_PER_YEAR * 24);
-      $n = substr(self::$QB, $from, 1);
+      $d = floor(static::qiLow(floor(($jd + $pc - 2451259) / static::DAY_PER_YEAR * 24) * M_PI / 12) + 0.5);
+      $from = (int)(($jd - $f2) / static::DAY_PER_YEAR * 24);
+      $n = substr(static::$QB, $from, 1);
       if (strcmp('1', $n) == 0) {
         $d += 1;
       } elseif (strcmp('2', $n) == 0) {
@@ -655,20 +655,20 @@ class ShouXingUtil
 
   static function qiAccurate($w): float
   {
-    $t = self::saLonT($w) * 36525;
-    return $t - self::dtT($t) + self::ONE_THIRD;
+    $t = static::saLonT($w) * 36525;
+    return $t - static::dtT($t) + static::ONE_THIRD;
   }
 
   static function qiAccurate2($jd): float
   {
     $d = M_PI / 12;
-    $w = floor(($jd + 293) / self::DAY_PER_YEAR * 24) * $d;
-    $a = self::qiAccurate($w);
+    $w = floor(($jd + 293) / static::DAY_PER_YEAR * 24) * $d;
+    $a = static::qiAccurate($w);
     if ($a - $jd > 5) {
-      return self::qiAccurate($w - $d);
+      return static::qiAccurate($w - $d);
     }
     if ($a - $jd < -5) {
-      return self::qiAccurate($w + $d);
+      return static::qiAccurate($w + $d);
     }
     return $a;
   }

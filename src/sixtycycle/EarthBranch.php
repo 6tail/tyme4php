@@ -23,9 +23,9 @@ class EarthBranch extends LoopTyme
     protected function __construct(?int $index = null, ?string $name = null)
     {
         if ($index !== null) {
-            parent::__construct(self::$NAMES, $index);
+            parent::__construct(static::$NAMES, $index);
         } else if ($name !== null) {
-            parent::__construct(self::$NAMES, null, $name);
+            parent::__construct(static::$NAMES, null, $name);
         }
     }
 
@@ -41,7 +41,7 @@ class EarthBranch extends LoopTyme
 
     function next(int $n): static
     {
-        return self::fromIndex($this->nextIndex($n));
+        return static::fromIndex($this->nextIndex($n));
     }
 
     /**
@@ -153,7 +153,7 @@ class EarthBranch extends LoopTyme
      */
     function getCombine(): static
     {
-        return self::fromIndex(1 - $this->index);
+        return static::fromIndex(1 - $this->index);
     }
 
     /**
@@ -173,7 +173,7 @@ class EarthBranch extends LoopTyme
      */
     function getHarm(): static
     {
-        return self::fromIndex(19 - $this->index);
+        return static::fromIndex(19 - $this->index);
     }
 
     /**

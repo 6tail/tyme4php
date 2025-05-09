@@ -105,7 +105,7 @@ class LunarWeek extends AbstractTyme
 
     function getName(): string
     {
-        return self::$NAMES[$this->index];
+        return static::$NAMES[$this->index];
     }
 
     function __toString(): string

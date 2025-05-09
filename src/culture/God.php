@@ -33,9 +33,9 @@ class God extends LoopTyme
     protected function __construct(?int $index = null, ?string $name = null)
     {
         if ($index !== null) {
-            parent::__construct(self::$NAMES, $index);
+            parent::__construct(static::$NAMES, $index);
         } else if ($name !== null) {
-            parent::__construct(self::$NAMES, null, $name);
+            parent::__construct(static::$NAMES, null, $name);
         }
     }
 
@@ -51,7 +51,7 @@ class God extends LoopTyme
 
     function next(int $n): static
     {
-        return self::fromIndex($this->nextIndex($n));
+        return static::fromIndex($this->nextIndex($n));
     }
 
     /**

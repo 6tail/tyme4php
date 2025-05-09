@@ -86,7 +86,7 @@ class Fortune extends AbstractTyme
 
     function next(int $n): static
     {
-        return self::fromChildLimit($this->childLimit, $this->index + $n);
+        return static::fromChildLimit($this->childLimit, $this->index + $n);
     }
 
 }

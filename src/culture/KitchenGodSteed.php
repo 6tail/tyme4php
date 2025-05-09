@@ -33,12 +33,12 @@ class KitchenGodSteed extends AbstractCulture
 
     protected function byHeavenStem(int $n): string
     {
-        return self::$NUMBERS[$this->firstDaySixtyCycle->getHeavenStem()->stepsTo($n)];
+        return static::$NUMBERS[$this->firstDaySixtyCycle->getHeavenStem()->stepsTo($n)];
     }
 
     protected function byEarthBranch(int $n): string
     {
-        return self::$NUMBERS[$this->firstDaySixtyCycle->getEarthBranch()->stepsTo($n)];
+        return static::$NUMBERS[$this->firstDaySixtyCycle->getEarthBranch()->stepsTo($n)];
     }
 
     /**

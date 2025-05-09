@@ -69,7 +69,7 @@ class SolarSeason extends AbstractTyme
 
     function getName(): string
     {
-        return self::$NAMES[$this->index];
+        return static::$NAMES[$this->index];
     }
 
     function __toString(): string
@@ -80,7 +80,7 @@ class SolarSeason extends AbstractTyme
     function next(int $n): static
     {
         $i = $this->index + $n;
-        return self::fromIndex(intdiv($this->getYear() * 4 + $i, 4), $this->indexOf($i, null, 4));
+        return static::fromIndex(intdiv($this->getYear() * 4 + $i, 4), $this->indexOf($i, null, 4));
     }
 
     /**

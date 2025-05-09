@@ -231,7 +231,7 @@ class SolarTime extends AbstractTyme
     function next(int $n): SolarTime
     {
         if ($n == 0) {
-            return self::fromYmdHms($this->getYear(), $this->getMonth(), $this->getDay(), $this->hour, $this->minute, $this->second);
+            return static::fromYmdHms($this->getYear(), $this->getMonth(), $this->getDay(), $this->hour, $this->minute, $this->second);
         }
         $ts = $this->second + $n;
         $tm = $this->minute + intdiv($ts, 60);
@@ -254,7 +254,7 @@ class SolarTime extends AbstractTyme
         }
 
         $d = $this->day->next($td);
-        return self::fromYmdHms($d->getYear(), $d->getMonth(), $d->getDay(), $th, $tm, $ts);
+        return static::fromYmdHms($d->getYear(), $d->getMonth(), $d->getDay(), $th, $tm, $ts);
     }
 
     /**

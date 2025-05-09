@@ -250,7 +250,7 @@ class LunarMonth extends AbstractTyme
      */
     function getName(): string
     {
-        return sprintf('%s%s', $this->leap ? '闰' : '', self::$NAMES[$this->month - 1]);
+        return sprintf('%s%s', $this->leap ? '闰' : '', static::$NAMES[$this->month - 1]);
     }
 
     function __toString(): string
