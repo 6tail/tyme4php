@@ -93,7 +93,7 @@ class SixtyCycleMonth extends AbstractTyme
 
     function next(int $n): SixtyCycleMonth
     {
-        return new SixtyCycleMonth(SixtyCycleYear::fromYear(($this->year->getYear() * 12 + $this->getIndexInYear() + $n) / 12), $this->month->next($n));
+        return new SixtyCycleMonth(SixtyCycleYear::fromYear(floor(($this->year->getYear() * 12 + $this->getIndexInYear() + $n) / 12)), $this->month->next($n));
     }
 
     /**
