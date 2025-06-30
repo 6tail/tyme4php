@@ -128,14 +128,14 @@ class RabByungYear extends AbstractTyme
 
     function getMonthCount(): int
     {
-        return $this->getLeapMonth() == 0 ? 12 : 13;
+        return $this->getLeapMonth() < 1 ? 12 : 13;
     }
 
     function getMonths(): array
     {
         $l = [];
         $leapMonth = $this->getLeapMonth();
-        for ($i = 1; $i <= 12; $i++) {
+        for ($i = 1; $i < 13; $i++) {
             $l[] = new RabByungMonth($this, $i);
             if ($i == $leapMonth) {
                 $l[] = new RabByungMonth($this, -$i);

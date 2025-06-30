@@ -102,7 +102,7 @@ class LunarYear extends AbstractTyme
      */
     function getMonthCount(): int
     {
-        return $this->getLeapMonth() > 0 ? 13 : 12;
+        return $this->getLeapMonth() < 1 ? 12 : 13;
     }
 
     /**

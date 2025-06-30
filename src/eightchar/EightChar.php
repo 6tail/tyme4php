@@ -124,7 +124,7 @@ class EightChar extends AbstractCulture
         }
         $offset = $m + $h;
         $offset = ($offset >= 14 ? 26 : 14) - $offset;
-        return SixtyCycle::fromName(sprintf('%s%s', HeavenStem::fromIndex(($this->year->getHeavenStem()->getIndex() + 1) * 2 + $offset - 1)->getName(), EarthBranch::fromIndex(1 + $offset)->getName()));
+        return SixtyCycle::fromName(sprintf('%s%s', HeavenStem::fromIndex(($this->year->getHeavenStem()->getIndex() + 1) * 2 + $offset - 1)->getName(), EarthBranch::fromIndex($offset + 1)->getName()));
     }
 
     /**
@@ -134,16 +134,15 @@ class EightChar extends AbstractCulture
      */
     function getBodySign(): SixtyCycle
     {
-        $m = $this->month->getEarthBranch()->getIndex() - 1;
-        if ($m < 1) {
-            $m += 12;
+        $offset = $this->month->getEarthBranch()->getIndex() - 1;
+        if ($offset < 1) {
+            $offset += 12;
         }
-        $h = $this->hour->getEarthBranch()->getIndex() + 1;
-        $offset = $m + $h;
+        $offset += $this->hour->getEarthBranch()->getIndex() + 1;
         if ($offset > 12) {
             $offset -= 12;
         }
-        return SixtyCycle::fromName(sprintf('%s%s', HeavenStem::fromIndex(($this->year->getHeavenStem()->getIndex() + 1) * 2 + $offset - 1)->getName(), EarthBranch::fromIndex(1 + $offset)->getName()));
+        return SixtyCycle::fromName(sprintf('%s%s', HeavenStem::fromIndex(($this->year->getHeavenStem()->getIndex() + 1) * 2 + $offset - 1)->getName(), EarthBranch::fromIndex($offset + 1)->getName()));
     }
 
     /**

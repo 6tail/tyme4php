@@ -240,8 +240,8 @@ class EightCharTest extends TestCase
         $this->assertEquals(9, $childLimit->getMonthCount());
         $this->assertEquals(2, $childLimit->getDayCount());
         $this->assertEquals(10, $childLimit->getHourCount());
-        $this->assertEquals(26, $childLimit->getMinuteCount());
-        $this->assertEquals('2030年12月12日 07:17:00', $childLimit->getEndTime()->__toString());
+        $this->assertEquals(6, $childLimit->getMinuteCount());
+        $this->assertEquals('2030年12月12日 06:57:00', $childLimit->getEndTime()->__toString());
     }
 
     /**
@@ -254,8 +254,8 @@ class EightCharTest extends TestCase
         $this->assertEquals(9, $childLimit->getMonthCount());
         $this->assertEquals(10, $childLimit->getDayCount());
         $this->assertEquals(1, $childLimit->getHourCount());
-        $this->assertEquals(42, $childLimit->getMinuteCount());
-        $this->assertEquals('2020年3月21日 11:12:00', $childLimit->getEndTime()->__toString());
+        $this->assertEquals(52, $childLimit->getMinuteCount());
+        $this->assertEquals('2020年3月21日 11:22:00', $childLimit->getEndTime()->__toString());
     }
 
     /**

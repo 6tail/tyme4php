@@ -231,14 +231,24 @@ class SolarDay extends AbstractTyme
      */
     function getPhenologyDay(): PhenologyDay
     {
-        $term = $this->getTerm();
-        $dayIndex = $this->subtract($term->getJulianDay()->getSolarDay());
+        $d = $this->getTermDay();
+        $dayIndex = $d->getDayIndex();
         $index = intdiv($dayIndex, 5);
         if ($index > 2) {
             $index = 2;
         }
-        $dayIndex -= $index * 5;
-        return new PhenologyDay(Phenology::fromIndex($term->getIndex() * 3 + $index), $dayIndex);
+        $term = $d->getSolarTerm();
+        return new PhenologyDay(Phenology::fromIndex($term->getYear(), $term->getIndex() * 3 + $index), $dayIndex - $index * 5);
+    }
+
+    /**
+     * 候
+     *
+     * @return Phenology 候
+     */
+    function getPhenology(): Phenology
+    {
+        return $this->getPhenologyDay()->getPhenology();
     }
 
     /**

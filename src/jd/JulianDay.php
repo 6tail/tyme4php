@@ -102,12 +102,12 @@ class JulianDay extends AbstractTyme
         $d -= (int)(30.601 * $month);
         $day = $d;
         if ($month > 13) {
-            $month -= 13;
-            $year -= 4715;
+            $month -= 12;
         } else {
-            $month -= 1;
-            $year -= 4716;
+            $year -= 1;
         }
+        $month -= 1;
+        $year -= 4715;
         $f *= 24;
         $hour = (int)$f;
 
@@ -118,19 +118,7 @@ class JulianDay extends AbstractTyme
         $f -= $minute;
         $f *= 60;
         $second = (int)round($f);
-        if ($second > 59) {
-            $second -= 60;
-            $minute++;
-        }
-        if ($minute > 59) {
-            $minute -= 60;
-            $hour++;
-        }
-        if ($hour > 23) {
-            $hour -= 24;
-            $day += 1;
-        }
-        return SolarTime::fromYmdHms($year, $month, $day, $hour, $minute, $second);
+        return $second < 60 ? SolarTime::fromYmdHms($year, $month, $day, $hour, $minute, $second) : SolarTime::fromYmdHms($year, $month, $day, $hour, $minute, $second - 60)->next(60);
     }
 
     /**

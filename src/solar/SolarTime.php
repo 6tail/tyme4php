@@ -4,6 +4,7 @@ namespace com\tyme\solar;
 
 
 use com\tyme\AbstractTyme;
+use com\tyme\culture\phenology\Phenology;
 use com\tyme\jd\JulianDay;
 use com\tyme\lunar\LunarHour;
 use com\tyme\sixtycycle\SixtyCycleHour;
@@ -179,17 +180,25 @@ class SolarTime extends AbstractTyme
      */
     function getTerm(): SolarTerm
     {
-        $y = $this->getYear();
-        $i = $this->getMonth() * 2;
-        if ($i == 24) {
-            $y += 1;
-            $i = 0;
-        }
-        $term = SolarTerm::fromIndex($y, $i);
-        while ($this->isBefore($term->getJulianDay()->getSolarTime())) {
+        $term = $this->getSolarDay()->getTerm();
+        if ($this->isBefore($term->getJulianDay()->getSolarTime())) {
             $term = $term->next(-1);
         }
         return $term;
+    }
+
+    /**
+     * 候
+     *
+     * @return Phenology 候
+     */
+    function getPhenology(): Phenology
+    {
+        $p = $this->getSolarDay()->getPhenology();
+        if ($this->isBefore($p->getJulianDay()->getSolarTime())) {
+            $p = $p->next(-1);
+        }
+        return $p;
     }
 
     /**

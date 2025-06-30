@@ -265,23 +265,21 @@ class LunarMonth extends AbstractTyme
         }
         $m = $this->indexInYear + 1 + $n;
         $y = $this->year;
-        $leapMonth = $y->getLeapMonth();
         if ($n > 0) {
-            $monthCount = $leapMonth > 0 ? 13 : 12;
+            $monthCount = $y->getMonthCount();
             while ($m > $monthCount) {
                 $m -= $monthCount;
                 $y = $y->next(1);
-                $leapMonth = $y->getLeapMonth();
-                $monthCount = $leapMonth > 0 ? 13 : 12;
+                $monthCount = $y->getMonthCount();
             }
         } else {
             while ($m <= 0) {
                 $y = $y->next(-1);
-                $leapMonth = $y->getLeapMonth();
-                $m += $leapMonth > 0 ? 13 : 12;
+                $m += $y->getMonthCount();
             }
         }
         $leap = false;
+        $leapMonth = $y->getLeapMonth();
         if ($leapMonth > 0) {
             if ($m == $leapMonth + 1) {
                 $leap = true;
