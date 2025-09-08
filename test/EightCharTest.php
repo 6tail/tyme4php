@@ -666,4 +666,17 @@ class EightCharTest extends TestCase
 
         LunarHour::$provider = new DefaultEightCharProvider();
     }
+
+    public function test47()
+    {
+        $eightChar = new EightChar('壬申', '壬寅', '庚辰', '甲申');
+        $solarTimes = $eightChar->getSolarTimes(1801, 2099);
+        $actual = array();
+        foreach ($solarTimes as $solarTime) {
+            $actual[] = $solarTime->__toString();
+        }
+
+        $expected = array('1812年2月18日 16:00:00', '1992年3月5日 15:00:00', '2052年2月19日 16:00:00');
+        $this->assertEquals($expected, $actual);
+    }
 }

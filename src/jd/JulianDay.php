@@ -45,8 +45,8 @@ class JulianDay extends AbstractTyme
             $year--;
         }
         if ($g) {
-            $n = intdiv($year, 100);
-            $n = 2 - $n + intdiv($n, 4);
+            $n = (int)($year * 0.01);
+            $n = 2 - $n + (int)($n * 0.25);
         }
         return static::fromJulianDay((int)(365.25 * ($year + 4716)) + (int)(30.6001 * ($month + 1)) + $d + $n - 1524.5);
     }
@@ -88,26 +88,26 @@ class JulianDay extends AbstractTyme
      */
     function getSolarTime(): SolarTime
     {
-        $d = (int)($this->day + 0.5);
-        $f = $this->day + 0.5 - $d;
+        $n = (int)($this->day + 0.5);
+        $f = $this->day + 0.5 - $n;
 
-        if ($d >= 2299161) {
-            $c = (int)(($d - 1867216.25) / 36524.25);
-            $d += 1 + $c - intdiv($c, 4);
+        if ($n >= 2299161) {
+            $c = (int)(($n - 1867216.25) / 36524.25);
+            $n += 1 + $c - intdiv($c, 4);
         }
-        $d += 1524;
-        $year = (int)(($d - 122.1) / 365.25);
-        $d -= (int)(365.25 * $year);
-        $month = (int)($d / 30.601);
-        $d -= (int)(30.601 * $month);
-        $day = $d;
-        if ($month > 13) {
-            $month -= 12;
+        $n += 1524;
+        $y = (int)(($n - 122.1) / 365.25);
+        $n -= (int)(365.25 * $y);
+        $m = (int)($n / 30.601);
+        $n -= (int)(30.601 * $m);
+        $d = $n;
+        if ($m > 13) {
+            $m -= 12;
         } else {
-            $year -= 1;
+            $y -= 1;
         }
-        $month -= 1;
-        $year -= 4715;
+        $m -= 1;
+        $y -= 4715;
         $f *= 24;
         $hour = (int)$f;
 
@@ -118,7 +118,7 @@ class JulianDay extends AbstractTyme
         $f -= $minute;
         $f *= 60;
         $second = (int)round($f);
-        return $second < 60 ? SolarTime::fromYmdHms($year, $month, $day, $hour, $minute, $second) : SolarTime::fromYmdHms($year, $month, $day, $hour, $minute, $second - 60)->next(60);
+        return $second < 60 ? SolarTime::fromYmdHms($y, $m, $d, $hour, $minute, $second) : SolarTime::fromYmdHms($y, $m, $d, $hour, $minute, $second - 60)->next(60);
     }
 
     /**

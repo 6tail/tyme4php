@@ -67,7 +67,7 @@ class SixtyCycleDay extends AbstractTyme
         if ($index < 0 && $term->getJulianDay()->getSolarDay()->isAfter($springSolarDay)) {
             $index += 24;
         }
-        return new static($solarDay, new SixtyCycleMonth(SixtyCycleYear::fromYear($lunarYear->getYear()), LunarMonth::fromYm($solarYear, 1)->getSixtyCycle()->next((int)floor($index / 2))), $lunarDay->getSixtyCycle());
+        return new static($solarDay, new SixtyCycleMonth(SixtyCycleYear::fromYear($lunarYear->getYear()), LunarMonth::fromYm($solarYear, 1)->getSixtyCycle()->next((int)floor($index * 0.5))), $lunarDay->getSixtyCycle());
     }
 
     /**
@@ -163,11 +163,9 @@ class SixtyCycleDay extends AbstractTyme
     function getNineStar(): NineStar
     {
         $dongZhi = SolarTerm::fromIndex($this->solarDay->getYear(), 0);
-        $xiaZhi = $dongZhi->next(12);
-        $dongZhi2 = $dongZhi->next(24);
         $dongZhiSolar = $dongZhi->getJulianDay()->getSolarDay();
-        $xiaZhiSolar = $xiaZhi->getJulianDay()->getSolarDay();
-        $dongZhiSolar2 = $dongZhi2->getJulianDay()->getSolarDay();
+        $xiaZhiSolar = $dongZhi->next(12)->getJulianDay()->getSolarDay();
+        $dongZhiSolar2 = $dongZhi->next(24)->getJulianDay()->getSolarDay();
         $dongZhiIndex = $dongZhiSolar->getLunarDay()->getSixtyCycle()->getIndex();
         $xiaZhiIndex = $xiaZhiSolar->getLunarDay()->getSixtyCycle()->getIndex();
         $dongZhiIndex2 = $dongZhiSolar2->getLunarDay()->getSixtyCycle()->getIndex();

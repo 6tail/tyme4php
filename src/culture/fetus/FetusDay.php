@@ -71,12 +71,12 @@ class FetusDay extends AbstractCulture
 
         $s .= ' ';
 
-        $directionName = $this->direction->getName();
         if (Side::IN == $this->side) {
             $s .= '房';
         }
         $s .= $this->side->getName();
 
+        $directionName = $this->direction->getName();
         if (Side::OUT == $this->side && str_contains('北南西东', $directionName)) {
             $s .= '正';
         }

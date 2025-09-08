@@ -273,8 +273,7 @@ class LunarHour extends AbstractTyme
         if ($this->hour >= 23) {
             $d = $d->next(1);
         }
-        $heavenStemIndex = $d->getHeavenStem()->getIndex() % 5 * 2 + $earthBranchIndex;
-        return SixtyCycle::fromName(sprintf('%s%s', HeavenStem::fromIndex($heavenStemIndex)->getName(), EarthBranch::fromIndex($earthBranchIndex)->getName()));
+        return SixtyCycle::fromName(sprintf('%s%s', HeavenStem::fromIndex($d->getHeavenStem()->getIndex() % 5 * 2 + $earthBranchIndex)->getName(), EarthBranch::fromIndex($earthBranchIndex)->getName()));
     }
 
     /**
@@ -296,14 +295,14 @@ class LunarHour extends AbstractTyme
     {
         $solar = $this->day->getSolarDay();
         $dongZhi = SolarTerm::fromIndex($solar->getYear(), 0);
-        $xiaZhi = $dongZhi->next(12);
-        $asc = !$solar->isBefore($dongZhi->getJulianDay()->getSolarDay()) && $solar->isBefore($xiaZhi->getJulianDay()->getSolarDay());
-        $start = [8, 5, 2][$this->day->getSixtyCycle()->getEarthBranch()->getIndex() % 3];
-        if ($asc) {
-            $start = 8 - $start;
-        }
         $earthBranchIndex = $this->getIndexInDay() % 12;
-        return NineStar::fromIndex($start + ($asc ? $earthBranchIndex : -$earthBranchIndex));
+        $index = [8, 5, 2][$this->day->getSixtyCycle()->getEarthBranch()->getIndex() % 3];
+        if (!$solar->isBefore($dongZhi->getJulianDay()->getSolarDay()) && $solar->isBefore($dongZhi->next(12)->getJulianDay()->getSolarDay())) {
+            $index = 8 + $earthBranchIndex - $index;
+        } else {
+            $index -= $earthBranchIndex;
+        }
+        return NineStar::fromIndex($index);
     }
 
     /**

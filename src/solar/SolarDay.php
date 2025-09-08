@@ -364,8 +364,7 @@ class SolarDay extends AbstractTyme
         $start = $start->next($start->getLunarDay()->getSixtyCycle()->getHeavenStem()->stepsTo(2));
 
         // 小暑
-        $slightHeat = $grainInEar->next(2);
-        $end = $slightHeat->getJulianDay()->getSolarDay();
+        $end = $grainInEar->next(2)->getJulianDay()->getSolarDay();
         // 小暑后的第1个未日
         $end = $end->next($end->getLunarDay()->getSixtyCycle()->getEarthBranch()->stepsTo(7));
 

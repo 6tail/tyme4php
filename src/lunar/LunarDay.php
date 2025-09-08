@@ -243,11 +243,9 @@ class LunarDay extends AbstractTyme
     {
         $d = $this->getSolarDay();
         $dongZhi = SolarTerm::fromIndex($d->getYear(), 0);
-        $xiaZhi = $dongZhi->next(12);
-        $dongZhi2 = $dongZhi->next(24);
         $dongZhiSolar = $dongZhi->getJulianDay()->getSolarDay();
-        $xiaZhiSolar = $xiaZhi->getJulianDay()->getSolarDay();
-        $dongZhiSolar2 = $dongZhi2->getJulianDay()->getSolarDay();
+        $xiaZhiSolar = $dongZhi->next(12)->getJulianDay()->getSolarDay();
+        $dongZhiSolar2 = $dongZhi->next(24)->getJulianDay()->getSolarDay();
         $dongZhiIndex = $dongZhiSolar->getLunarDay()->getSixtyCycle()->getIndex();
         $xiaZhiIndex = $xiaZhiSolar->getLunarDay()->getSixtyCycle()->getIndex();
         $dongZhiIndex2 = $dongZhiSolar2->getLunarDay()->getSixtyCycle()->getIndex();
