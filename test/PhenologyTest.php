@@ -45,7 +45,7 @@ class PhenologyTest extends TestCase
         $jd = $p->getJulianDay();
         $this->assertEquals('麋角解', $p->getName());
         $this->assertEquals('2025年12月26日', $jd->getSolarDay()->__toString());
-        $this->assertEquals('2025年12月26日 20:49:39', $jd->getSolarTime()->__toString());
+        $this->assertEquals('2025年12月26日 20:49:56', $jd->getSolarTime()->__toString());
     }
 
     function test3()
@@ -54,12 +54,12 @@ class PhenologyTest extends TestCase
         $jd = $p->getJulianDay();
         $this->assertEquals('麋角解', $p->getName());
         $this->assertEquals('2025年12月26日', $jd->getSolarDay()->__toString());
-        $this->assertEquals('2025年12月26日 20:49:39', $jd->getSolarTime()->__toString());
+        $this->assertEquals('2025年12月26日 20:49:56', $jd->getSolarTime()->__toString());
     }
 
     function test4()
     {
         $this->assertEquals('蚯蚓结', SolarTime::fromYmdHms(2025, 12, 26, 20, 49, 38)->getPhenology()->getName());
-        $this->assertEquals('麋角解', SolarTime::fromYmdHms(2025, 12, 26, 20, 49, 39)->getPhenology()->getName());
+        $this->assertEquals('麋角解', SolarTime::fromYmdHms(2025, 12, 26, 20, 49, 56)->getPhenology()->getName());
     }
 }

@@ -4,6 +4,7 @@ namespace com\tyme\solar;
 
 
 use com\tyme\AbstractTyme;
+use com\tyme\culture\Phase;
 use com\tyme\culture\phenology\Phenology;
 use com\tyme\jd\JulianDay;
 use com\tyme\lunar\LunarHour;
@@ -285,5 +286,20 @@ class SolarTime extends AbstractTyme
     function getSixtyCycleHour(): SixtyCycleHour
     {
         return SixtyCycleHour::fromSolarTime($this);
+    }
+
+    /**
+     * 月相
+     *
+     * @return Phase 月相
+     */
+    function getPhase(): Phase
+    {
+        $month = $this->getLunarHour()->getLunarDay()->getLunarMonth()->next(1);
+        $p = Phase::fromIndex($month->getYear(), $month->getMonth(), 0);
+        while ($p->getSolarTime()->isAfter($this)) {
+            $p = $p->next(-1);
+        }
+        return $p;
     }
 }

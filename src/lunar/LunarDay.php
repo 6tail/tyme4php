@@ -10,6 +10,7 @@ use com\tyme\culture\Element;
 use com\tyme\culture\fetus\FetusDay;
 use com\tyme\culture\God;
 use com\tyme\culture\Phase;
+use com\tyme\culture\PhaseDay;
 use com\tyme\culture\ren\MinorRen;
 use com\tyme\culture\star\nine\NineStar;
 use com\tyme\culture\star\six\SixStar;
@@ -287,13 +288,31 @@ class LunarDay extends AbstractTyme
     }
 
     /**
+     * 月相第几天
+     *
+     * @return PhaseDay 月相第几天
+     */
+    function getPhaseDay(): PhaseDay
+    {
+        $today = $this->getSolarDay();
+        $m = $this->month->next(1);
+        $p = Phase::fromIndex($m->getYear(), $m->getMonth(), 0);
+        $d = $p->getSolarDay();
+        while ($p->getSolarDay()->isAfter($today)) {
+            $p = $p->next(-1);
+            $d = $p->getSolarDay();
+        }
+        return new PhaseDay($p, $today->subtract($d));
+    }
+
+    /**
      * 月相
      *
      * @return Phase 月相
      */
     function getPhase(): Phase
     {
-        return Phase::fromIndex($this->day - 1);
+        return $this->getPhaseDay()->getPhase();
     }
 
     /**

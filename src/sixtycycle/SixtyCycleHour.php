@@ -167,10 +167,9 @@ class SixtyCycleHour extends AbstractTyme
     {
         $solar = $this->solarTime->getSolarDay();
         $dongZhi = SolarTerm::fromIndex($solar->getYear(), 0);
-        $xiaZhi = $dongZhi->next(12);
         $earthBranchIndex = $this->getIndexInDay() % 12;
         $index = [8, 5, 2][$this->day->getSixtyCycle()->getEarthBranch()->getIndex() % 3];
-        if (!$solar->isBefore($dongZhi->getJulianDay()->getSolarDay()) && $solar->isBefore($xiaZhi->getJulianDay()->getSolarDay())) {
+        if (!$solar->isBefore($dongZhi->getJulianDay()->getSolarDay()) && $solar->isBefore($dongZhi->next(12)->getJulianDay()->getSolarDay())) {
             $index = 8 + $earthBranchIndex - $index;
         } else {
             $index -= $earthBranchIndex;

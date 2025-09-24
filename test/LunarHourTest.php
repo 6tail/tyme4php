@@ -69,7 +69,7 @@ class LunarHourTest extends TestCase
 
         $this->assertEquals('甲子', $h->getMonthSixtyCycle()->getName());
         $this->assertEquals('农历癸卯年十一月', $h->getLunarDay()->getLunarMonth()->__toString());
-        $this->assertEquals('乙丑', $h->getLunarDay()->getLunarMonth()->getSixtyCycle()->getName());
+        $this->assertEquals('甲子', $h->getLunarDay()->getLunarMonth()->getSixtyCycle()->getName());
 
         $this->assertEquals('癸卯', $h->getYearSixtyCycle()->getName());
         $this->assertEquals('农历癸卯年', $h->getLunarDay()->getLunarMonth()->getLunarYear()->__toString());
@@ -87,7 +87,7 @@ class LunarHourTest extends TestCase
 
         $this->assertEquals('甲子', $h->getMonthSixtyCycle()->getName());
         $this->assertEquals('农历癸卯年十一月', $h->getLunarDay()->getLunarMonth()->__toString());
-        $this->assertEquals('乙丑', $h->getLunarDay()->getLunarMonth()->getSixtyCycle()->getName());
+        $this->assertEquals('甲子', $h->getLunarDay()->getLunarMonth()->getSixtyCycle()->getName());
 
         $this->assertEquals('癸卯', $h->getYearSixtyCycle()->getName());
         $this->assertEquals('农历癸卯年', $h->getLunarDay()->getLunarMonth()->getLunarYear()->__toString());

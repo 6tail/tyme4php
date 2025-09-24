@@ -9,6 +9,8 @@ use com\tyme\culture\dog\Dog;
 use com\tyme\culture\dog\DogDay;
 use com\tyme\culture\nine\Nine;
 use com\tyme\culture\nine\NineDay;
+use com\tyme\culture\Phase;
+use com\tyme\culture\PhaseDay;
 use com\tyme\culture\phenology\Phenology;
 use com\tyme\culture\phenology\PhenologyDay;
 use com\tyme\culture\plumrain\PlumRain;
@@ -459,6 +461,33 @@ class SolarDay extends AbstractTyme
     function getRabByungDay(): RabByungDay
     {
         return RabByungDay::fromSolarDay($this);
+    }
+
+    /**
+     * 月相第几天
+     *
+     * @return PhaseDay 月相第几天
+     */
+    function getPhaseDay(): PhaseDay
+    {
+        $month = $this->getLunarDay()->getLunarMonth()->next(1);
+        $p = Phase::fromIndex($month->getYear(), $month->getMonth(), 0);
+        $d = $p->getSolarDay();
+        while ($d->isAfter($this)) {
+            $p = $p->next(-1);
+            $d = $p->getSolarDay();
+        }
+        return new PhaseDay($p, $this->subtract($d));
+    }
+
+    /**
+     * 月相
+     *
+     * @return Phase 月相
+     */
+    function getPhase(): Phase
+    {
+        return $this->getPhaseDay()->getPhase();
     }
 
 }

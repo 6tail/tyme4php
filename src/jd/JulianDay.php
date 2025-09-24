@@ -88,19 +88,18 @@ class JulianDay extends AbstractTyme
      */
     function getSolarTime(): SolarTime
     {
-        $n = (int)($this->day + 0.5);
-        $f = $this->day + 0.5 - $n;
+        $d = (int)($this->day + 0.5);
+        $f = $this->day + 0.5 - $d;
 
-        if ($n >= 2299161) {
-            $c = (int)(($n - 1867216.25) / 36524.25);
-            $n += 1 + $c - intdiv($c, 4);
+        if ($d >= 2299161) {
+            $c = (int)(($d - 1867216.25) / 36524.25);
+            $d += 1 + $c - intdiv($c, 4);
         }
-        $n += 1524;
-        $y = (int)(($n - 122.1) / 365.25);
-        $n -= (int)(365.25 * $y);
-        $m = (int)($n / 30.601);
-        $n -= (int)(30.601 * $m);
-        $d = $n;
+        $d += 1524;
+        $y = (int)(($d - 122.1) / 365.25);
+        $d -= (int)(365.25 * $y);
+        $m = (int)($d / 30.601);
+        $d -= (int)(30.601 * $m);
         if ($m > 13) {
             $m -= 12;
         } else {

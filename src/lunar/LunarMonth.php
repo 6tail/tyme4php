@@ -332,7 +332,7 @@ class LunarMonth extends AbstractTyme
      */
     function getSixtyCycle(): SixtyCycle
     {
-        return SixtyCycle::fromName(sprintf('%s%s', HeavenStem::fromIndex(($this->year->getSixtyCycle()->getHeavenStem()->getIndex() + 1) * 2 + $this->indexInYear)->getName(), EarthBranch::fromIndex($this->indexInYear + 2)->getName()));
+        return SixtyCycle::fromName(sprintf('%s%s', HeavenStem::fromIndex($this->year->getSixtyCycle()->getHeavenStem()->getIndex() * 2 + $this->month + 1)->getName(), EarthBranch::fromIndex($this->month + 1)->getName()));
     }
 
     /**

@@ -57,12 +57,12 @@ class LunarMonthTest extends TestCase
 
     function test8()
     {
-        $this->assertEquals('丙辰', LunarMonth::fromYm(2023, -2)->getSixtyCycle()->getName());
+        $this->assertEquals('乙卯', LunarMonth::fromYm(2023, -2)->getSixtyCycle()->getName());
     }
 
     function test9()
     {
-        $this->assertEquals('丁巳', LunarMonth::fromYm(2023, 3)->getSixtyCycle()->getName());
+        $this->assertEquals('丙辰', LunarMonth::fromYm(2023, 3)->getSixtyCycle()->getName());
     }
 
     function test10()
@@ -72,7 +72,7 @@ class LunarMonthTest extends TestCase
 
     function test11()
     {
-        $this->assertEquals('丙寅', LunarMonth::fromYm(2023, 12)->getSixtyCycle()->getName());
+        $this->assertEquals('乙丑', LunarMonth::fromYm(2023, 12)->getSixtyCycle()->getName());
     }
 
     function test12()
@@ -157,20 +157,20 @@ class LunarMonthTest extends TestCase
 
     function test28()
     {
-        $this->assertEquals('癸亥', LunarMonth::fromYm(2023, 9)->getSixtyCycle()->__toString());
+        $this->assertEquals('壬戌', LunarMonth::fromYm(2023, 9)->getSixtyCycle()->__toString());
     }
 
     function test29()
     {
         $d = SolarDay::fromYmd(2023, 10, 7)->getLunarDay();
-        $this->assertEquals('壬戌', $d->getLunarMonth()->getSixtyCycle()->__toString());
+        $this->assertEquals('辛酉', $d->getLunarMonth()->getSixtyCycle()->__toString());
         $this->assertEquals('辛酉', $d->getMonthSixtyCycle()->__toString());
     }
 
     function test30()
     {
         $d = SolarDay::fromYmd(2023, 10, 8)->getLunarDay();
-        $this->assertEquals('壬戌', $d->getLunarMonth()->getSixtyCycle()->__toString());
+        $this->assertEquals('辛酉', $d->getLunarMonth()->getSixtyCycle()->__toString());
         $this->assertEquals('壬戌', $d->getMonthSixtyCycle()->__toString());
     }
 
@@ -178,21 +178,21 @@ class LunarMonthTest extends TestCase
     {
         $d = SolarDay::fromYmd(2023, 10, 15)->getLunarDay();
         $this->assertEquals('九月', $d->getLunarMonth()->getName());
-        $this->assertEquals('癸亥', $d->getLunarMonth()->getSixtyCycle()->__toString());
+        $this->assertEquals('壬戌', $d->getLunarMonth()->getSixtyCycle()->__toString());
         $this->assertEquals('壬戌', $d->getMonthSixtyCycle()->__toString());
     }
 
     function test32()
     {
         $d = SolarDay::fromYmd(2023, 11, 7)->getLunarDay();
-        $this->assertEquals('癸亥', $d->getLunarMonth()->getSixtyCycle()->__toString());
+        $this->assertEquals('壬戌', $d->getLunarMonth()->getSixtyCycle()->__toString());
         $this->assertEquals('壬戌', $d->getMonthSixtyCycle()->__toString());
     }
 
     function test33()
     {
         $d = SolarDay::fromYmd(2023, 11, 8)->getLunarDay();
-        $this->assertEquals('癸亥', $d->getLunarMonth()->getSixtyCycle()->__toString());
+        $this->assertEquals('壬戌', $d->getLunarMonth()->getSixtyCycle()->__toString());
         $this->assertEquals('癸亥', $d->getMonthSixtyCycle()->__toString());
     }
 
@@ -227,14 +227,14 @@ class LunarMonthTest extends TestCase
     function test37()
     {
         $d = SolarDay::fromYmd(2023, 10, 30)->getLunarDay();
-        $this->assertEquals('癸亥', $d->getLunarMonth()->getSixtyCycle()->__toString());
+        $this->assertEquals('壬戌', $d->getLunarMonth()->getSixtyCycle()->__toString());
         $this->assertEquals('壬戌', $d->getMonthSixtyCycle()->__toString());
     }
 
     function test38()
     {
         $d = SolarDay::fromYmd(2023, 10, 19)->getLunarDay();
-        $this->assertEquals('癸亥', $d->getLunarMonth()->getSixtyCycle()->__toString());
+        $this->assertEquals('壬戌', $d->getLunarMonth()->getSixtyCycle()->__toString());
         $this->assertEquals('壬戌', $d->getMonthSixtyCycle()->__toString());
     }
 
@@ -242,7 +242,7 @@ class LunarMonthTest extends TestCase
     {
         $m = LunarMonth::fromYm(2023, 11);
         $this->assertEquals('农历癸卯年十一月', $m->__toString());
-        $this->assertEquals('乙丑', $m->getSixtyCycle()->__toString());
+        $this->assertEquals('甲子', $m->getSixtyCycle()->__toString());
     }
 
     function test40()
