@@ -296,7 +296,7 @@ class SolarTime extends AbstractTyme
     function getPhase(): Phase
     {
         $month = $this->getLunarHour()->getLunarDay()->getLunarMonth()->next(1);
-        $p = Phase::fromIndex($month->getYear(), $month->getMonth(), 0);
+        $p = Phase::fromIndex($month->getYear(), $month->getMonthWithLeap(), 0);
         while ($p->getSolarTime()->isAfter($this)) {
             $p = $p->next(-1);
         }

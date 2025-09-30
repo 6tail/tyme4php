@@ -471,7 +471,7 @@ class SolarDay extends AbstractTyme
     function getPhaseDay(): PhaseDay
     {
         $month = $this->getLunarDay()->getLunarMonth()->next(1);
-        $p = Phase::fromIndex($month->getYear(), $month->getMonth(), 0);
+        $p = Phase::fromIndex($month->getYear(), $month->getMonthWithLeap(), 0);
         $d = $p->getSolarDay();
         while ($d->isAfter($this)) {
             $p = $p->next(-1);

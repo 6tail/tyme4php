@@ -296,9 +296,9 @@ class LunarDay extends AbstractTyme
     {
         $today = $this->getSolarDay();
         $m = $this->month->next(1);
-        $p = Phase::fromIndex($m->getYear(), $m->getMonth(), 0);
+        $p = Phase::fromIndex($m->getYear(), $m->getMonthWithLeap(), 0);
         $d = $p->getSolarDay();
-        while ($p->getSolarDay()->isAfter($today)) {
+        while ($d->isAfter($today)) {
             $p = $p->next(-1);
             $d = $p->getSolarDay();
         }

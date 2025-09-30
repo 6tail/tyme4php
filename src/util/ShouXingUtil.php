@@ -390,8 +390,7 @@ class ShouXingUtil
     }
     $v /= static::$XL0[0];
     $t2 = $t * $t;
-    $v += (-0.0728 - 2.7702 * $t - 1.1019 * $t2 - 0.0996 * $t2 * $t) / static::SECOND_PER_RAD;
-    return $v;
+    return $v + (-0.0728 - 2.7702 * $t - 1.1019 * $t2 - 0.0996 * $t2 * $t) / static::SECOND_PER_RAD;
   }
 
   static function mLon($t, $n): float
@@ -433,8 +432,7 @@ class ShouXingUtil
       }
       $v += $c * $tn;
     }
-    $v /= static::SECOND_PER_RAD;
-    return $v;
+    return $v / static::SECOND_PER_RAD;
   }
 
   static function gxcSunLon($t): float
@@ -493,8 +491,7 @@ class ShouXingUtil
   static function mv($t): float
   {
     $v = 8399.71 - 914 * sin(0.7848 + 8328.691425 * $t + 0.0001523 * $t * $t);
-    $v -= 179 * sin(2.543 + 15542.7543 * $t) + 160 * sin(0.1874 + 7214.0629 * $t) + 62 * sin(3.14 + 16657.3828 * $t) + 34 * sin(4.827 + 16866.9323 * $t) + 22 * sin(4.9 + 23871.4457 * $t) + 12 * sin(2.59 + 14914.4523 * $t) + 7 * sin(0.23 + 6585.7609 * $t) + 5 * sin(0.9 + 25195.624 * $t) + 5 * sin(2.32 - 7700.3895 * $t) + 5 * sin(3.88 + 8956.9934 * $t) + 5 * sin(0.49 + 7771.3771 * $t);
-    return $v;
+    return $v - (179 * sin(2.543 + 15542.7543 * $t) + 160 * sin(0.1874 + 7214.0629 * $t) + 62 * sin(3.14 + 16657.3828 * $t) + 34 * sin(4.827 + 16866.9323 * $t) + 22 * sin(4.9 + 23871.4457 * $t) + 12 * sin(2.59 + 14914.4523 * $t) + 7 * sin(0.23 + 6585.7609 * $t) + 5 * sin(0.9 + 25195.624 * $t) + 5 * sin(2.32 - 7700.3895 * $t) + 5 * sin(3.88 + 8956.9934 * $t) + 5 * sin(0.49 + 7771.3771 * $t));
   }
 
   static function saLonT($w): float
@@ -503,9 +500,7 @@ class ShouXingUtil
     $t = ($w - 1.75347 - M_PI) / $v;
     $v = static::ev($t);
     $t += ($w - static::saLon($t, 10)) / $v;
-    $v = static::ev($t);
-    $t += ($w - static::saLon($t, -1)) / $v;
-    return $t;
+    return $t + (($w - static::saLon($t, -1)) / static::ev($t));
   }
 
   static function saLonT2($w): float
@@ -513,8 +508,7 @@ class ShouXingUtil
     $v = 628.3319653318;
     $t = ($w - 1.75347 - M_PI) / $v;
     $t -= (0.000005297 * $t * $t + 0.0334166 * cos(4.669257 + 628.307585 * $t) + 0.0002061 * cos(2.67823 + 628.307585 * $t) * $t) / $v;
-    $t += ($w - static::eLon($t, 8) - M_PI + (20.5 + 17.2 * sin(2.1824 - 33.75705 * $t)) / static::SECOND_PER_RAD) / $v;
-    return $t;
+    return $t + (($w - static::eLon($t, 8) - M_PI + (20.5 + 17.2 * sin(2.1824 - 33.75705 * $t)) / static::SECOND_PER_RAD) / $v);
   }
 
   static function msaLon($t, $mn, $sn): float
@@ -529,8 +523,7 @@ class ShouXingUtil
     $t += ($w - static::msaLon($t, 3, 3)) / $v;
     $v = static::mv($t) - static::ev($t);
     $t += ($w - static::msaLon($t, 20, 10)) / $v;
-    $t += ($w - static::msaLon($t, -1, 60)) / $v;
-    return $t;
+    return $t + (($w - static::msaLon($t, -1, 60)) / $v);
   }
 
   static function msaLonT2($w): float
@@ -541,8 +534,7 @@ class ShouXingUtil
     $t -= (-0.00003309 * $t2 + 0.10976 * cos(0.784758 + 8328.6914246 * $t + 0.000152292 * $t2) + 0.02224 * cos(0.18740 + 7214.0628654 * $t - 0.00021848 * $t2) - 0.03342 * cos(4.669257 + 628.307585 * $t)) / $v;
     $l = static::mLon($t, 20) - (4.8950632 + 628.3319653318 * $t + 0.000005297 * $t * $t + 0.0334166 * cos(4.669257 + 628.307585 * $t) + 0.0002061 * cos(2.67823 + 628.307585 * $t) * $t + 0.000349 * cos(4.6261 + 1256.61517 * $t) - 20.5 / static::SECOND_PER_RAD);
     $v = 7771.38 - 914 * sin(0.7848 + 8328.691425 * $t + 0.0001523 * $t * $t) - 179 * sin(2.543 + 15542.7543 * $t) - 160 * sin(0.1874 + 7214.0629 * $t);
-    $t += ($w - $l) / $v;
-    return $t;
+    return $t + ($w - $l) / $v;
   }
 
   static function qiHigh($w): float
