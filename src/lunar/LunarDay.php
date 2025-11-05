@@ -23,12 +23,14 @@ use com\tyme\sixtycycle\EarthBranch;
 use com\tyme\sixtycycle\HeavenStem;
 use com\tyme\sixtycycle\SixtyCycle;
 use com\tyme\sixtycycle\SixtyCycleDay;
+use com\tyme\sixtycycle\ThreePillars;
 use com\tyme\solar\SolarDay;
 use com\tyme\solar\SolarTerm;
 use InvalidArgumentException;
 
 /**
  * 农历日
+ *
  * @author 6tail
  * @package com\tyme\lunar
  */
@@ -244,9 +246,9 @@ class LunarDay extends AbstractTyme
     {
         $d = $this->getSolarDay();
         $dongZhi = SolarTerm::fromIndex($d->getYear(), 0);
-        $dongZhiSolar = $dongZhi->getJulianDay()->getSolarDay();
-        $xiaZhiSolar = $dongZhi->next(12)->getJulianDay()->getSolarDay();
-        $dongZhiSolar2 = $dongZhi->next(24)->getJulianDay()->getSolarDay();
+        $dongZhiSolar = $dongZhi->getSolarDay();
+        $xiaZhiSolar = $dongZhi->next(12)->getSolarDay();
+        $dongZhiSolar2 = $dongZhi->next(24)->getSolarDay();
         $dongZhiIndex = $dongZhiSolar->getLunarDay()->getSixtyCycle()->getIndex();
         $xiaZhiIndex = $xiaZhiSolar->getLunarDay()->getSixtyCycle()->getIndex();
         $dongZhiIndex2 = $dongZhiSolar2->getLunarDay()->getSixtyCycle()->getIndex();
@@ -365,6 +367,7 @@ class LunarDay extends AbstractTyme
 
     /**
      * 当天的时辰列表
+     *
      * @return LunarHour[] 时辰列表
      */
     function getHours(): array
@@ -381,6 +384,7 @@ class LunarDay extends AbstractTyme
 
     /**
      * 神煞列表(吉神宜趋，凶神宜忌)
+     *
      * @return God[] 神煞列表
      * @see SixtyCycleDay
      */
@@ -391,6 +395,7 @@ class LunarDay extends AbstractTyme
 
     /**
      * 宜
+     *
      * @return Taboo[] 宜忌列表
      * @see SixtyCycleDay
      */
@@ -401,6 +406,7 @@ class LunarDay extends AbstractTyme
 
     /**
      * 忌
+     *
      * @return Taboo[] 宜忌列表
      * @see SixtyCycleDay
      */
@@ -411,6 +417,7 @@ class LunarDay extends AbstractTyme
 
     /**
      * 六曜
+     *
      * @return SixStar 六曜
      */
     function getSixStar(): SixStar
@@ -420,10 +427,21 @@ class LunarDay extends AbstractTyme
 
     /**
      * 小六壬
+     *
      * @return MinorRen 小六壬
      */
     function getMinorRen(): MinorRen
     {
         return $this->getLunarMonth()->getMinorRen()->next($this->day - 1);
+    }
+
+    /**
+     * 三柱
+     *
+     * @return ThreePillars 三柱
+     */
+    function getThreePillars(): ThreePillars
+    {
+        return $this->getSixtyCycleDay()->getThreePillars();
     }
 }

@@ -20,6 +20,7 @@ use com\tyme\solar\SolarTime;
 
 /**
  * 干支日（立春换年，节令换月）
+ *
  * @author 6tail
  * @package com\tyme\sixtycycle
  */
@@ -50,7 +51,7 @@ class SixtyCycleDay extends AbstractTyme
     static function fromSolarDay(SolarDay $solarDay): static
     {
         $solarYear = $solarDay->getYear();
-        $springSolarDay = SolarTerm::fromIndex($solarYear, 3)->getJulianDay()->getSolarDay();
+        $springSolarDay = SolarTerm::fromIndex($solarYear, 3)->getSolarDay();
         $lunarDay = $solarDay->getLunarDay();
         $lunarYear = $lunarDay->getLunarMonth()->getLunarYear();
         if ($lunarYear->getYear() == $solarYear) {
@@ -64,7 +65,7 @@ class SixtyCycleDay extends AbstractTyme
         }
         $term = $solarDay->getTerm();
         $index = $term->getIndex() - 3;
-        if ($index < 0 && $term->getJulianDay()->getSolarDay()->isAfter($springSolarDay)) {
+        if ($index < 0 && $term->getSolarDay()->isAfter($springSolarDay)) {
             $index += 24;
         }
         return new static($solarDay, new SixtyCycleMonth(SixtyCycleYear::fromYear($lunarYear->getYear()), LunarMonth::fromYm($solarYear, 1)->getSixtyCycle()->next((int)floor($index * 0.5))), $lunarDay->getSixtyCycle());
@@ -163,9 +164,9 @@ class SixtyCycleDay extends AbstractTyme
     function getNineStar(): NineStar
     {
         $dongZhi = SolarTerm::fromIndex($this->solarDay->getYear(), 0);
-        $dongZhiSolar = $dongZhi->getJulianDay()->getSolarDay();
-        $xiaZhiSolar = $dongZhi->next(12)->getJulianDay()->getSolarDay();
-        $dongZhiSolar2 = $dongZhi->next(24)->getJulianDay()->getSolarDay();
+        $dongZhiSolar = $dongZhi->getSolarDay();
+        $xiaZhiSolar = $dongZhi->next(12)->getSolarDay();
+        $dongZhiSolar2 = $dongZhi->next(24)->getSolarDay();
         $dongZhiIndex = $dongZhiSolar->getLunarDay()->getSixtyCycle()->getIndex();
         $xiaZhiIndex = $xiaZhiSolar->getLunarDay()->getSixtyCycle()->getIndex();
         $dongZhiIndex2 = $dongZhiSolar2->getLunarDay()->getSixtyCycle()->getIndex();
@@ -218,6 +219,7 @@ class SixtyCycleDay extends AbstractTyme
 
     /**
      * 干支时辰列表
+     *
      * @return SixtyCycleHour[] 干支时辰列表
      */
     function getHours(): array
@@ -235,6 +237,7 @@ class SixtyCycleDay extends AbstractTyme
 
     /**
      * 神煞列表(吉神宜趋，凶神宜忌)
+     *
      * @return God[] 神煞列表
      */
     function getGods(): array
@@ -244,6 +247,7 @@ class SixtyCycleDay extends AbstractTyme
 
     /**
      * 宜
+     *
      * @return Taboo[] 宜忌列表
      */
     function getRecommends(): array
@@ -253,10 +257,21 @@ class SixtyCycleDay extends AbstractTyme
 
     /**
      * 忌
+     *
      * @return Taboo[] 宜忌列表
      */
     function getAvoids(): array
     {
         return Taboo::getDayAvoids($this->getMonth(), $this->day);
+    }
+
+    /**
+     * 三柱
+     *
+     * @return ThreePillars 三柱
+     */
+    function getThreePillars(): ThreePillars
+    {
+        return new ThreePillars($this->getYear(), $this->getMonth(), $this->getSixtyCycle());
     }
 }

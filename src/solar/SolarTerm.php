@@ -22,7 +22,7 @@ class SolarTerm extends LoopTyme
     protected int $year;
 
     /**
-     * @var float 月
+     * @var float 儒略日（用于日历，只精确到日中午12:00）
      */
     protected float $cursoryJulianDay;
 
@@ -85,13 +85,23 @@ class SolarTerm extends LoopTyme
     }
 
     /**
-     * 儒略日
+     * 儒略日（精确到秒）
      *
      * @return JulianDay 儒略日
      */
     function getJulianDay(): JulianDay
     {
         return JulianDay::fromJulianDay(ShouXingUtil::qiAccurate2($this->cursoryJulianDay) + JulianDay::J2000);
+    }
+
+    /**
+     * 公历日（用于日历）
+     *
+     * @return SolarDay 公历日
+     */
+    function getSolarDay(): SolarDay
+    {
+        return JulianDay::fromJulianDay($this->cursoryJulianDay + JulianDay::J2000)->getSolarDay();
     }
 
     /**
@@ -105,7 +115,7 @@ class SolarTerm extends LoopTyme
     }
 
     /**
-     * 粗略的儒略日
+     * 儒略日（用于日历，只精确到日中午12:00）
      *
      * @return float 儒略日数
      */

@@ -205,10 +205,10 @@ class SolarDay extends AbstractTyme
             $i = 0;
         }
         $term = SolarTerm::fromIndex($y, $i);
-        $day = $term->getJulianDay()->getSolarDay();
+        $day = $term->getSolarDay();
         while ($this->isBefore($day)) {
             $term = $term->next(-1);
-            $day = $term->getJulianDay()->getSolarDay();
+            $day = $term->getSolarDay();
         }
         return new SolarTermDay($term, $this->subtract($day));
     }
@@ -263,7 +263,7 @@ class SolarDay extends AbstractTyme
         // 夏至
         $xiaZhi = SolarTerm::fromIndex($this->getYear(), 12);
         // 第1个庚日
-        $start = $xiaZhi->getJulianDay()->getSolarDay();
+        $start = $xiaZhi->getSolarDay();
         // 第3个庚日，即初伏第1天
         $start = $start->next($start->getLunarDay()->getSixtyCycle()->getHeavenStem()->stepsTo(6) + 20);
         $days = $this->subtract($start);
@@ -284,7 +284,7 @@ class SolarDay extends AbstractTyme
         $start = $start->next(10);
         $days = $this->subtract($start);
         // 立秋
-        if ($xiaZhi->next(3)->getJulianDay()->getSolarDay()->isAfter($start)) {
+        if ($xiaZhi->next(3)->getSolarDay()->isAfter($start)) {
             if ($days < 10) {
                 return new DogDay(Dog::fromIndex(1), $days + 10);
             }
@@ -305,9 +305,9 @@ class SolarDay extends AbstractTyme
     function getNineDay(): ?NineDay
     {
         $year = $this->getYear();
-        $start = SolarTerm::fromIndex($year + 1, 0)->getJulianDay()->getSolarDay();
+        $start = SolarTerm::fromIndex($year + 1, 0)->getSolarDay();
         if ($this->isBefore($start)) {
-            $start = SolarTerm::fromIndex($year, 0)->getJulianDay()->getSolarDay();
+            $start = SolarTerm::fromIndex($year, 0)->getSolarDay();
         }
         $end = $start->next(81);
         if ($this->isBefore($start) || !$this->isBefore($end)) {
@@ -329,7 +329,7 @@ class SolarDay extends AbstractTyme
         if ($term->isQi()) {
             $term = $term->next(-1);
         }
-        $dayIndex = $this->subtract($term->getJulianDay()->getSolarDay());
+        $dayIndex = $this->subtract($term->getSolarDay());
         $startIndex = ($term->getIndex() - 1) * 3;
         $data = substr('93705542220504xx1513904541632524533533105544806564xx7573304542018584xx95', $startIndex, 6);
         $days = 0;
@@ -361,12 +361,12 @@ class SolarDay extends AbstractTyme
     {
         // 芒种
         $grainInEar = SolarTerm::fromIndex($this->getYear(), 11);
-        $start = $grainInEar->getJulianDay()->getSolarDay();
+        $start = $grainInEar->getSolarDay();
         // 芒种后的第1个丙日
         $start = $start->next($start->getLunarDay()->getSixtyCycle()->getHeavenStem()->stepsTo(2));
 
         // 小暑
-        $end = $grainInEar->next(2)->getJulianDay()->getSolarDay();
+        $end = $grainInEar->next(2)->getSolarDay();
         // 小暑后的第1个未日
         $end = $end->next($end->getLunarDay()->getSixtyCycle()->getEarthBranch()->stepsTo(7));
 

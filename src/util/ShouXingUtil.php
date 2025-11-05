@@ -357,7 +357,7 @@ class ShouXingUtil
     return $dl / 100 / static::SECOND_PER_RAD;
   }
 
-  static function eLon($t, $n)
+  static function eLon($t, $n): float
   {
     $t /= 10;
     $v = 0;
@@ -460,7 +460,7 @@ class ShouXingUtil
     return -20 + $jsd * $dy * $dy;
   }
 
-  static function dtCalc($y)
+  static function dtCalc($y): float
   {
     $size = count(static::$DT_AT);
     $y0 = static::$DT_AT[$size - 2];

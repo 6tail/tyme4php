@@ -9,30 +9,22 @@ use com\tyme\sixtycycle\EarthBranch;
 use com\tyme\sixtycycle\HeavenStem;
 use com\tyme\sixtycycle\SixtyCycle;
 use com\tyme\sixtycycle\SixtyCycleDay;
+use com\tyme\sixtycycle\ThreePillars;
 use com\tyme\solar\SolarTerm;
 use com\tyme\solar\SolarTime;
 
 /**
  * 八字
+ *
  * @author 6tail
  * @package com\tyme\eightchar
  */
 class EightChar extends AbstractCulture
 {
     /**
-     * @var SixtyCycle 年柱
+     * @var ThreePillars 三柱
      */
-    protected SixtyCycle $year;
-
-    /**
-     * @var SixtyCycle 月柱
-     */
-    protected SixtyCycle $month;
-
-    /**
-     * @var SixtyCycle 日柱
-     */
-    protected SixtyCycle $day;
+    protected ThreePillars $threePillars;
 
     /**
      * @var SixtyCycle 时柱
@@ -41,9 +33,7 @@ class EightChar extends AbstractCulture
 
     function __construct(SixtyCycle|string $year, SixtyCycle|string $month, SixtyCycle|string $day, SixtyCycle|string $hour)
     {
-        $this->year = $year instanceof SixtyCycle ? $year : SixtyCycle::fromName($year);
-        $this->month = $month instanceof SixtyCycle ? $month : SixtyCycle::fromName($month);
-        $this->day = $day instanceof SixtyCycle ? $day : SixtyCycle::fromName($day);
+        $this->threePillars = new ThreePillars($year, $month, $day);
         $this->hour = $hour instanceof SixtyCycle ? $hour : SixtyCycle::fromName($hour);
     }
 
@@ -54,7 +44,7 @@ class EightChar extends AbstractCulture
      */
     function getYear(): SixtyCycle
     {
-        return $this->year;
+        return $this->threePillars->getYear();
     }
 
     /**
@@ -64,7 +54,7 @@ class EightChar extends AbstractCulture
      */
     function getMonth(): SixtyCycle
     {
-        return $this->month;
+        return $this->threePillars->getMonth();
     }
 
     /**
@@ -74,7 +64,7 @@ class EightChar extends AbstractCulture
      */
     function getDay(): SixtyCycle
     {
-        return $this->day;
+        return $this->threePillars->getDay();
     }
 
     /**
@@ -94,7 +84,8 @@ class EightChar extends AbstractCulture
      */
     function getFetalOrigin(): SixtyCycle
     {
-        return SixtyCycle::fromName(sprintf('%s%s', $this->month->getHeavenStem()->next(1)->getName(), $this->month->getEarthBranch()->next(3)->getName()));
+        $m = $this->getMonth();
+        return SixtyCycle::fromName(sprintf('%s%s', $m->getHeavenStem()->next(1)->getName(), $m->getEarthBranch()->next(3)->getName()));
     }
 
     /**
@@ -104,7 +95,8 @@ class EightChar extends AbstractCulture
      */
     function getFetalBreath(): SixtyCycle
     {
-        return SixtyCycle::fromName(sprintf('%s%s', $this->day->getHeavenStem()->next(5)->getName(), EarthBranch::fromIndex(13 - $this->day->getEarthBranch()->getIndex())->getName()));
+        $d = $this->getDay();
+        return SixtyCycle::fromName(sprintf('%s%s', $d->getHeavenStem()->next(5)->getName(), EarthBranch::fromIndex(13 - $d->getEarthBranch()->getIndex())->getName()));
     }
 
     /**
@@ -114,7 +106,7 @@ class EightChar extends AbstractCulture
      */
     function getOwnSign(): SixtyCycle
     {
-        $m = $this->month->getEarthBranch()->getIndex() - 1;
+        $m = $this->getMonth()->getEarthBranch()->getIndex() - 1;
         if ($m < 1) {
             $m += 12;
         }
@@ -124,7 +116,7 @@ class EightChar extends AbstractCulture
         }
         $offset = $m + $h;
         $offset = ($offset >= 14 ? 26 : 14) - $offset;
-        return SixtyCycle::fromName(sprintf('%s%s', HeavenStem::fromIndex(($this->year->getHeavenStem()->getIndex() + 1) * 2 + $offset - 1)->getName(), EarthBranch::fromIndex($offset + 1)->getName()));
+        return SixtyCycle::fromName(sprintf('%s%s', HeavenStem::fromIndex(($this->getYear()->getHeavenStem()->getIndex() + 1) * 2 + $offset - 1)->getName(), EarthBranch::fromIndex($offset + 1)->getName()));
     }
 
     /**
@@ -134,7 +126,7 @@ class EightChar extends AbstractCulture
      */
     function getBodySign(): SixtyCycle
     {
-        $offset = $this->month->getEarthBranch()->getIndex() - 1;
+        $offset = $this->getMonth()->getEarthBranch()->getIndex() - 1;
         if ($offset < 1) {
             $offset += 12;
         }
@@ -142,7 +134,7 @@ class EightChar extends AbstractCulture
         if ($offset > 12) {
             $offset -= 12;
         }
-        return SixtyCycle::fromName(sprintf('%s%s', HeavenStem::fromIndex(($this->year->getHeavenStem()->getIndex() + 1) * 2 + $offset - 1)->getName(), EarthBranch::fromIndex($offset + 1)->getName()));
+        return SixtyCycle::fromName(sprintf('%s%s', HeavenStem::fromIndex(($this->getYear()->getHeavenStem()->getIndex() + 1) * 2 + $offset - 1)->getName(), EarthBranch::fromIndex($offset + 1)->getName()));
     }
 
     /**
@@ -154,12 +146,12 @@ class EightChar extends AbstractCulture
      */
     function getDuty(): Duty
     {
-        return Duty::fromIndex($this->day->getEarthBranch()->getIndex() - $this->month->getEarthBranch()->getIndex());
+        return Duty::fromIndex($this->getDay()->getEarthBranch()->getIndex() - $this->getMonth()->getEarthBranch()->getIndex());
     }
 
     function getName(): string
     {
-        return sprintf('%s %s %s %s', $this->year, $this->month, $this->day, $this->hour);
+        return sprintf('%s %s', $this->threePillars, $this->hour);
     }
 
     /**
@@ -171,14 +163,17 @@ class EightChar extends AbstractCulture
     function getSolarTimes(int $startYear, int $endYear): array
     {
         $l = array();
+        $year = $this->getYear();
+        $month = $this->getMonth();
+        $day = $this->getDay();
         // 月地支距寅月的偏移值
-        $m = $this->month->getEarthBranch()->next(-2)->getIndex();
+        $m = $month->getEarthBranch()->next(-2)->getIndex();
         // 月天干要一致
-        if (!HeavenStem::fromIndex(($this->year->getHeavenStem()->getIndex() + 1) * 2 + $m)->equals($this->month->getHeavenStem())) {
+        if (!HeavenStem::fromIndex(($year->getHeavenStem()->getIndex() + 1) * 2 + $m)->equals($month->getHeavenStem())) {
             return $l;
         }
         // 1年的立春是辛酉，序号57
-        $y = $this->year->next(-57)->getIndex() + 1;
+        $y = $year->next(-57)->getIndex() + 1;
         // 节令偏移值
         $m *= 2;
         // 时辰地支转时刻
@@ -203,7 +198,7 @@ class EightChar extends AbstractCulture
             if ($solarTime->getYear() >= $startYear) {
                 // 日干支和节令干支的偏移值
                 $solarDay = $solarTime->getSolarDay();
-                $d = $this->day->next(-$solarDay->getLunarDay()->getSixtyCycle()->getIndex())->getIndex();
+                $d = $day->next(-$solarDay->getLunarDay()->getSixtyCycle()->getIndex())->getIndex();
                 if ($d > 0) {
                     // 从节令推移天数
                     $solarDay = $solarDay->next($d);

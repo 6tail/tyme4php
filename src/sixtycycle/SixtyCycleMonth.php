@@ -103,7 +103,7 @@ class SixtyCycleMonth extends AbstractTyme
      */
     function getFirstDay(): SixtyCycleDay
     {
-        return SixtyCycleDay::fromSolarDay(SolarTerm::fromIndex($this->year->getYear(), 3 + $this->getIndexInYear() * 2)->getJulianDay()->getSolarDay());
+        return SixtyCycleDay::fromSolarDay(SolarTerm::fromIndex($this->year->getYear(), 3 + $this->getIndexInYear() * 2)->getSolarDay());
     }
 
     /**

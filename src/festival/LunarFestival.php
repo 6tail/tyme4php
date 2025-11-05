@@ -67,7 +67,7 @@ class LunarFestival extends AbstractTyme
                     return new static($type, LunarDay::fromYmd($year, intval(substr($data, 4, 2)), intval(substr($data, 6, 2))), null, $data);
                 case FestivalType::TERM:
                     $solarTerm = SolarTerm::fromIndex($year, intval(substr($data, 4, 2)));
-                    return new static($type, $solarTerm->getJulianDay()->getSolarDay()->getLunarDay(), $solarTerm, $data);
+                    return new static($type, $solarTerm->getSolarDay()->getLunarDay(), $solarTerm, $data);
                 case FestivalType::EVE:
                     return new static($type, LunarDay::fromYmd($year + 1, 1, 1)->next(-1), null, $data);
             }
@@ -83,7 +83,7 @@ class LunarFestival extends AbstractTyme
         if (preg_match_all('/@\\d{2}1\\d{2}/', static::$DATA, $matches)) {
             $data = $matches[0][0];
             $solarTerm = SolarTerm::fromIndex($year, intval(substr($data, 4, 2)));
-            $lunarDay = $solarTerm->getJulianDay()->getSolarDay()->getLunarDay();
+            $lunarDay = $solarTerm->getSolarDay()->getLunarDay();
             if ($lunarDay->getYear() == $year && $lunarDay->getMonth() == $month && $lunarDay->getDay() == $day) {
                 return new static(FestivalType::TERM, $lunarDay, $solarTerm, $data);
             }
