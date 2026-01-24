@@ -13,7 +13,6 @@ use com\tyme\culture\star\nine\NineStar;
 use com\tyme\culture\star\twelve\TwelveStar;
 use com\tyme\culture\star\twentyeight\TwentyEightStar;
 use com\tyme\culture\Taboo;
-use com\tyme\lunar\LunarMonth;
 use com\tyme\solar\SolarDay;
 use com\tyme\solar\SolarTerm;
 use com\tyme\solar\SolarTime;
@@ -50,25 +49,17 @@ class SixtyCycleDay extends AbstractTyme
 
     static function fromSolarDay(SolarDay $solarDay): static
     {
-        $solarYear = $solarDay->getYear();
-        $springSolarDay = SolarTerm::fromIndex($solarYear, 3)->getSolarDay();
-        $lunarDay = $solarDay->getLunarDay();
-        $lunarYear = $lunarDay->getLunarMonth()->getLunarYear();
-        if ($lunarYear->getYear() == $solarYear) {
-            if ($solarDay->isBefore($springSolarDay)) {
-                $lunarYear = $lunarYear->next(-1);
-            }
-        } else if ($lunarYear->getYear() < $solarYear) {
-            if (!$solarDay->isBefore($springSolarDay)) {
-                $lunarYear = $lunarYear->next(1);
-            }
-        }
         $term = $solarDay->getTerm();
-        $index = $term->getIndex() - 3;
-        if ($index < 0 && $term->getSolarDay()->isAfter($springSolarDay)) {
-            $index += 24;
+        $index = $term->getIndex();
+        $offset = -1;
+        if ($index < 3) {
+            if ($index == 0) {
+                $offset = -2;
+            }
+        } else {
+            $offset = intdiv($index - 3, 2);
         }
-        return new static($solarDay, new SixtyCycleMonth(SixtyCycleYear::fromYear($lunarYear->getYear()), LunarMonth::fromYm($solarYear, 1)->getSixtyCycle()->next((int)floor($index * 0.5))), $lunarDay->getSixtyCycle());
+        return new static($solarDay, SixtyCycleYear::fromYear($term->getYear())->getFirstMonth()->next($offset), SixtyCycle::fromIndex($solarDay->subtract(SolarDay::fromYmd(2000, 1, 7))));
     }
 
     /**

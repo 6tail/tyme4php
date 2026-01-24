@@ -3,56 +3,30 @@
 namespace com\tyme\solar;
 
 
-use com\tyme\AbstractTyme;
 use com\tyme\culture\Phase;
 use com\tyme\culture\phenology\Phenology;
 use com\tyme\jd\JulianDay;
 use com\tyme\lunar\LunarHour;
 use com\tyme\sixtycycle\SixtyCycleHour;
-use InvalidArgumentException;
+use com\tyme\unit\SecondUnit;
 
 /**
  * 公历时刻
  * @author 6tail
  * @package com\tyme\solar
  */
-class SolarTime extends AbstractTyme
+class SolarTime extends SecondUnit
 {
-    /**
-     * @var SolarDay 公历日
-     */
-    protected SolarDay $day;
-
-    /**
-     * @var int 时
-     */
-    protected int $hour;
-
-    /**
-     * @var int 分
-     */
-    protected int $minute;
-
-    /**
-     * @var int 秒
-     */
-    protected int $second;
-
     protected function __construct(int $year, int $month, int $day, int $hour, int $minute, int $second)
     {
-        if ($hour < 0 || $hour > 23) {
-            throw new InvalidArgumentException(sprintf('illegal hour: %d', $hour));
-        }
-        if ($minute < 0 || $minute > 59) {
-            throw new InvalidArgumentException(sprintf('illegal minute: %d', $minute));
-        }
-        if ($second < 0 || $second > 59) {
-            throw new InvalidArgumentException(sprintf('illegal second: %d', $second));
-        }
-        $this->day = SolarDay::fromYmd($year, $month, $day);
-        $this->hour = $hour;
-        $this->minute = $minute;
-        $this->second = $second;
+        self::validate($year, $month, $day, $hour, $minute, $second);
+        parent::__construct($year, $month, $day, $hour, $minute, $second);
+    }
+
+    static function validate($year, $month, $day, $hour, $minute, $second): void
+    {
+        parent::validate($year, $month, $day, $hour, $minute, $second);
+        SolarDay::validate($year, $month, $day);
     }
 
     static function fromYmdHms(int $year, int $month, int $day, int $hour, int $minute, int $second): static
@@ -67,67 +41,7 @@ class SolarTime extends AbstractTyme
      */
     function getSolarDay(): SolarDay
     {
-        return $this->day;
-    }
-
-    /**
-     * 年
-     *
-     * @return int 年
-     */
-    function getYear(): int
-    {
-        return $this->day->getYear();
-    }
-
-    /**
-     * 月
-     *
-     * @return int 月
-     */
-    function getMonth(): int
-    {
-        return $this->day->getMonth();
-    }
-
-    /**
-     * 日
-     *
-     * @return int 日
-     */
-    function getDay(): int
-    {
-        return $this->day->getDay();
-    }
-
-    /**
-     * 时
-     *
-     * @return int 时
-     */
-    function getHour(): int
-    {
-        return $this->hour;
-    }
-
-    /**
-     * 分
-     *
-     * @return int 分
-     */
-    function getMinute(): int
-    {
-        return $this->minute;
-    }
-
-    /**
-     * 秒
-     *
-     * @return int 秒
-     */
-    function getSecond(): int
-    {
-        return $this->second;
+        return SolarDay::fromYmd($this->year, $this->month, $this->day);
     }
 
     function getName(): string
@@ -137,7 +51,7 @@ class SolarTime extends AbstractTyme
 
     function __toString(): string
     {
-        return sprintf('%s %s', $this->day, $this->getName());
+        return sprintf('%s %s', $this->getSolarDay(), $this->getName());
     }
 
     /**
@@ -148,13 +62,15 @@ class SolarTime extends AbstractTyme
      */
     function isBefore(SolarTime $target): bool
     {
-        if (!$this->day->equals($target->getSolarDay())) {
-            return $this->day->isBefore($target->getSolarDay());
+        $aDay = $this->getSolarDay();
+        $bDay = $target->getSolarDay();
+        if (!$aDay->equals($bDay)) {
+            return $aDay->isBefore($bDay);
         }
-        if ($this->hour != $target->getHour()) {
-            return $this->hour < $target->getHour();
+        if ($this->hour != $target->hour) {
+            return $this->hour < $target->hour;
         }
-        return $this->minute != $target->getMinute() ? $this->minute < $target->getMinute() : $this->second < $target->getSecond();
+        return $this->minute != $target->minute ? $this->minute < $target->minute : $this->second < $target->second;
     }
 
     /**
@@ -165,13 +81,15 @@ class SolarTime extends AbstractTyme
      */
     function isAfter(SolarTime $target): bool
     {
-        if (!$this->day->equals($target->getSolarDay())) {
-            return $this->day->isAfter($target->getSolarDay());
+        $aDay = $this->getSolarDay();
+        $bDay = $target->getSolarDay();
+        if (!$aDay->equals($bDay)) {
+            return $aDay->isAfter($bDay);
         }
-        if ($this->hour != $target->getHour()) {
-            return $this->hour > $target->getHour();
+        if ($this->hour != $target->hour) {
+            return $this->hour > $target->hour;
         }
-        return $this->minute != $target->getMinute() ? $this->minute > $target->getMinute() : $this->second > $target->getSecond();
+        return $this->minute != $target->minute ? $this->minute > $target->minute : $this->second > $target->second;
     }
 
     /**
@@ -209,7 +127,7 @@ class SolarTime extends AbstractTyme
      */
     function getJulianDay(): JulianDay
     {
-        return JulianDay::fromYmdHms($this->getYear(), $this->getMonth(), $this->getDay(), $this->hour, $this->minute, $this->second);
+        return JulianDay::fromYmdHms($this->year, $this->month, $this->day, $this->hour, $this->minute, $this->second);
     }
 
     /**
@@ -220,9 +138,9 @@ class SolarTime extends AbstractTyme
      */
     function subtract(SolarTime $target): int
     {
-        $days = $this->day->subtract($target->getSolarDay());
+        $days = $this->getSolarDay()->subtract($target->getSolarDay());
         $cs = $this->hour * 3600 + $this->minute * 60 + $this->second;
-        $ts = $target->getHour() * 3600 + $target->getMinute() * 60 + $target->getSecond();
+        $ts = $target->hour * 3600 + $target->minute * 60 + $target->second;
         $seconds = $cs - $ts;
         if ($seconds < 0) {
             $seconds += 86400;
@@ -241,7 +159,7 @@ class SolarTime extends AbstractTyme
     function next(int $n): SolarTime
     {
         if ($n == 0) {
-            return static::fromYmdHms($this->getYear(), $this->getMonth(), $this->getDay(), $this->hour, $this->minute, $this->second);
+            return static::fromYmdHms($this->year, $this->month, $this->day, $this->hour, $this->minute, $this->second);
         }
         $ts = $this->second + $n;
         $tm = $this->minute + intdiv($ts, 60);
@@ -263,7 +181,7 @@ class SolarTime extends AbstractTyme
             $td -= 1;
         }
 
-        $d = $this->day->next($td);
+        $d = $this->getSolarDay()->next($td);
         return static::fromYmdHms($d->getYear(), $d->getMonth(), $d->getDay(), $th, $tm, $ts);
     }
 
@@ -274,7 +192,7 @@ class SolarTime extends AbstractTyme
      */
     function getLunarHour(): LunarHour
     {
-        $d = $this->day->getLunarDay();
+        $d = $this->getSolarDay()->getLunarDay();
         return LunarHour::fromYmdHms($d->getYear(), $d->getMonth(), $d->getDay(), $this->hour, $this->minute, $this->second);
     }
 

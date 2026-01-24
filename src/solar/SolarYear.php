@@ -3,8 +3,8 @@
 namespace com\tyme\solar;
 
 
-use com\tyme\AbstractTyme;
 use com\tyme\rabbyung\RabByungYear;
+use com\tyme\unit\YearUnit;
 use InvalidArgumentException;
 
 /**
@@ -12,33 +12,24 @@ use InvalidArgumentException;
  * @author 6tail
  * @package com\tyme\solar
  */
-class SolarYear extends AbstractTyme
+class SolarYear extends YearUnit
 {
-    /**
-     * @var int 年
-     */
-    protected int $year;
-
     protected function __construct(int $year)
+    {
+        self::validate($year);
+        parent::__construct($year);
+    }
+
+    static function validate(int $year): void
     {
         if ($year < 1 || $year > 9999) {
             throw new InvalidArgumentException(sprintf('illegal solar year: %d', $year));
         }
-        $this->year = $year;
     }
 
     static function fromYear(int $year): static
     {
         return new static($year);
-    }
-
-    /**
-     * 年
-     * @return int 年
-     */
-    function getYear(): int
-    {
-        return $this->year;
     }
 
     /**

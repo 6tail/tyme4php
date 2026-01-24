@@ -3,7 +3,7 @@
 namespace com\tyme\solar;
 
 
-use com\tyme\AbstractTyme;
+use com\tyme\unit\YearUnit;
 use InvalidArgumentException;
 
 /**
@@ -11,14 +11,9 @@ use InvalidArgumentException;
  * @author 6tail
  * @package com\tyme\solar
  */
-class SolarHalfYear extends AbstractTyme
+class SolarHalfYear extends YearUnit
 {
     static array $NAMES = ['上半年', '下半年'];
-
-    /**
-     * @var SolarYear 年
-     */
-    protected SolarYear $year;
 
     /**
      * @var int 索引，0-1
@@ -27,11 +22,17 @@ class SolarHalfYear extends AbstractTyme
 
     protected function __construct(int $year, int $index)
     {
+        self::validate($year, $index);
+        parent::__construct($year);
+        $this->index = $index;
+    }
+
+    static function validate(int $year, int $index): void
+    {
         if ($index < 0 || $index > 1) {
             throw new InvalidArgumentException(sprintf('illegal solar half year index: %d', $index));
         }
-        $this->year = SolarYear::fromYear($year);
-        $this->index = $index;
+        SolarYear::validate($year);
     }
 
     static function fromIndex(int $year, int $index): static
@@ -45,16 +46,7 @@ class SolarHalfYear extends AbstractTyme
      */
     function getSolarYear(): SolarYear
     {
-        return $this->year;
-    }
-
-    /**
-     * 年
-     * @return int 年
-     */
-    function getYear(): int
-    {
-        return $this->year->getYear();
+        return SolarYear::fromYear($this->year);
     }
 
     /**
@@ -74,13 +66,13 @@ class SolarHalfYear extends AbstractTyme
 
     function __toString(): string
     {
-        return sprintf('%s%s', $this->year, $this->getName());
+        return sprintf('%s%s', $this->getSolarYear(), $this->getName());
     }
 
     function next(int $n): static
     {
         $i = $this->index + $n;
-        return static::fromIndex(intdiv($this->getYear() * 2 + $i, 2), $this->indexOf($i, null, 2));
+        return static::fromIndex(intdiv($this->year * 2 + $i, 2), $this->indexOf($i, null, 2));
     }
 
     /**
@@ -91,9 +83,8 @@ class SolarHalfYear extends AbstractTyme
     function getMonths(): array
     {
         $l = array();
-        $y = $this->getYear();
         for ($i = 1; $i < 7; $i++) {
-            $l[] = SolarMonth::fromYm($y, $this->index * 6 + $i);
+            $l[] = SolarMonth::fromYm($this->year, $this->index * 6 + $i);
         }
         return $l;
     }
@@ -106,9 +97,8 @@ class SolarHalfYear extends AbstractTyme
     function getSeasons(): array
     {
         $l = array();
-        $y = $this->getYear();
         for ($i = 0; $i < 2; $i++) {
-            $l[] = SolarSeason::fromIndex($y, $this->index * 2 + $i);
+            $l[] = SolarSeason::fromIndex($this->year, $this->index * 2 + $i);
         }
         return $l;
     }

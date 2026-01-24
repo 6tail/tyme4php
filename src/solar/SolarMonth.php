@@ -3,7 +3,7 @@
 namespace com\tyme\solar;
 
 
-use com\tyme\AbstractTyme;
+use com\tyme\unit\MonthUnit;
 use InvalidArgumentException;
 
 /**
@@ -11,7 +11,7 @@ use InvalidArgumentException;
  * @author 6tail
  * @package com\tyme\solar
  */
-class SolarMonth extends AbstractTyme
+class SolarMonth extends MonthUnit
 {
     static array $NAMES = ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月'];
 
@@ -20,23 +20,18 @@ class SolarMonth extends AbstractTyme
      */
     static array $DAYS = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
 
-    /**
-     * @var SolarYear 年
-     */
-    protected SolarYear $year;
-
-    /**
-     * @var int 月
-     */
-    protected int $month;
-
     protected function __construct(int $year, int $month)
+    {
+        self::validate($year, $month);
+        parent::__construct($year, $month);
+    }
+
+    static function validate(int $year, int $month): void
     {
         if ($month < 1 || $month > 12) {
             throw new InvalidArgumentException(sprintf('illegal solar month: %d', $month));
         }
-        $this->year = SolarYear::fromYear($year);
-        $this->month = $month;
+        SolarYear::validate($year);
     }
 
     static function fromYm(int $year, int $month): static
@@ -50,26 +45,7 @@ class SolarMonth extends AbstractTyme
      */
     function getSolarYear(): SolarYear
     {
-        return $this->year;
-    }
-
-    /**
-     * 年
-     * @return int 年
-     */
-    function getYear(): int
-    {
-        return $this->year->getYear();
-    }
-
-    /**
-     * 月
-     *
-     * @return int 月
-     */
-    function getMonth(): int
-    {
-        return $this->month;
+        return SolarYear::fromYear($this->year);
     }
 
     /**
@@ -79,12 +55,12 @@ class SolarMonth extends AbstractTyme
      */
     function getDayCount(): int
     {
-        if (1582 == $this->getYear() && 10 == $this->month) {
+        if (1582 == $this->year && 10 == $this->month) {
             return 21;
         }
         $d = static::$DAYS[$this->getIndexInYear()];
         //公历闰年2月多一天
-        if (2 == $this->month && $this->year->isLeap()) {
+        if (2 == $this->month && $this->getSolarYear()->isLeap()) {
             $d++;
         }
         return $d;
@@ -107,7 +83,7 @@ class SolarMonth extends AbstractTyme
      */
     function getSeason(): SolarSeason
     {
-        return SolarSeason::fromIndex($this->getYear(), intdiv($this->getIndexInYear(), 3));
+        return SolarSeason::fromIndex($this->year, intdiv($this->getIndexInYear(), 3));
     }
 
     /**
@@ -118,7 +94,7 @@ class SolarMonth extends AbstractTyme
      */
     function getWeekCount(int $start): int
     {
-        return (int)ceil(($this->indexOf(SolarDay::fromYmd($this->getYear(), $this->month, 1)->getWeek()->getIndex() - $start, null, 7) + $this->getDayCount()) / 7);
+        return (int)ceil(($this->indexOf(SolarDay::fromYmd($this->year, $this->month, 1)->getWeek()->getIndex() - $start, null, 7) + $this->getDayCount()) / 7);
     }
 
     function getName(): string
@@ -128,13 +104,13 @@ class SolarMonth extends AbstractTyme
 
     function __toString(): string
     {
-        return sprintf('%s%s', $this->year, $this->getName());
+        return sprintf('%s%s', $this->getSolarYear(), $this->getName());
     }
 
     function next(int $n): SolarMonth
     {
         $i = $this->month - 1 + $n;
-        return static::fromYm(intdiv($this->getYear() * 12 + $i, 12), $this->indexOf($i, null, 12) + 1);
+        return static::fromYm(intdiv($this->year * 12 + $i, 12), $this->indexOf($i, null, 12) + 1);
     }
 
     /**
@@ -146,10 +122,9 @@ class SolarMonth extends AbstractTyme
     function getWeeks(int $start): array
     {
         $size = $this->getWeekCount($start);
-        $y = $this->getYear();
         $l = array();
         for ($i = 0; $i < $size; $i++) {
-            $l[] = SolarWeek::fromYm($y, $this->month, $i, $start);
+            $l[] = SolarWeek::fromYm($this->year, $this->month, $i, $start);
         }
         return $l;
     }
@@ -162,11 +137,20 @@ class SolarMonth extends AbstractTyme
     function getDays(): array
     {
         $size = $this->getDayCount();
-        $y = $this->getYear();
         $l = array();
         for ($i = 1; $i <= $size; $i++) {
-            $l[] = SolarDay::fromYmd($y, $this->month, $i);
+            $l[] = SolarDay::fromYmd($this->year, $this->month, $i);
         }
         return $l;
+    }
+
+    /**
+     * 本月第1天
+     *
+     * @return SolarDay 公历日
+     */
+    function getFirstDay(): SolarDay
+    {
+        return SolarDay::fromYmd($this->year, $this->month, 1);
     }
 }

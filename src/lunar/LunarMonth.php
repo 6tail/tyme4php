@@ -3,7 +3,6 @@
 namespace com\tyme\lunar;
 
 
-use com\tyme\AbstractTyme;
 use com\tyme\culture\Direction;
 use com\tyme\culture\fetus\FetusMonth;
 use com\tyme\culture\ren\MinorRen;
@@ -13,6 +12,7 @@ use com\tyme\sixtycycle\EarthBranch;
 use com\tyme\sixtycycle\HeavenStem;
 use com\tyme\sixtycycle\SixtyCycle;
 use com\tyme\solar\SolarTerm;
+use com\tyme\unit\MonthUnit;
 use com\tyme\util\ShouXingUtil;
 use InvalidArgumentException;
 
@@ -21,124 +21,35 @@ use InvalidArgumentException;
  * @author 6tail
  * @package com\tyme\lunar
  */
-class LunarMonth extends AbstractTyme
+class LunarMonth extends MonthUnit
 {
-    /**
-     * @var array 缓存
-     */
-    private static array $cache = array();
-
     static array $NAMES = ['正月', '二月', '三月', '四月', '五月', '六月', '七月', '八月', '九月', '十月', '十一月', '十二月'];
-
-
-    /**
-     * @var LunarYear 农历年
-     */
-    protected LunarYear $year;
-
-    /**
-     * @var int 月
-     */
-    protected int $month;
 
     /**
      * @var bool 是否闰月
      */
     protected bool $leap;
 
-    /**
-     * @var int 天数
-     */
-    protected int $dayCount;
-
-    /**
-     * @var int 位于当年的索引，0-12
-     */
-    protected int $indexInYear;
-
-    /**
-     * @var JulianDay 初一的儒略日
-     */
-    protected JulianDay $firstJulianDay;
-
-    protected function __construct(int $year, int $month, ?array $cache = null)
+    protected function __construct(int $year, int $month)
     {
-        if ($cache !== null) {
-            $m = (int)$cache[1];
-            $this->year = LunarYear::fromYear((int)$cache[0]);
-            $this->month = abs($m);
-            $this->leap = $m < 0;
-            $this->dayCount = (int)$cache[2];
-            $this->indexInYear = (int)$cache[3];
-            $this->firstJulianDay = JulianDay::fromJulianDay((double)$cache[4]);
-        } else {
-            $currentYear = LunarYear::fromYear($year);
-            $currentLeapMonth = $currentYear->getLeapMonth();
-            if ($month == 0 || $month > 12 || $month < -12) {
-                throw new InvalidArgumentException(sprintf('illegal lunar month: %d', $month));
-            }
-            $leap = $month < 0;
-            $m = abs($month);
-            if ($leap && $m != $currentLeapMonth) {
-                throw new InvalidArgumentException(sprintf('illegal leap month %d in lunar year %d', $m, $year));
-            }
+        self::validate($year, $month);
+        parent::__construct($year, abs($month));
+        $this->leap = $month < 0;
+    }
 
-            // 冬至
-            $dongZhiJd = SolarTerm::fromIndex($year, 0)->getCursoryJulianDay();
-
-            // 冬至前的初一，今年首朔的日月黄经差
-            $w = ShouXingUtil::calcShuo($dongZhiJd);
-            if ($w > $dongZhiJd) {
-                $w -= 29.53;
-            }
-
-            // 正常情况正月初一为第3个朔日，但有些特殊的
-            $offset = 2;
-            if ($year > 8 && $year < 24) {
-                $offset = 1;
-            } else if (LunarYear::fromYear($year - 1)->getLeapMonth() > 10 && $year != 239 && $year != 240) {
-                $offset = 3;
-            }
-
-            // 位于当年的索引
-            $index = $m - 1;
-            if ($leap || ($currentLeapMonth > 0 && $m > $currentLeapMonth)) {
-                $index += 1;
-            }
-            $this->indexInYear = $index;
-
-            // 本月初一
-            $w += 29.5306 * ($offset + $index);
-            $firstDay = ShouXingUtil::calcShuo($w);
-            $this->firstJulianDay = JulianDay::fromJulianDay(JulianDay::J2000 + $firstDay);
-            // 本月天数 = 下月初一 - 本月初一
-            $this->dayCount = (int)(ShouXingUtil::calcShuo($w + 29.5306) - $firstDay);
-            $this->year = $currentYear;
-            $this->month = $m;
-            $this->leap = $leap;
+    static function validate($year, $month): void
+    {
+        if ($month == 0 || $month > 12 || $month < -12) {
+            throw new InvalidArgumentException(sprintf('illegal lunar month: %d', $month));
+        }
+        if ($month < 0 && -$month != LunarYear::fromYear($year)->getLeapMonth()) {
+            throw new InvalidArgumentException(sprintf('illegal leap month %d in lunar year %d', -$month, $year));
         }
     }
 
     static function fromYm(int $year, int $month): static
     {
-        $c = null;
-        $key = sprintf('%d%d', $year, $month);
-        if (!empty(static::$cache[$key])) {
-            $c = static::$cache[$key];
-        }
-        if (null != $c) {
-            $m = new static(0, 0, $c);
-        } else {
-            $m = new static($year, $month);
-            static::$cache[$key] = [
-                $m->getYear(),
-                $m->getMonthWithLeap(),
-                $m->getDayCount(),
-                $m->getIndexInYear(),
-                $m->getFirstJulianDay()->getDay()
-            ];
-        }
-        return $m;
+        return new static($year, $month);
     }
 
     /**
@@ -148,27 +59,7 @@ class LunarMonth extends AbstractTyme
      */
     function getLunarYear(): LunarYear
     {
-        return $this->year;
-    }
-
-    /**
-     * 年
-     *
-     * @return int 年
-     */
-    function getYear(): int
-    {
-        return $this->year->getYear();
-    }
-
-    /**
-     * 月
-     *
-     * @return int 月
-     */
-    function getMonth(): int
-    {
-        return $this->month;
+        return LunarYear::fromYear($this->year);
     }
 
     /**
@@ -181,6 +72,30 @@ class LunarMonth extends AbstractTyme
         return $this->leap ? -$this->month : $this->month;
     }
 
+    protected function getNewMoon(): float
+    {
+        $year = $this->year;
+        // 冬至
+        $dongZhiJd = SolarTerm::fromIndex($year, 0)->getCursoryJulianDay();
+
+        // 冬至前的初一，今年首朔的日月黄经差
+        $w = ShouXingUtil::calcShuo($dongZhiJd);
+        if ($w > $dongZhiJd) {
+            $w -= 29.53;
+        }
+
+        // 正常情况正月初一为第3个朔日，但有些特殊的
+        $offset = 2;
+        if ($year > 8 && $year < 24) {
+            $offset = 1;
+        } else if (LunarYear::fromYear($year - 1)->getLeapMonth() > 10 && $year != 239 && $year != 240) {
+            $offset = 3;
+        }
+
+        // 本月初一
+        return $w + 29.5306 * ($offset + $this->getIndexInYear());
+    }
+
     /**
      * 天数(大月30天，小月29天)
      *
@@ -188,7 +103,9 @@ class LunarMonth extends AbstractTyme
      */
     function getDayCount(): int
     {
-        return $this->dayCount;
+        $w = $this->getNewMoon();
+        // 本月天数 = 下月初一 - 本月初一
+        return (int)(ShouXingUtil::calcShuo($w + 29.5306) - ShouXingUtil::calcShuo($w));
     }
 
     /**
@@ -198,7 +115,16 @@ class LunarMonth extends AbstractTyme
      */
     function getIndexInYear(): int
     {
-        return $this->indexInYear;
+        $index = $this->month - 1;
+        if ($this->leap) {
+            $index += 1;
+        } else {
+            $leapMonth = $this->getLunarYear()->getLeapMonth();
+            if ($leapMonth > 0 && $this->month > $leapMonth) {
+                $index += 1;
+            }
+        }
+        return $index;
     }
 
     /**
@@ -218,7 +144,7 @@ class LunarMonth extends AbstractTyme
      */
     function getFirstJulianDay(): JulianDay
     {
-        return $this->firstJulianDay;
+        return JulianDay::fromJulianDay(JulianDay::J2000 + ShouXingUtil::calcShuo($this->getNewMoon()));
     }
 
     /**
@@ -239,7 +165,7 @@ class LunarMonth extends AbstractTyme
      */
     function getWeekCount(int $start): int
     {
-        return (int)ceil(($this->indexOf($this->firstJulianDay->getWeek()->getIndex() - $start, null, 7) + $this->getDayCount()) / 7);
+        return (int)ceil(($this->indexOf($this->getFirstJulianDay()->getWeek()->getIndex() - $start, null, 7) + $this->getDayCount()) / 7);
     }
 
     /**
@@ -254,16 +180,16 @@ class LunarMonth extends AbstractTyme
 
     function __toString(): string
     {
-        return sprintf('%s%s', $this->year, $this->getName());
+        return sprintf('%s%s', $this->getLunarYear(), $this->getName());
     }
 
     function next(int $n): LunarMonth
     {
         if ($n == 0) {
-            return static::fromYm($this->getYear(), $this->getMonthWithLeap());
+            return static::fromYm($this->year, $this->getMonthWithLeap());
         }
-        $m = $this->indexInYear + 1 + $n;
-        $y = $this->year;
+        $m = $this->getIndexInYear() + 1 + $n;
+        $y = $this->getLunarYear();
         if ($n > 0) {
             $monthCount = $y->getMonthCount();
             while ($m > $monthCount) {
@@ -298,13 +224,17 @@ class LunarMonth extends AbstractTyme
     function getDays(): array
     {
         $size = $this->getDayCount();
-        $y = $this->getYear();
         $m = $this->getMonthWithLeap();
         $l = array();
         for ($i = 0; $i < $size; $i++) {
-            $l[] = LunarDay::fromYmd($y, $m, $i + 1);
+            $l[] = LunarDay::fromYmd($this->year, $m, $i + 1);
         }
         return $l;
+    }
+
+    function getFirstDay(): LunarDay
+    {
+        return LunarDay::fromYmd($this->year, $this->getMonthWithLeap(), 1);
     }
 
     /**
@@ -316,11 +246,10 @@ class LunarMonth extends AbstractTyme
     function getWeeks(int $start): array
     {
         $size = $this->getWeekCount($start);
-        $y = $this->getYear();
         $m = $this->getMonthWithLeap();
         $l = array();
         for ($i = 0; $i < $size; $i++) {
-            $l[] = LunarWeek::fromYm($y, $m, $i, $start);
+            $l[] = LunarWeek::fromYm($this->year, $m, $i, $start);
         }
         return $l;
     }
@@ -332,7 +261,7 @@ class LunarMonth extends AbstractTyme
      */
     function getSixtyCycle(): SixtyCycle
     {
-        return SixtyCycle::fromName(sprintf('%s%s', HeavenStem::fromIndex($this->year->getSixtyCycle()->getHeavenStem()->getIndex() * 2 + $this->month + 1)->getName(), EarthBranch::fromIndex($this->month + 1)->getName()));
+        return SixtyCycle::fromName(sprintf('%s%s', HeavenStem::fromIndex($this->getLunarYear()->getSixtyCycle()->getHeavenStem()->getIndex() * 2 + $this->month + 1)->getName(), EarthBranch::fromIndex($this->month + 1)->getName()));
     }
 
     /**
@@ -346,7 +275,7 @@ class LunarMonth extends AbstractTyme
         if ($index < 2) {
             $index += 3;
         }
-        return NineStar::fromIndex(27 - $this->year->getSixtyCycle()->getEarthBranch()->getIndex() % 3 * 3 - $index);
+        return NineStar::fromIndex(27 - $this->getLunarYear()->getSixtyCycle()->getEarthBranch()->getIndex() % 3 * 3 - $index);
     }
 
     /**

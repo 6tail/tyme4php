@@ -43,4 +43,9 @@ class SolarYearTest extends TestCase
     {
         $this->assertEquals('2018年', SolarYear::fromYear(2023)->next(-5)->getName());
     }
+
+    function test7()
+    {
+        $this->assertEquals(2023, SolarYear::fromYear(2023)->getYear());
+    }
 }

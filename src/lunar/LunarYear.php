@@ -3,12 +3,12 @@
 namespace com\tyme\lunar;
 
 
-use com\tyme\AbstractTyme;
 use com\tyme\culture\Direction;
 use com\tyme\culture\KitchenGodSteed;
 use com\tyme\culture\star\nine\NineStar;
 use com\tyme\culture\Twenty;
 use com\tyme\sixtycycle\SixtyCycle;
+use com\tyme\unit\YearUnit;
 use InvalidArgumentException;
 
 /**
@@ -16,17 +16,12 @@ use InvalidArgumentException;
  * @author 6tail
  * @package com\tyme\lunar
  */
-class LunarYear extends AbstractTyme
+class LunarYear extends YearUnit
 {
     /**
      * @var ?array 缓存{闰月:年}
      */
     protected static ?array $LEAP = null;
-
-    /**
-     * @var int 年
-     */
-    protected int $year;
 
     private static function init(): void
     {
@@ -71,25 +66,20 @@ class LunarYear extends AbstractTyme
         if (null == static::$LEAP) {
             static::init();
         }
+        self::validate($year);
+        parent::__construct($year);
+    }
+
+    static function validate(int $year): void
+    {
         if ($year < -1 || $year > 9999) {
             throw new InvalidArgumentException(sprintf('illegal lunar year: %d', $year));
         }
-        $this->year = $year;
     }
 
     static function fromYear(int $year): static
     {
         return new static($year);
-    }
-
-    /**
-     * 年
-     *
-     * @return int 年
-     */
-    function getYear(): int
-    {
-        return $this->year;
     }
 
     /**

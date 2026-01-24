@@ -3,8 +3,7 @@
 namespace com\tyme\lunar;
 
 
-use com\tyme\AbstractTyme;
-use com\tyme\culture\Week;
+use com\tyme\unit\WeekUnit;
 use InvalidArgumentException;
 
 /**
@@ -12,40 +11,23 @@ use InvalidArgumentException;
  * @author 6tail
  * @package com\tyme\lunar
  */
-class LunarWeek extends AbstractTyme
+class LunarWeek extends WeekUnit
 {
     static array $NAMES = ['第一周', '第二周', '第三周', '第四周', '第五周', '第六周'];
 
-    /**
-     * @var LunarMonth 月
-     */
-    protected LunarMonth $month;
-
-    /**
-     * @var int 索引，0-5
-     */
-    protected int $index;
-
-    /**
-     * @var Week 起始星期
-     */
-    protected Week $start;
-
     protected function __construct(int $year, int $month, int $index, int $start)
     {
-        if ($index < 0 || $index > 5) {
-            throw new InvalidArgumentException(sprintf('illegal lunar week index: %d', $index));
-        }
-        if ($start < 0 || $start > 6) {
-            throw new InvalidArgumentException(sprintf('illegal lunar week start: %d', $start));
-        }
+        self::validate($year, $month, $index, $start);
+        parent::__construct($year, $month, $index, $start);
+    }
+
+    static function validate(int $year, int $month, int $index, int $start): void
+    {
+        parent::validate($year, $month, $index, $start);
         $m = LunarMonth::fromYm($year, $month);
         if ($index >= $m->getWeekCount($start)) {
             throw new InvalidArgumentException(sprintf('illegal lunar week index: %d in month: %s', $index, $m));
         }
-        $this->month = $m;
-        $this->index = $index;
-        $this->start = Week::fromIndex($start);
     }
 
     static function fromYm(int $year, int $month, int $index, int $start): static
@@ -60,47 +42,7 @@ class LunarWeek extends AbstractTyme
      */
     function getLunarMonth(): LunarMonth
     {
-        return $this->month;
-    }
-
-    /**
-     * 年
-     *
-     * @return int 年
-     */
-    function getYear(): int
-    {
-        return $this->month->getYear();
-    }
-
-    /**
-     * 月
-     *
-     * @return int 月
-     */
-    function getMonth(): int
-    {
-        return $this->month->getMonthWithLeap();
-    }
-
-    /**
-     * 索引
-     *
-     * @return int 索引，0-5
-     */
-    function getIndex(): int
-    {
-        return $this->index;
-    }
-
-    /**
-     * 起始星期
-     *
-     * @return Week 星期
-     */
-    function getStart(): Week
-    {
-        return $this->start;
+        return LunarMonth::fromYm($this->year, $this->month);
     }
 
     function getName(): string
@@ -110,37 +52,36 @@ class LunarWeek extends AbstractTyme
 
     function __toString(): string
     {
-        return sprintf('%s%s', $this->month, $this->getName());
+        return sprintf('%s%s', $this->getLunarMonth(), $this->getName());
     }
 
     function next(int $n): static
     {
-        $startIndex = $this->start->getIndex();
         if ($n == 0) {
-            return static::fromYm($this->getYear(), $this->getMonth(), $this->index, $startIndex);
+            return static::fromYm($this->getYear(), $this->getMonth(), $this->index, $this->start);
         }
         $d = $this->index + $n;
-        $m = $this->month;
+        $m = $this->getLunarMonth();
         if ($n > 0) {
-            $weekCount = $m->getWeekCount($startIndex);
+            $weekCount = $m->getWeekCount($this->start);
             while ($d >= $weekCount) {
                 $d -= $weekCount;
                 $m = $m->next(1);
-                if (!LunarDay::fromYmd($m->getYear(), $m->getMonthWithLeap(), 1)->getWeek()->equals($this->start)) {
+                if ($m->getFirstDay()->getWeek()->getIndex() != $this->start) {
                     $d += 1;
                 }
-                $weekCount = $m->getWeekCount($startIndex);
+                $weekCount = $m->getWeekCount($this->start);
             }
         } else {
             while ($d < 0) {
-                if (!LunarDay::fromYmd($m->getYear(), $m->getMonthWithLeap(), 1)->getWeek()->equals($this->start)) {
+                if ($m->getFirstDay()->getWeek()->getIndex() != $this->start) {
                     $d -= 1;
                 }
                 $m = $m->next(-1);
-                $d += $m->getWeekCount($startIndex);
+                $d += $m->getWeekCount($this->start);
             }
         }
-        return static::fromYm($m->getYear(), $m->getMonthWithLeap(), $d, $startIndex);
+        return static::fromYm($m->getYear(), $m->getMonthWithLeap(), $d, $this->start);
     }
 
     /**
@@ -150,8 +91,8 @@ class LunarWeek extends AbstractTyme
      */
     function getFirstDay(): LunarDay
     {
-        $firstDay = LunarDay::fromYmd($this->getYear(), $this->getMonth(), 1);
-        return $firstDay->next($this->index * 7 - $this->indexOf($firstDay->getWeek()->getIndex() - $this->start->getIndex(), null, 7));
+        $firstDay = LunarDay::fromYmd($this->year, $this->month, 1);
+        return $firstDay->next($this->index * 7 - $this->indexOf($firstDay->getWeek()->getIndex() - $this->start, null, 7));
     }
 
     /**
