@@ -49,7 +49,7 @@ enum FestivalType: int
 
     function equals(FestivalType $o): bool
     {
-        return $this->value == $o->value;
+        return $this->value === $o->value;
     }
 
 }

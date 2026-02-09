@@ -71,7 +71,7 @@ class SolarTerm extends LoopTyme
      */
     function isJie(): bool
     {
-        return $this->index % 2 == 1;
+        return $this->index % 2 === 1;
     }
 
     /**
@@ -81,7 +81,7 @@ class SolarTerm extends LoopTyme
      */
     function isQi(): bool
     {
-        return $this->index % 2 == 0;
+        return $this->index % 2 === 0;
     }
 
     /**

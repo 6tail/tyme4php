@@ -55,12 +55,12 @@ class SolarMonth extends MonthUnit
      */
     function getDayCount(): int
     {
-        if (1582 == $this->year && 10 == $this->month) {
+        if (1582 === $this->year && 10 === $this->month) {
             return 21;
         }
         $d = static::$DAYS[$this->getIndexInYear()];
         //公历闰年2月多一天
-        if (2 == $this->month && $this->getSolarYear()->isLeap()) {
+        if (2 === $this->month && $this->getSolarYear()->isLeap()) {
             $d++;
         }
         return $d;

@@ -59,11 +59,11 @@ class FetusDay extends AbstractCulture
     function getName(): string
     {
         $s = $this->fetusHeavenStem->getName() . $this->fetusEarthBranch->getName();
-        if ('门门' == $s) {
+        if ('门门' === $s) {
             $s = '占大门';
-        } else if ('碓磨碓' == $s) {
+        } else if ('碓磨碓' === $s) {
             $s = '占碓磨';
-        } else if ('房床床' == $s) {
+        } else if ('房床床' === $s) {
             $s = '占房床';
         } else if (str_starts_with($s, '门')) {
             $s = '占' . $s;
@@ -71,13 +71,13 @@ class FetusDay extends AbstractCulture
 
         $s .= ' ';
 
-        if (Side::IN == $this->side) {
+        if (Side::IN === $this->side) {
             $s .= '房';
         }
         $s .= $this->side->getName();
 
         $directionName = $this->direction->getName();
-        if (Side::OUT == $this->side && str_contains('北南西东', $directionName)) {
+        if (Side::OUT === $this->side && str_contains('北南西东', $directionName)) {
             $s .= '正';
         }
         $s .= $directionName;

@@ -39,7 +39,7 @@ class LunarMonth extends MonthUnit
 
     static function validate($year, $month): void
     {
-        if ($month == 0 || $month > 12 || $month < -12) {
+        if ($month === 0 || $month > 12 || $month < -12) {
             throw new InvalidArgumentException(sprintf('illegal lunar month: %d', $month));
         }
         if ($month < 0 && -$month != LunarYear::fromYear($year)->getLeapMonth()) {
@@ -185,7 +185,7 @@ class LunarMonth extends MonthUnit
 
     function next(int $n): LunarMonth
     {
-        if ($n == 0) {
+        if ($n === 0) {
             return static::fromYm($this->year, $this->getMonthWithLeap());
         }
         $m = $this->getIndexInYear() + 1 + $n;
@@ -206,7 +206,7 @@ class LunarMonth extends MonthUnit
         $leap = false;
         $leapMonth = $y->getLeapMonth();
         if ($leapMonth > 0) {
-            if ($m == $leapMonth + 1) {
+            if ($m === $leapMonth + 1) {
                 $leap = true;
             }
             if ($m > $leapMonth) {

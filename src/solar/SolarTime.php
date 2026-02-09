@@ -158,7 +158,7 @@ class SolarTime extends SecondUnit
      */
     function next(int $n): SolarTime
     {
-        if ($n == 0) {
+        if ($n === 0) {
             return static::fromYmdHms($this->year, $this->month, $this->day, $this->hour, $this->minute, $this->second);
         }
         $ts = $this->second + $n;

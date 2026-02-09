@@ -37,7 +37,7 @@ class LunarHour extends SecondUnit
 
     protected function __construct(int $year, int $month, int $day, int $hour, int $minute, int $second)
     {
-        if (null == static::$provider) {
+        if (null === static::$provider) {
             static::init();
         }
         self::validate($year, $month, $day, $hour, $minute, $second);

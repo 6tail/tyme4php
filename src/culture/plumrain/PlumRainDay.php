@@ -29,6 +29,6 @@ class PlumRainDay extends AbstractCultureDay
 
     function __toString(): string
     {
-        return $this->getPlumRain()->getIndex() == 0 ? parent::__toString() : $this->culture->getName();
+        return $this->getPlumRain()->getIndex() === 0 ? parent::__toString() : $this->culture->getName();
     }
 }

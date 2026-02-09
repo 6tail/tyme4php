@@ -45,7 +45,7 @@ enum YinYang: int
 
     function equals(YinYang $o): bool
     {
-        return $this->value == $o->value;
+        return $this->value === $o->value;
     }
 
 }

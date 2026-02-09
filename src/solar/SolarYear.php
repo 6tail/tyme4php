@@ -39,7 +39,7 @@ class SolarYear extends YearUnit
      */
     function getDayCount(): int
     {
-        if (1582 == $this->year) {
+        if (1582 === $this->year) {
             return 355;
         }
         return $this->isLeap() ? 366 : 365;
@@ -53,9 +53,9 @@ class SolarYear extends YearUnit
     function isLeap(): bool
     {
         if ($this->year < 1600) {
-            return $this->year % 4 == 0;
+            return $this->year % 4 === 0;
         }
-        return ($this->year % 4 == 0 && $this->year % 100 != 0) || ($this->year % 400 == 0);
+        return ($this->year % 4 === 0 && $this->year % 100 != 0) || ($this->year % 400 == 0);
     }
 
     function getName(): string

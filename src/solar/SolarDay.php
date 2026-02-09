@@ -48,7 +48,7 @@ class SolarDay extends DayUnit
         if ($day < 1) {
             throw new InvalidArgumentException(sprintf('illegal solar day: %d-%d-%d', $year, $month, $day));
         }
-        if (1582 == $year && 10 == $month) {
+        if (1582 === $year && 10 === $month) {
             if (($day > 4 && $day < 15) || $day > 31) {
                 throw new InvalidArgumentException(sprintf('illegal solar day: %d-%d-%d', $year, $month, $day));
             }
@@ -155,7 +155,7 @@ class SolarDay extends DayUnit
     {
         $y = $this->year;
         $i = $this->month * 2;
-        if ($i == 24) {
+        if ($i === 24) {
             $y += 1;
             $i = 0;
         }

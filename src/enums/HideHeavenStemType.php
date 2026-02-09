@@ -49,7 +49,7 @@ enum HideHeavenStemType: int
 
     function equals(HideHeavenStemType $o): bool
     {
-        return $this->value == $o->value;
+        return $this->value === $o->value;
     }
 
 }

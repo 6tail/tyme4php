@@ -63,7 +63,7 @@ class LunarYear extends YearUnit
 
     protected function __construct(int $year)
     {
-        if (null == static::$LEAP) {
+        if (null === static::$LEAP) {
             static::init();
         }
         self::validate($year);
@@ -128,7 +128,7 @@ class LunarYear extends YearUnit
      */
     function getLeapMonth(): int
     {
-        if ($this->year == -1) {
+        if ($this->year === -1) {
             return 11;
         }
         for ($i = 0, $j = count(static::$LEAP); $i < $j; $i++) {
@@ -198,7 +198,7 @@ class LunarYear extends YearUnit
     {
         $l = array();
         $m = $this->getFirstMonth();
-        while ($m->getYear() == $this->year) {
+        while ($m->getYear() === $this->year) {
             $l[] = $m;
             $m = $m->next(1);
         }

@@ -80,19 +80,22 @@ class LunarFestival extends AbstractTyme
         if (preg_match_all(sprintf('/@\d{2}0%02d%02d/', $month, $day), static::$DATA, $matches)) {
             return new static(FestivalType::DAY, LunarDay::fromYmd($year, $month, $day), null, $matches[0][0]);
         }
+        $lunarDay = LunarDay::fromYmd($year, $month, $day);
+        $solarDay = $lunarDay->getSolarDay();
         if (preg_match_all('/@\\d{2}1\\d{2}/', static::$DATA, $matches)) {
             $data = $matches[0][0];
-            $solarTerm = SolarTerm::fromIndex($year, intval(substr($data, 4, 2)));
-            $lunarDay = $solarTerm->getSolarDay()->getLunarDay();
-            if ($lunarDay->getYear() == $year && $lunarDay->getMonth() == $month && $lunarDay->getDay() == $day) {
-                return new static(FestivalType::TERM, $lunarDay, $solarTerm, $data);
+            $term = SolarTerm::fromIndex($year, intval(substr($data, 4, 2)));
+            $termDay = $term->getSolarDay();
+            if ($termDay->getYear() == $solarDay->getYear() && $termDay->getMonth() == $solarDay->getMonth() && $termDay->getDay() == $solarDay->getDay()) {
+                return new static(FestivalType::TERM, $lunarDay, $term, $data);
             }
         }
-        if (preg_match_all('/@\\d{2}2/', static::$DATA, $matches)) {
-            $lunarDay = LunarDay::fromYmd($year, $month, $day);
-            $nextDay = $lunarDay->next(1);
-            if ($nextDay->getMonth() == 1 && $nextDay->getDay() == 1) {
-                return new static(FestivalType::EVE, $lunarDay, null, $matches[0][0]);
+        if ($month == 12 && $day > 28) {
+            if (preg_match_all('/@\\d{2}2/', static::$DATA, $matches)) {
+                $nextDay = $lunarDay->next(1);
+                if ($nextDay->getMonth() == 1 && $nextDay->getDay() == 1) {
+                    return new static(FestivalType::EVE, $lunarDay, null, $matches[0][0]);
+                }
             }
         }
         return null;

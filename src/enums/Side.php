@@ -45,7 +45,7 @@ enum Side: int
 
     function equals(Side $o): bool
     {
-        return $this->value == $o->value;
+        return $this->value === $o->value;
     }
 
 }

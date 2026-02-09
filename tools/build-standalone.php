@@ -16,7 +16,7 @@ function writeClass($path): void
     $lines = file($path);
     foreach ($lines as $line) {
         if (!$isClass) {
-            if (str_contains($line, '/') || str_contains($line, 'class') || str_contains($line, 'bcscale')) {
+            if (str_contains($line, '/') || str_contains($line, 'class')) {
                 $isClass = true;
             }
         }
@@ -43,7 +43,7 @@ function parseFile($path): ClassInfo
                 if (!in_array($line, $uses)) {
                     $uses[] = $line;
                 }
-            } else if (str_contains($line, '/') || str_contains($line, 'class') || str_contains($line, 'bcscale')) {
+            } else if (str_contains($line, '/') || str_contains($line, 'class')) {
                 $isClass = true;
             }
         }
@@ -64,13 +64,18 @@ function parseDirectory($path): void
 
     $files = glob(rtrim($path, '/') . '/*');
     if ('../src' == $path) {
-        usort($files, function ($a, $b) {
-            $sorts = array();
-            foreach (['ExtendTrait', 'Culture', 'Tyme', 'AbstractCulture', 'AbstractCultureDay', 'AbstractTyme', 'LoopTyme'] as $name) {
-                $sorts[] = '../src/'. $name . '.php';
-            }
-            return array_search($a, $sorts) - array_search($b, $sorts);
-        });
+        $sorts = array();
+        foreach (['ExtendTrait', 'Culture', 'Tyme', 'AbstractCulture', 'AbstractCultureDay', 'AbstractTyme', 'LoopTyme'] as $name) {
+            $sorts[] = '../src/'. $name . '.php';
+        }
+        $sorts[] = '../src/unit';
+        $files = sortFiles($files, $sorts);
+    } else if ('../src/unit' == $path) {
+        $sorts = array();
+        foreach (['YearUnit', 'MonthUnit', 'WeekUnit', 'DayUnit', 'SecondUnit'] as $name) {
+            $sorts[] = '../src/unit/'. $name . '.php';
+        }
+        $files = sortFiles($files, $sorts);
     }
     foreach ($files as $file) {
         if (is_file($file)) {
@@ -113,6 +118,25 @@ function parseDirectory($path): void
             parseDirectory($file);
         }
     }
+}
+
+function sortFiles($files, $sorts)
+{
+    usort($files, function ($a, $b) use ($sorts) {
+        $m = array_search($a, $sorts);
+        $n = array_search($b, $sorts);
+        if ($m === false && $n === false) {
+            return 0;
+        }
+        if ($n === false) {
+            return -1;
+        }
+        if ($m === false) {
+            return 1;
+        }
+        return $m < $n ? -1 : 1;
+    });
+    return $files;
 }
 
 parseDirectory('../src');

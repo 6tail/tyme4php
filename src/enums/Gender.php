@@ -45,7 +45,7 @@ enum Gender: int
 
     function equals(Gender $o): bool
     {
-        return $this->value == $o->value;
+        return $this->value === $o->value;
     }
 
 }

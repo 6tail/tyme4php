@@ -91,7 +91,7 @@ class Phase extends LoopTyme
     function getSolarTime(): SolarTime
     {
         $t = $this->getStartSolarTime();
-        return $this->index % 2 == 1 ? $t->next(1) : $t;
+        return $this->index % 2 === 1 ? $t->next(1) : $t;
     }
 
     function getSolarDay(): SolarDay
