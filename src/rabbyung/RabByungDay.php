@@ -2,29 +2,18 @@
 
 namespace com\tyme\rabbyung;
 
-use com\tyme\AbstractTyme;
-use com\tyme\culture\Zodiac;
 use com\tyme\solar\SolarDay;
+use com\tyme\unit\DayUnit;
 use InvalidArgumentException;
 
 /**
- * 藏历日
+ * 藏历日，仅支持藏历1950年十二月初一（公历1951年1月8日）至藏历2050年十二月三十（公历2051年2月11日）
  * @author 6tail
  * @package com\tyme\rabbyung
  */
-class RabByungDay extends AbstractTyme
+class RabByungDay extends DayUnit
 {
     static array $NAMES = ['初一', '初二', '初三', '初四', '初五', '初六', '初七', '初八', '初九', '初十', '十一', '十二', '十三', '十四', '十五', '十六', '十七', '十八', '十九', '二十', '廿一', '廿二', '廿三', '廿四', '廿五', '廿六', '廿七', '廿八', '廿九', '三十'];
-
-    /**
-     * @var RabByungMonth 藏历月
-     */
-    protected RabByungMonth $month;
-
-    /**
-     * @var int 日
-     */
-    protected int $day;
 
     /**
      * @var bool 是否闰日
@@ -34,25 +23,32 @@ class RabByungDay extends AbstractTyme
     /**
      * 初始化
      *
-     * @param RabByungMonth $month 藏历月
+     * @param int $year 藏历年
+     * @param int $month 藏历月，闰月为负
      * @param int $day 藏历日，闰日为负
      */
-    function __construct(RabByungMonth $month, int $day)
+    function __construct(int $year, int $month, int $day)
+    {
+
+        self::validate($year, $month, $day);
+        parent::__construct($year, $month, abs($day));
+        $this->leap = $day < 0;
+    }
+
+    static function validate(int $year, int $month, int $day): void
     {
         if ($day == 0 || $day < -30 || $day > 30) {
             throw new InvalidArgumentException(sprintf('illegal day %d in %s', $day, $month));
         }
-        $this->leap = $day < 0;
+        $m = RabByungMonth::fromYm($year, $month);
+        $leap = $day < 0;
         $d = abs($day);
-        $leapDays = $month->getLeapDays();
-        $missDays = $month->getMissDays();
-        if ($this->leap && !in_array($d, $leapDays)) {
-            throw new InvalidArgumentException(sprintf('illegal leap day %d in %s', $d, $month));
-        } elseif (!$this->leap && in_array($d, $missDays)) {
-            throw new InvalidArgumentException(sprintf('illegal day %d in %s', $d, $month));
+        if ($leap && !in_array($d, $m->getLeapDays())) {
+            throw new InvalidArgumentException(sprintf('illegal leap day %d in %s', $d, $m));
         }
-        $this->month = $month;
-        $this->day = $d;
+        if (!$leap && in_array($d, $m->getMissDays())) {
+            throw new InvalidArgumentException(sprintf('illegal day %d in %s', $d, $m));
+        }
     }
 
     /**
@@ -65,12 +61,7 @@ class RabByungDay extends AbstractTyme
      */
     static function fromYmd(int $year, int $month, int $day): static
     {
-        return new static(RabByungMonth::fromYm($year, $month), $day);
-    }
-
-    static function fromElementZodiac(int $rabByungIndex, RabByungElement $element, Zodiac $zodiac, int $month, int $day): static
-    {
-        return new static(RabByungMonth::fromElementZodiac($rabByungIndex, $element, $zodiac, $month), $day);
+        return new static($year, $month, $day);
     }
 
     /**
@@ -105,7 +96,7 @@ class RabByungDay extends AbstractTyme
                 }
             }
         }
-        return new self($m, $day);
+        return new self($m->getYear(), $m->getMonthWithLeap(), $day);
     }
 
     /**
@@ -115,37 +106,7 @@ class RabByungDay extends AbstractTyme
      */
     function getRabByungMonth(): RabByungMonth
     {
-        return $this->month;
-    }
-
-    /**
-     * 藏历年
-     *
-     * @return int 藏历年
-     */
-    function getYear(): int
-    {
-        return $this->month->getYear();
-    }
-
-    /**
-     * 藏历月
-     *
-     * @return int 藏历月，闰月为负
-     */
-    function getMonth(): int
-    {
-        return $this->month->getMonthWithLeap();
-    }
-
-    /**
-     * 藏历日
-     *
-     * @return int 藏历日
-     */
-    function getDay(): int
-    {
-        return $this->day;
+        return RabByungMonth::fromYm($this->year, $this->month);
     }
 
     /**
@@ -175,7 +136,7 @@ class RabByungDay extends AbstractTyme
 
     function __toString(): string
     {
-        return $this->month . $this->getName();
+        return $this->getRabByungMonth() . $this->getName();
     }
 
     /**
@@ -197,8 +158,9 @@ class RabByungDay extends AbstractTyme
     function getSolarDay(): SolarDay
     {
         $m = RabByungMonth::fromYm(1950, 12);
+        $cm = $this->getRabByungMonth();
         $n = 0;
-        while (!$this->month->equals($m)) {
+        while (!$cm->equals($m)) {
             $n += $m->getDayCount();
             $m = $m->next(1);
         }

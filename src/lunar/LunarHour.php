@@ -11,7 +11,6 @@ use com\tyme\eightchar\EightChar;
 use com\tyme\eightchar\provider\EightCharProvider;
 use com\tyme\eightchar\provider\impl\DefaultEightCharProvider;
 use com\tyme\sixtycycle\EarthBranch;
-use com\tyme\sixtycycle\HeavenStem;
 use com\tyme\sixtycycle\SixtyCycle;
 use com\tyme\sixtycycle\SixtyCycleHour;
 use com\tyme\solar\SolarTerm;
@@ -176,12 +175,13 @@ class LunarHour extends SecondUnit
      */
     function getSixtyCycle(): SixtyCycle
     {
-        $earthBranchIndex = $this->getIndexInDay() % 12;
-        $d = $this->getLunarDay()->getSixtyCycle();
+        $e = $this->getIndexInDay();
+        $h = $this->getLunarDay()->getSixtyCycle()->getHeavenStem();
         if ($this->hour >= 23) {
-            $d = $d->next(1);
+            $h = $h->next(1);
+            $e = 0;
         }
-        return SixtyCycle::fromName(sprintf('%s%s', HeavenStem::fromIndex($d->getHeavenStem()->getIndex() % 5 * 2 + $earthBranchIndex)->getName(), EarthBranch::fromIndex($earthBranchIndex)->getName()));
+        return SixtyCycle::fromIndex($h->getIndex() * 12 + $e);
     }
 
     /**
@@ -205,7 +205,7 @@ class LunarHour extends SecondUnit
         $solar = $d->getSolarDay();
         $dongZhi = SolarTerm::fromIndex($solar->getYear(), 0);
         $earthBranchIndex = $this->getIndexInDay() % 12;
-        $index = [8, 5, 2][$d->getSixtyCycle()->getEarthBranch()->getIndex() % 3];
+        $index = 8 - 3 * ($d->getSixtyCycle()->getEarthBranch()->getIndex() % 3);
         if (!$solar->isBefore($dongZhi->getJulianDay()->getSolarDay()) && $solar->isBefore($dongZhi->next(12)->getJulianDay()->getSolarDay())) {
             $index = 8 + $earthBranchIndex - $index;
         } else {

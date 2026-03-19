@@ -8,8 +8,6 @@ use com\tyme\culture\fetus\FetusMonth;
 use com\tyme\culture\ren\MinorRen;
 use com\tyme\culture\star\nine\NineStar;
 use com\tyme\jd\JulianDay;
-use com\tyme\sixtycycle\EarthBranch;
-use com\tyme\sixtycycle\HeavenStem;
 use com\tyme\sixtycycle\SixtyCycle;
 use com\tyme\solar\SolarTerm;
 use com\tyme\unit\MonthUnit;
@@ -261,7 +259,7 @@ class LunarMonth extends MonthUnit
      */
     function getSixtyCycle(): SixtyCycle
     {
-        return SixtyCycle::fromName(sprintf('%s%s', HeavenStem::fromIndex($this->getLunarYear()->getSixtyCycle()->getHeavenStem()->getIndex() * 2 + $this->month + 1)->getName(), EarthBranch::fromIndex($this->month + 1)->getName()));
+        return SixtyCycle::fromIndex($this->year * 12 + $this->month - 47);
     }
 
     /**

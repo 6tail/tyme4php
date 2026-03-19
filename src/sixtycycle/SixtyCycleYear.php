@@ -106,8 +106,7 @@ class SixtyCycleYear extends AbstractTyme
      */
     function getFirstMonth(): SixtyCycleMonth
     {
-        $h = HeavenStem::fromIndex(($this->getSixtyCycle()->getHeavenStem()->getIndex() + 1) * 2);
-        return new SixtyCycleMonth($this, SixtyCycle::fromName(sprintf('%s寅', $h->getName())));
+        return new SixtyCycleMonth($this, SixtyCycle::fromIndex($this->year * 12 - 46));
     }
 
     /**

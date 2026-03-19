@@ -32,7 +32,7 @@ class LegalHolidayTest extends TestCase
     {
         $d = LegalHoliday::fromYmd(2001, 12, 29);
         $this->assertNotNull($d);
-        $this->assertEquals('2001年12月29日 元旦节(班)', $d->__toString());
+        $this->assertEquals('2001年12月29日 元旦(班)', $d->__toString());
         $this->assertNull($d->next(-1));
     }
 

@@ -75,10 +75,9 @@ class SolarWeek extends WeekUnit
 
     function next(int $n): static
     {
-        $d = $this->index;
+        $d = $this->index + $n;
         $m = $this->getSolarMonth();
         if ($n > 0) {
-            $d += $n;
             $weekCount = $m->getWeekCount($this->start);
             while ($d >= $weekCount) {
                 $d -= $weekCount;
@@ -89,7 +88,6 @@ class SolarWeek extends WeekUnit
                 $weekCount = $m->getWeekCount($this->start);
             }
         } else if ($n < 0) {
-            $d += $n;
             while ($d < 0) {
                 if ($m->getFirstDay()->getWeek()->getIndex() != $this->start) {
                     $d -= 1;

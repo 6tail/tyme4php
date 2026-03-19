@@ -18,8 +18,6 @@ use com\tyme\culture\star\twentyeight\TwentyEightStar;
 use com\tyme\culture\Taboo;
 use com\tyme\culture\Week;
 use com\tyme\festival\LunarFestival;
-use com\tyme\sixtycycle\EarthBranch;
-use com\tyme\sixtycycle\HeavenStem;
 use com\tyme\sixtycycle\SixtyCycle;
 use com\tyme\sixtycycle\SixtyCycleDay;
 use com\tyme\sixtycycle\ThreePillars;
@@ -97,7 +95,8 @@ class LunarDay extends DayUnit
             return $this->year < $target->year;
         }
         if ($this->month != $target->month) {
-            return abs($this->month) < abs($target->month);
+            $t = abs($target->month);
+            return $this->month == $t || abs($this->month) < $t;
         }
         return $this->day < $target->day;
     }
@@ -114,7 +113,8 @@ class LunarDay extends DayUnit
             return $this->year > $target->year;
         }
         if ($this->month != $target->month) {
-            return abs($this->month) >= abs($target->month);
+            $t = abs($this->month);
+            return $t == $target->month || $t > abs($target->month);
         }
         return $this->day > $target->day;
     }
@@ -160,8 +160,7 @@ class LunarDay extends DayUnit
      */
     function getSixtyCycle(): SixtyCycle
     {
-        $offset = (int)$this->getLunarMonth()->getFirstJulianDay()->next($this->day - 12)->getDay();
-        return SixtyCycle::fromName(sprintf('%s%s', HeavenStem::fromIndex($offset)->getName(), EarthBranch::fromIndex($offset)->getName()));
+        return SixtyCycle::fromIndex((int)$this->getLunarMonth()->getFirstJulianDay()->next($this->day - 12)->getDay());
     }
 
     /**
@@ -194,27 +193,26 @@ class LunarDay extends DayUnit
     function getNineStar(): NineStar
     {
         $d = $this->getSolarDay();
-        $dongZhi = SolarTerm::fromIndex($d->getYear(), 0);
-        $dongZhiSolar = $dongZhi->getSolarDay();
-        $xiaZhiSolar = $dongZhi->next(12)->getSolarDay();
-        $dongZhiSolar2 = $dongZhi->next(24)->getSolarDay();
-        $dongZhiIndex = $dongZhiSolar->getLunarDay()->getSixtyCycle()->getIndex();
-        $xiaZhiIndex = $xiaZhiSolar->getLunarDay()->getSixtyCycle()->getIndex();
-        $dongZhiIndex2 = $dongZhiSolar2->getLunarDay()->getSixtyCycle()->getIndex();
-        $solarShunBai = $dongZhiSolar->next($dongZhiIndex > 29 ? 60 - $dongZhiIndex : -$dongZhiIndex);
-        $solarShunBai2 = $dongZhiSolar2->next($dongZhiIndex2 > 29 ? 60 - $dongZhiIndex2 : -$dongZhiIndex2);
-        $solarNiZi = $xiaZhiSolar->next($xiaZhiIndex > 29 ? 60 - $xiaZhiIndex : -$xiaZhiIndex);
-        $offset = 0;
-        if (!$d->isBefore($solarShunBai) && $d->isBefore($solarNiZi)) {
-            $offset = $d->subtract($solarShunBai);
-        } else if (!$d->isBefore($solarNiZi) && $d->isBefore($solarShunBai2)) {
-            $offset = 8 - $d->subtract($solarNiZi);
-        } else if (!$d->isBefore($solarShunBai2)) {
-            $offset = $d->subtract($solarShunBai2);
-        } else if ($d->isBefore($solarShunBai)) {
-            $offset = 8 + $solarShunBai->subtract($d);
+        $y = $d->getYear();
+        $winterSolstice = SolarTerm::fromIndex($y, 0)->getSolarDay();
+        $summerSolstice = SolarTerm::fromIndex($y, 12)->getSolarDay();
+        $nextWinterSolstice = SolarTerm::fromIndex($y + 1, 0)->getSolarDay();
+        // 距冬至最近的甲子日
+        $w = $winterSolstice->next($winterSolstice->getLunarDay()->getSixtyCycle()->stepsCloseTo(0));
+        // 距夏至最近的甲子日
+        $s = $summerSolstice->next($summerSolstice->getLunarDay()->getSixtyCycle()->stepsCloseTo(0));
+        // 距下个冬至最近的甲子日
+        $n = $nextWinterSolstice->next($nextWinterSolstice->getLunarDay()->getSixtyCycle()->stepsCloseTo(0));
+        // 43210012345678876543210012345
+        //      w        s        n
+        //     冬至     夏至      冬至
+        if ($d->isBefore($w)) {
+            return NineStar::fromIndex($w->subtract($d) - 1);
         }
-        return NineStar::fromIndex($offset);
+        if ($d->isBefore($s)) {
+            return NineStar::fromIndex($d->subtract($w));
+        }
+        return NineStar::fromIndex($d->isBefore($n) ? $n->subtract($d) - 1 : $d->subtract($n));
     }
 
     /**

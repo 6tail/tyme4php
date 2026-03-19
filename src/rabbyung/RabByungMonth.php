@@ -2,16 +2,15 @@
 
 namespace com\tyme\rabbyung;
 
-use com\tyme\AbstractTyme;
-use com\tyme\culture\Zodiac;
+use com\tyme\unit\MonthUnit;
 use InvalidArgumentException;
 
 /**
- * 藏历月
+ * 藏历月，仅支持藏历1950年十二月至藏历2050年十二月
  * @author 6tail
  * @package com\tyme\rabbyung
  */
-class RabByungMonth extends AbstractTyme
+class RabByungMonth extends MonthUnit
 {
     static array $NAMES = ['正月', '二月', '三月', '四月', '五月', '六月', '七月', '八月', '九月', '十月', '十一月', '十二月'];
 
@@ -26,24 +25,9 @@ class RabByungMonth extends AbstractTyme
     protected static ?array $DAYS = null;
 
     /**
-     * @var RabByungYear 藏历年
-     */
-    protected RabByungYear $year;
-
-    /**
-     * @var int 月
-     */
-    protected int $month;
-
-    /**
      * @var bool 是否闰月
      */
     protected bool $leap;
-
-    /**
-     * @var int 位于当年的索引，0-12
-     */
-    protected int $indexInYear;
 
     private static function init(): void
     {
@@ -68,40 +52,37 @@ class RabByungMonth extends AbstractTyme
         static::$DAYS = $days;
     }
 
-    function __construct(RabByungYear $year, int $month)
+    function __construct(int $year, int $month)
     {
         if (null == static::$DAYS) {
             static::init();
         }
+        self::validate($year, $month);
+        parent::__construct($year, abs($month));
+        $this->leap = $month < 0;
+    }
+
+    static function validate($year, $month): void
+    {
         if ($month == 0 || $month > 12 || $month < -12) {
             throw new InvalidArgumentException(sprintf('illegal rab-byung month: %d', $month));
         }
-        $y = $year->getYear();
-        if ($y < 1950 || $y > 2050) {
-            throw new InvalidArgumentException(sprintf('rab-byung year %d must between 1950 and 2050', $y));
+        if ($year < 1950 || $year > 2050) {
+            throw new InvalidArgumentException(sprintf('rab-byung year %d must between 1950 and 2050', $year));
         }
+        $leap = $month < 0;
         $m = abs($month);
-        if ($y == 1950 && $m < 12) {
-            throw new InvalidArgumentException(sprintf('month %d must be 12 in rab-byung year %d', $month, $y));
+        if ($year == 1950 && $m < 12) {
+            throw new InvalidArgumentException(sprintf("month %d must be 12 in rab-byung year %d", $month, $year));
         }
-        $this->leap = $month < 0;
-        $leapMonth = $year->getLeapMonth();
-        if ($this->leap && $m != $leapMonth) {
-            throw new InvalidArgumentException(printf('illegal leap month %d in rab-byung year %d', $m, $y));
+        if ($leap && $m != RabByungYear::fromYear($year)->getLeapMonth()) {
+            throw new InvalidArgumentException(sprintf("illegal leap month %d in rab-byung year %d", $m, $year));
         }
-        $this->year = $year;
-        $this->month = $m;
-        $this->indexInYear = $m - 1 + ($this->leap || (0 < $leapMonth && $leapMonth < $m) ? 1 : 0);
     }
 
     static function fromYm(int $year, int $month): static
     {
-        return new static(RabByungYear::fromYear($year), $month);
-    }
-
-    static function fromElementZodiac(int $rabByungIndex, RabByungElement $element, Zodiac $zodiac, int $month): static
-    {
-        return new static(RabByungYear::fromElementZodiac($rabByungIndex, $element, $zodiac), $month);
+        return new static($year, $month);
     }
 
     /**
@@ -111,27 +92,7 @@ class RabByungMonth extends AbstractTyme
      */
     function getRabByungYear(): RabByungYear
     {
-        return $this->year;
-    }
-
-    /**
-     * 年
-     *
-     * @return int 年
-     */
-    function getYear(): int
-    {
-        return $this->year->getYear();
-    }
-
-    /**
-     * 月
-     *
-     * @return int 月
-     */
-    function getMonth(): int
-    {
-        return $this->month;
+        return RabByungYear::fromYear($this->year);
     }
 
     /**
@@ -151,7 +112,16 @@ class RabByungMonth extends AbstractTyme
      */
     function getIndexInYear(): int
     {
-        return $this->indexInYear;
+        $index = $this->month - 1;
+        if ($this->leap) {
+            $index += 1;
+        } else {
+            $leapMonth = $this->getRabByungYear()->getLeapMonth();
+            if ($leapMonth > 0 && $this->month > $leapMonth) {
+                $index += 1;
+            }
+        }
+        return $index;
     }
 
     /**
@@ -181,7 +151,7 @@ class RabByungMonth extends AbstractTyme
 
     function __toString(): string
     {
-        return $this->year . $this->getName();
+        return $this->getRabByungYear() . $this->getName();
     }
 
     function next($n): static
@@ -189,8 +159,8 @@ class RabByungMonth extends AbstractTyme
         if ($n == 0) {
             return static::fromYm($this->getYear(), $this->getMonthWithLeap());
         }
-        $m = $this->indexInYear + 1 + $n;
-        $y = $this->year;
+        $m = $this->getIndexInYear() + 1 + $n;
+        $y = $this->getRabByungYear();
         if ($n > 0) {
             $monthCount = $y->getMonthCount();
             while ($m > $monthCount) {
@@ -224,7 +194,7 @@ class RabByungMonth extends AbstractTyme
      */
     function getFirstDay(): RabByungDay
     {
-        return new RabByungDay($this, 1);
+        return new RabByungDay($this->getYear(), $this->getMonthWithLeap(), 1);
     }
 
     /**
@@ -235,13 +205,15 @@ class RabByungMonth extends AbstractTyme
     function getDays(): array
     {
         $days = [];
+        $y = $this->getYear();
+        $m = $this->getMonthWithLeap();
         $missDays = $this->getMissDays();
         $leapDays = $this->getLeapDays();
         for ($i = 1; $i <= 30; $i++) {
             if (in_array($i, $missDays)) continue;
-            $days[] = new RabByungDay($this, $i);
+            $days[] = new RabByungDay($y, $m, $i);
             if (in_array($i, $leapDays)) {
-                $days[] = new RabByungDay($this, -$i);
+                $days[] = new RabByungDay($y, $m, -$i);
             }
         }
         return $days;
@@ -264,7 +236,7 @@ class RabByungMonth extends AbstractTyme
      */
     function getSpecialDays(): array
     {
-        $key = '' . ($this->getYear() * 13 + $this->indexInYear);
+        $key = '' . ($this->getYear() * 13 + $this->getIndexInYear());
         return static::$DAYS[$key] ?? [];
     }
 

@@ -90,10 +90,9 @@ class LunarFestival extends AbstractTyme
                 return new static(FestivalType::TERM, $lunarDay, $term, $data);
             }
         }
-        if ($month == 12 && $day > 28) {
+        if (abs($month) == 12 && $day > 28) {
             if (preg_match_all('/@\\d{2}2/', static::$DATA, $matches)) {
-                $nextDay = $lunarDay->next(1);
-                if ($nextDay->getMonth() == 1 && $nextDay->getDay() == 1) {
+                if ($lunarDay->next(1)->getYear() != $year) {
                     return new static(FestivalType::EVE, $lunarDay, null, $matches[0][0]);
                 }
             }

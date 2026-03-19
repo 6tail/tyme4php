@@ -154,27 +154,20 @@ class SixtyCycleDay extends AbstractTyme
      */
     function getNineStar(): NineStar
     {
-        $dongZhi = SolarTerm::fromIndex($this->solarDay->getYear(), 0);
-        $dongZhiSolar = $dongZhi->getSolarDay();
-        $xiaZhiSolar = $dongZhi->next(12)->getSolarDay();
-        $dongZhiSolar2 = $dongZhi->next(24)->getSolarDay();
-        $dongZhiIndex = $dongZhiSolar->getLunarDay()->getSixtyCycle()->getIndex();
-        $xiaZhiIndex = $xiaZhiSolar->getLunarDay()->getSixtyCycle()->getIndex();
-        $dongZhiIndex2 = $dongZhiSolar2->getLunarDay()->getSixtyCycle()->getIndex();
-        $solarShunBai = $dongZhiSolar->next($dongZhiIndex > 29 ? 60 - $dongZhiIndex : -$dongZhiIndex);
-        $solarShunBai2 = $dongZhiSolar2->next($dongZhiIndex2 > 29 ? 60 - $dongZhiIndex2 : -$dongZhiIndex2);
-        $solarNiZi = $xiaZhiSolar->next($xiaZhiIndex > 29 ? 60 - $xiaZhiIndex : -$xiaZhiIndex);
-        $offset = 0;
-        if (!$this->solarDay->isBefore($solarShunBai) && $this->solarDay->isBefore($solarNiZi)) {
-            $offset = $this->solarDay->subtract($solarShunBai);
-        } else if (!$this->solarDay->isBefore($solarNiZi) && $this->solarDay->isBefore($solarShunBai2)) {
-            $offset = 8 - $this->solarDay->subtract($solarNiZi);
-        } else if (!$this->solarDay->isBefore($solarShunBai2)) {
-            $offset = $this->solarDay->subtract($solarShunBai2);
-        } else if ($this->solarDay->isBefore($solarShunBai)) {
-            $offset = 8 + $solarShunBai->subtract($this->solarDay);
+        $y = $this->solarDay->getYear();
+        $winterSolstice = SolarTerm::fromIndex($y, 0)->getSolarDay();
+        $summerSolstice = SolarTerm::fromIndex($y, 12)->getSolarDay();
+        $nextWinterSolstice = SolarTerm::fromIndex($y + 1, 0)->getSolarDay();
+        $w = $winterSolstice->next($winterSolstice->getLunarDay()->getSixtyCycle()->stepsCloseTo(0));
+        $s = $summerSolstice->next($summerSolstice->getLunarDay()->getSixtyCycle()->stepsCloseTo(0));
+        $n = $nextWinterSolstice->next($nextWinterSolstice->getLunarDay()->getSixtyCycle()->stepsCloseTo(0));
+        if ($this->solarDay->isBefore($w)) {
+            return NineStar::fromIndex($w->subtract($this->solarDay) - 1);
         }
-        return NineStar::fromIndex($offset);
+        if ($this->solarDay->isBefore($s)) {
+            return NineStar::fromIndex($this->solarDay->subtract($w));
+        }
+        return NineStar::fromIndex($this->solarDay->isBefore($n) ? $n->subtract($this->solarDay) - 1 : $this->solarDay->subtract($n));
     }
 
     /**

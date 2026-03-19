@@ -32,15 +32,15 @@ class SolarFestivalTest extends TestCase
     {
         $f = SolarFestival::fromIndex(2023, 0);
         $this->assertNotNull($f);
-        $this->assertEquals('2024年5月1日 五一劳动节', $f->next(13)->__toString());
-        $this->assertEquals('2022年8月1日 八一建军节', $f->next(-3)->__toString());
+        $this->assertEquals('2024年5月1日 劳动节', $f->next(13)->__toString());
+        $this->assertEquals('2022年8月1日 建军节', $f->next(-3)->__toString());
     }
 
     function test3()
     {
         $f = SolarFestival::fromIndex(2023, 0);
         $this->assertNotNull($f);
-        $this->assertEquals('2022年3月8日 三八妇女节', $f->next(-9)->__toString());
+        $this->assertEquals('2022年3月8日 妇女节', $f->next(-9)->__toString());
     }
 
     function test4()
@@ -54,7 +54,7 @@ class SolarFestivalTest extends TestCase
     {
         $f = SolarDay::fromYmd(2021, 5, 4)->getFestival();
         $this->assertNotNull($f);
-        $this->assertEquals('2021年5月4日 五四青年节', $f->__toString());
+        $this->assertEquals('2021年5月4日 青年节', $f->__toString());
     }
 
     function test6()

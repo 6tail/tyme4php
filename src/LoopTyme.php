@@ -102,14 +102,39 @@ abstract class LoopTyme extends AbstractTyme
     }
 
     /**
-     * 到目标索引的步数
+     * 到目标索引的步数（从左往右顺序）
      *
      * @param int $targetIndex 目标索引
-     * @return int 步数
+     * @return int 步数（>=0）
      */
     function stepsTo(int $targetIndex): int
     {
         return $this->indexOf($targetIndex - $this->index);
+    }
+
+    /**
+     * 到目标索引的步数（从右往左逆序）
+     *
+     * @param int $targetIndex 目标索引
+     * @return int 步数（<=0）
+     */
+    function stepsBackTo(int $targetIndex): int
+    {
+        $n = $this->getSize();
+        return -(($this->index - $targetIndex + $n) % $n);
+    }
+
+    /**
+     * 到目标索引的最少步数
+     *
+     * @param int $targetIndex 目标索引
+     * @return int 步数（从左往右顺序>=0，从右往左逆序<=0）
+     */
+    function stepsCloseTo(int $targetIndex): int
+    {
+        $d1 = $this->stepsTo($targetIndex);
+        $d2 = $this->stepsBackTo($targetIndex);
+        return $d1 <= abs($d2) ? $d1 : $d2;
     }
 
 }

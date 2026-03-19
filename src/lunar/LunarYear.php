@@ -197,10 +197,13 @@ class LunarYear extends YearUnit
     function getMonths(): array
     {
         $l = array();
-        $m = $this->getFirstMonth();
-        while ($m->getYear() === $this->year) {
-            $l[] = $m;
-            $m = $m->next(1);
+        $y = $this->getYear();
+        $leapMonth = $this->getLeapMonth();
+        for ($i = 1; $i < 13; $i++) {
+            $l[] = LunarMonth::fromYm($y, $i);
+            if ($i == $leapMonth) {
+                $l[] = LunarMonth::fromYm($y, -$i);
+            }
         }
         return $l;
     }

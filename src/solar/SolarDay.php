@@ -16,6 +16,7 @@ use com\tyme\culture\plumrain\PlumRain;
 use com\tyme\culture\plumrain\PlumRainDay;
 use com\tyme\culture\Week;
 use com\tyme\enums\HideHeavenStemType;
+use com\tyme\event\Event;
 use com\tyme\festival\SolarFestival;
 use com\tyme\holiday\LegalHoliday;
 use com\tyme\jd\JulianDay;
@@ -213,41 +214,19 @@ class SolarDay extends DayUnit
      */
     function getDogDay(): ?DogDay
     {
-        // 夏至
-        $xiaZhi = SolarTerm::fromIndex($this->year, 12);
-        // 第1个庚日
-        $start = $xiaZhi->getSolarDay();
-        // 第3个庚日，即初伏第1天
-        $start = $start->next($start->getLunarDay()->getSixtyCycle()->getHeavenStem()->stepsTo(6) + 20);
-        $days = $this->subtract($start);
-        // 初伏以前
-        if ($days < 0) {
+        // 初伏，夏至后第3个庚日
+        $d0 = Event::builder()->termHeavenStem(12, 6, 20)->build()->getSolarDay($this->year);
+        // 中伏，夏至后第4个庚日
+        $d1 = Event::builder()->termHeavenStem(12, 6, 30)->build()->getSolarDay($this->year);
+        // 末伏，立秋后第1个庚日
+        $d2 = Event::builder()->termHeavenStem(15, 6, 0)->build()->getSolarDay($this->year);
+        if ($this->isBefore($d0) || $this->isAfter($d2->next(9))) {
             return null;
         }
-        if ($days < 10) {
-            return new DogDay(Dog::fromIndex(0), $days);
+        if (!$this->isBefore($d2)) {
+            return new DogDay(Dog::fromIndex(2), $this->subtract($d2));
         }
-        // 第4个庚日，中伏第1天
-        $start = $start->next(10);
-        $days = $this->subtract($start);
-        if ($days < 10) {
-            return new DogDay(Dog::fromIndex(1), $days);
-        }
-        // 第5个庚日，中伏第11天或末伏第1天
-        $start = $start->next(10);
-        $days = $this->subtract($start);
-        // 立秋
-        if ($xiaZhi->next(3)->getSolarDay()->isAfter($start)) {
-            if ($days < 10) {
-                return new DogDay(Dog::fromIndex(1), $days + 10);
-            }
-            $start = $start->next(10);
-            $days = $this->subtract($start);
-        }
-        if ($days < 10) {
-            return new DogDay(Dog::fromIndex(2), $days);
-        }
-        return null;
+        return $this->isBefore($d1) ? new DogDay(Dog::fromIndex(0), $this->subtract($d0)) : new DogDay(Dog::fromIndex(1), $this->subtract($d1));
     }
 
     /**
@@ -311,17 +290,10 @@ class SolarDay extends DayUnit
      */
     function getPlumRainDay(): ?PlumRainDay
     {
-        // 芒种
-        $grainInEar = SolarTerm::fromIndex($this->year, 11);
-        $start = $grainInEar->getSolarDay();
-        // 芒种后的第1个丙日
-        $start = $start->next($start->getLunarDay()->getSixtyCycle()->getHeavenStem()->stepsTo(2));
-
-        // 小暑
-        $end = $grainInEar->next(2)->getSolarDay();
-        // 小暑后的第1个未日
-        $end = $end->next($end->getLunarDay()->getSixtyCycle()->getEarthBranch()->stepsTo(7));
-
+        // 入梅，芒种后第1个丙日
+        $start = Event::builder()->termHeavenStem(11, 2, 0)->build()->getSolarDay($this->year);
+        // 出梅，小暑后第1个未日
+        $end = Event::builder()->termEarthBranch(13, 7, 0)->build()->getSolarDay($this->year);
         if ($this->isBefore($start) || $this->isAfter($end)) {
             return null;
         }

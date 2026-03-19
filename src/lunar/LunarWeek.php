@@ -57,9 +57,6 @@ class LunarWeek extends WeekUnit
 
     function next(int $n): static
     {
-        if ($n === 0) {
-            return static::fromYm($this->getYear(), $this->getMonth(), $this->index, $this->start);
-        }
         $d = $this->index + $n;
         $m = $this->getLunarMonth();
         if ($n > 0) {
