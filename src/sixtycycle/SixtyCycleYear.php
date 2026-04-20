@@ -24,7 +24,7 @@ class SixtyCycleYear extends AbstractTyme
     function __construct(int $year)
     {
         if ($year < -1 || $year > 9999) {
-            throw new InvalidArgumentException(sprintf('illegal sixty cycle year: %d', $year));
+            throw new InvalidArgumentException('illegal sixty cycle year: ' . $year);
         }
         $this->year = $year;
     }
@@ -51,7 +51,7 @@ class SixtyCycleYear extends AbstractTyme
      */
     function getName(): string
     {
-        return sprintf('%s年', $this->getSixtyCycle());
+        return $this->getSixtyCycle() . '年';
     }
 
     function next(int $n): SixtyCycleYear

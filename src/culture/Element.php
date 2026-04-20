@@ -14,23 +14,24 @@ class Element extends LoopTyme
 {
     static array $NAMES = ['木', '火', '土', '金', '水'];
 
-    protected function __construct(?int $index = null, ?string $name = null)
+    protected function __construct(?array $names, ?int $index = null, ?string $name = null)
     {
+        $ns = $names === null ? static::$NAMES : $names;
         if ($index !== null) {
-            parent::__construct(static::$NAMES, $index);
+            parent::__construct($ns, $index);
         } else if ($name !== null) {
-            parent::__construct(static::$NAMES, null, $name);
+            parent::__construct($ns, null, $name);
         }
     }
 
     static function fromIndex(int $index): static
     {
-        return new static($index);
+        return new static(null, $index);
     }
 
     static function fromName(string $name): static
     {
-        return new static(null, $name);
+        return new static(null, null, $name);
     }
 
     function next(int $n): static

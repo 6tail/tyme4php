@@ -22,7 +22,6 @@ use com\tyme\sixtycycle\SixtyCycle;
 use com\tyme\sixtycycle\SixtyCycleDay;
 use com\tyme\sixtycycle\ThreePillars;
 use com\tyme\solar\SolarDay;
-use com\tyme\solar\SolarTerm;
 use com\tyme\unit\DayUnit;
 use InvalidArgumentException;
 
@@ -45,7 +44,7 @@ class LunarDay extends DayUnit
     static function validate(int $year, int $month, int $day): void
     {
         if ($day < 1) {
-            throw new InvalidArgumentException(sprintf('illegal lunar day %d', $day));
+            throw new InvalidArgumentException('illegal lunar day ' . $day);
         }
         $m = LunarMonth::fromYm($year, $month);
         if ($day > $m->getDayCount()) {
@@ -75,7 +74,7 @@ class LunarDay extends DayUnit
 
     function __toString(): string
     {
-        return sprintf('%s%s', $this->getLunarMonth(), $this->getName());
+        return $this->getLunarMonth() . $this->getName();
     }
 
     function next(int $n): LunarDay
@@ -192,27 +191,7 @@ class LunarDay extends DayUnit
      */
     function getNineStar(): NineStar
     {
-        $d = $this->getSolarDay();
-        $y = $d->getYear();
-        $winterSolstice = SolarTerm::fromIndex($y, 0)->getSolarDay();
-        $summerSolstice = SolarTerm::fromIndex($y, 12)->getSolarDay();
-        $nextWinterSolstice = SolarTerm::fromIndex($y + 1, 0)->getSolarDay();
-        // 距冬至最近的甲子日
-        $w = $winterSolstice->next($winterSolstice->getLunarDay()->getSixtyCycle()->stepsCloseTo(0));
-        // 距夏至最近的甲子日
-        $s = $summerSolstice->next($summerSolstice->getLunarDay()->getSixtyCycle()->stepsCloseTo(0));
-        // 距下个冬至最近的甲子日
-        $n = $nextWinterSolstice->next($nextWinterSolstice->getLunarDay()->getSixtyCycle()->stepsCloseTo(0));
-        // 43210012345678876543210012345
-        //      w        s        n
-        //     冬至     夏至      冬至
-        if ($d->isBefore($w)) {
-            return NineStar::fromIndex($w->subtract($d) - 1);
-        }
-        if ($d->isBefore($s)) {
-            return NineStar::fromIndex($d->subtract($w));
-        }
-        return NineStar::fromIndex($d->isBefore($n) ? $n->subtract($d) - 1 : $d->subtract($n));
+        return $this->getSolarDay()->getNineStar();
     }
 
     /**

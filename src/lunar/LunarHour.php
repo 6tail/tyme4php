@@ -66,12 +66,12 @@ class LunarHour extends SecondUnit
 
     function getName(): string
     {
-        return sprintf('%s时', EarthBranch::fromIndex($this->getIndexInDay())->getName());
+        return EarthBranch::fromIndex($this->getIndexInDay())->getName() . '时';
     }
 
     function __toString(): string
     {
-        return sprintf('%s%s时', $this->getLunarDay(), $this->getSixtyCycle()->getName());
+        return $this->getLunarDay() . $this->getSixtyCycle()->getName() . '时';
     }
 
     function getIndexInDay(): int

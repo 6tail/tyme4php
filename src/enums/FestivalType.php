@@ -4,6 +4,7 @@ namespace com\tyme\enums;
 
 /**
  * 节日类型
+ * @deprecated
  * @author 6tail
  * @package com\tyme\enums
  */

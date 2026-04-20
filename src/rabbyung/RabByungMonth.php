@@ -2,6 +2,7 @@
 
 namespace com\tyme\rabbyung;
 
+use com\tyme\lunar\LunarMonth;
 use com\tyme\unit\MonthUnit;
 use InvalidArgumentException;
 
@@ -12,8 +13,6 @@ use InvalidArgumentException;
  */
 class RabByungMonth extends MonthUnit
 {
-    static array $NAMES = ['正月', '二月', '三月', '四月', '五月', '六月', '七月', '八月', '九月', '十月', '十一月', '十二月'];
-
     /**
      * @var string[] 别名
      */
@@ -65,7 +64,7 @@ class RabByungMonth extends MonthUnit
     static function validate($year, $month): void
     {
         if ($month == 0 || $month > 12 || $month < -12) {
-            throw new InvalidArgumentException(sprintf('illegal rab-byung month: %d', $month));
+            throw new InvalidArgumentException('illegal rab-byung month: ' . $month);
         }
         if ($year < 1950 || $year > 2050) {
             throw new InvalidArgumentException(sprintf('rab-byung year %d must between 1950 and 2050', $year));
@@ -136,7 +135,7 @@ class RabByungMonth extends MonthUnit
 
     function getName(): string
     {
-        return ($this->leap ? '闰' : '') . static::$NAMES[$this->month - 1];
+        return ($this->leap ? '闰' : '') . LunarMonth::$NAMES[$this->month - 1];
     }
 
     /**

@@ -16,6 +16,11 @@ class NineStar extends LoopTyme
 {
     static array $NAMES = ['一', '二', '三', '四', '五', '六', '七', '八', '九'];
 
+    /**
+     * @var string[] 颜色
+     */
+    static array $COLORS = ['白', '黑', '碧', '绿', '黄', '白', '赤', '白', '紫'];
+
     protected function __construct(?int $index = null, ?string $name = null)
     {
         if ($index !== null) {
@@ -47,7 +52,7 @@ class NineStar extends LoopTyme
      */
     function getColor(): string
     {
-        return ['白', '黑', '碧', '绿', '黄', '白', '赤', '白', '紫'][$this->index];
+        return static::$COLORS[$this->index];
     }
 
     /**
@@ -57,7 +62,7 @@ class NineStar extends LoopTyme
      */
     function getElement(): Element
     {
-        return Element::fromIndex([4, 2, 0, 0, 2, 3, 3, 2, 1][$this->index]);
+        return $this->getDirection()->getElement();
     }
 
     /**
@@ -82,6 +87,6 @@ class NineStar extends LoopTyme
 
     function __toString(): string
     {
-        return sprintf('%s%s%s', $this->getName(), $this->getColor(), $this->getElement());
+        return $this->getName() . $this->getColor() . $this->getElement();
     }
 }

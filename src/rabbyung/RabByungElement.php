@@ -12,13 +12,11 @@ use com\tyme\culture\Element;
  */
 class RabByungElement extends Element
 {
+    static array $NAMES = ['木', '火', '土', '铁', '水'];
+
     protected function __construct(?int $index = null, ?string $name = null)
     {
-        if ($index !== null) {
-            parent::__construct($index);
-        } else if ($name !== null) {
-            parent::__construct(null, str_replace('铁', '金', $name));
-        }
+        parent::__construct(static::$NAMES, $index, $name);
     }
 
     static function fromIndex(int $index): static
@@ -74,10 +72,5 @@ class RabByungElement extends Element
     function getRestrained(): static
     {
         return $this->next(-2);
-    }
-
-    function getName(): string
-    {
-        return str_replace('金', '铁', parent::getName());
     }
 }

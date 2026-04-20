@@ -511,7 +511,7 @@ class EightCharTest extends TestCase
         ChildLimit::$provider = new DefaultChildLimitProvider();
     }
 
-    public function test32()
+    function test32()
     {
         $eightChar = new EightChar('丙辰', '丁酉', '丙子', '甲午');
         $solarTimes = $eightChar->getSolarTimes(1900, 2024);
@@ -524,7 +524,7 @@ class EightCharTest extends TestCase
         $this->assertEquals($expected, $actual);
     }
 
-    public function test33()
+    function test33()
     {
         $eightChar = new EightChar('壬寅', '庚戌', '己未', '乙亥');
         $solarTimes = $eightChar->getSolarTimes(1900, 2024);
@@ -537,7 +537,7 @@ class EightCharTest extends TestCase
         $this->assertEquals($expected, $actual);
     }
 
-    public function test34()
+    function test34()
     {
         $eightChar = new EightChar('己卯', '辛未', '甲戌', '壬申');
         $solarTimes = $eightChar->getSolarTimes(1900, 2024);
@@ -550,7 +550,7 @@ class EightCharTest extends TestCase
         $this->assertEquals($expected, $actual);
     }
 
-    public function test35()
+    function test35()
     {
         $eightChar = new EightChar('庚子', '戊子', '己卯', '庚午');
         $solarTimes = $eightChar->getSolarTimes(1900, 2024);
@@ -563,7 +563,7 @@ class EightCharTest extends TestCase
         $this->assertEquals($expected, $actual);
     }
 
-    public function test36()
+    function test36()
     {
         $eightChar = new EightChar('庚子', '癸未', '乙丑', '丁亥');
         $solarTimes = $eightChar->getSolarTimes(1900, 2024);
@@ -576,7 +576,7 @@ class EightCharTest extends TestCase
         $this->assertEquals($expected, $actual);
     }
 
-    public function test37()
+    function test37()
     {
         $eightChar = SolarTime::fromYmdHms(1999, 6, 7, 9, 11, 0)->getLunarHour()->getEightChar();
         $actual = $eightChar->__toString();
@@ -585,7 +585,7 @@ class EightCharTest extends TestCase
         $this->assertEquals($expected, $actual);
     }
 
-    public function test38()
+    function test38()
     {
         $eightChar = new EightChar('癸卯', '甲寅', '甲寅', '甲子');
         $solarTimes = $eightChar->getSolarTimes(1800, 2024);
@@ -598,7 +598,7 @@ class EightCharTest extends TestCase
         $this->assertEquals($expected, $actual);
     }
 
-    public function test39()
+    function test39()
     {
         $eightChar = new EightChar('己亥', '丁丑', '壬寅', '戊申');
         $solarTimes = $eightChar->getSolarTimes(1900, 2024);
@@ -611,7 +611,7 @@ class EightCharTest extends TestCase
         $this->assertEquals($expected, $actual);
     }
 
-    public function test40()
+    function test40()
     {
         $eightChar = new EightChar('己亥', '丙子', '癸酉', '庚申');
         $solarTimes = $eightChar->getSolarTimes(1900, 2024);
@@ -624,7 +624,7 @@ class EightCharTest extends TestCase
         $this->assertEquals($expected, $actual);
     }
 
-    public function test41()
+    function test41()
     {
         $eightChar = new EightChar('乙亥', '乙酉', '乙酉', '乙酉');
         $solarTimes = $eightChar->getSolarTimes(1000, 2024);
@@ -637,7 +637,7 @@ class EightCharTest extends TestCase
         $this->assertEquals($expected, $actual);
     }
 
-    public function test42()
+    function test42()
     {
         $eightChar = new EightChar('癸卯', '乙卯', '丙辰', '丁酉');
         $solarTimes = $eightChar->getSolarTimes(1900, 2024);
@@ -650,7 +650,7 @@ class EightCharTest extends TestCase
         $this->assertEquals($expected, $actual);
     }
 
-    public function test46()
+    function test46()
     {
         LunarHour::$provider = new LunarSect2EightCharProvider();
 
@@ -667,7 +667,7 @@ class EightCharTest extends TestCase
         LunarHour::$provider = new DefaultEightCharProvider();
     }
 
-    public function test47()
+    function test47()
     {
         $eightChar = new EightChar('壬申', '壬寅', '庚辰', '甲申');
         $solarTimes = $eightChar->getSolarTimes(1801, 2099);

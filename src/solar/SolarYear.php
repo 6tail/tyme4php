@@ -23,7 +23,7 @@ class SolarYear extends YearUnit
     static function validate(int $year): void
     {
         if ($year < 1 || $year > 9999) {
-            throw new InvalidArgumentException(sprintf('illegal solar year: %d', $year));
+            throw new InvalidArgumentException('illegal solar year: ' . $year);
         }
     }
 
@@ -60,7 +60,7 @@ class SolarYear extends YearUnit
 
     function getName(): string
     {
-        return sprintf('%d年', $this->year);
+        return $this->year . '年';
     }
 
     function next(int $n): static

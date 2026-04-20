@@ -12,6 +12,8 @@ use InvalidArgumentException;
  */
 abstract class WeekUnit extends MonthUnit
 {
+    static array $NAMES = ['第一周', '第二周', '第三周', '第四周', '第五周', '第六周'];
+
     /**
      * @var int 索引，0-5
      */
@@ -32,10 +34,10 @@ abstract class WeekUnit extends MonthUnit
     static function validate(int $year, int $month, int $index, int $start): void
     {
         if ($index < 0 || $index > 5) {
-            throw new InvalidArgumentException(sprintf('illegal week index: %d', $index));
+            throw new InvalidArgumentException('illegal week index: ' . $index);
         }
         if ($start < 0 || $start > 6) {
-            throw new InvalidArgumentException(sprintf('illegal week start: %d', $start));
+            throw new InvalidArgumentException('illegal week start: ' . $start);
         }
     }
 

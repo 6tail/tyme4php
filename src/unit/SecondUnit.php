@@ -38,13 +38,13 @@ abstract class SecondUnit extends DayUnit
     static function validate($year, $month, $day, $hour, $minute, $second): void
     {
         if ($hour < 0 || $hour > 23) {
-            throw new InvalidArgumentException(sprintf('illegal hour: %d', $hour));
+            throw new InvalidArgumentException('illegal hour: ' . $hour);
         }
         if ($minute < 0 || $minute > 59) {
-            throw new InvalidArgumentException(sprintf('illegal minute: %d', $minute));
+            throw new InvalidArgumentException('illegal minute: ' . $minute);
         }
         if ($second < 0 || $second > 59) {
-            throw new InvalidArgumentException(sprintf('illegal second: %d', $second));
+            throw new InvalidArgumentException('illegal second: ' . $second);
         }
     }
 

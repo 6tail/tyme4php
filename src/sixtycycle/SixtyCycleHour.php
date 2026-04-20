@@ -129,12 +129,12 @@ class SixtyCycleHour extends AbstractTyme
 
     function getName(): string
     {
-        return sprintf('%s时', $this->hour);
+        return $this->hour . '时';
     }
 
     function __toString(): string
     {
-        return sprintf('%s%s', $this->day, $this->getName());
+        return $this->day . $this->getName();
     }
 
     function getIndexInDay(): int

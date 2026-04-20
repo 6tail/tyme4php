@@ -14,7 +14,6 @@ use com\tyme\culture\star\twelve\TwelveStar;
 use com\tyme\culture\star\twentyeight\TwentyEightStar;
 use com\tyme\culture\Taboo;
 use com\tyme\solar\SolarDay;
-use com\tyme\solar\SolarTerm;
 use com\tyme\solar\SolarTime;
 
 /**
@@ -114,12 +113,12 @@ class SixtyCycleDay extends AbstractTyme
 
     function getName(): string
     {
-        return sprintf('%s日', $this->day);
+        return $this->day . '日';
     }
 
     function __toString(): string
     {
-        return sprintf('%s%s', $this->month, $this->getName());
+        return $this->month . $this->getName();
     }
 
     function next(int $n): SixtyCycleDay
@@ -154,20 +153,7 @@ class SixtyCycleDay extends AbstractTyme
      */
     function getNineStar(): NineStar
     {
-        $y = $this->solarDay->getYear();
-        $winterSolstice = SolarTerm::fromIndex($y, 0)->getSolarDay();
-        $summerSolstice = SolarTerm::fromIndex($y, 12)->getSolarDay();
-        $nextWinterSolstice = SolarTerm::fromIndex($y + 1, 0)->getSolarDay();
-        $w = $winterSolstice->next($winterSolstice->getLunarDay()->getSixtyCycle()->stepsCloseTo(0));
-        $s = $summerSolstice->next($summerSolstice->getLunarDay()->getSixtyCycle()->stepsCloseTo(0));
-        $n = $nextWinterSolstice->next($nextWinterSolstice->getLunarDay()->getSixtyCycle()->stepsCloseTo(0));
-        if ($this->solarDay->isBefore($w)) {
-            return NineStar::fromIndex($w->subtract($this->solarDay) - 1);
-        }
-        if ($this->solarDay->isBefore($s)) {
-            return NineStar::fromIndex($this->solarDay->subtract($w));
-        }
-        return NineStar::fromIndex($this->solarDay->isBefore($n) ? $n->subtract($this->solarDay) - 1 : $this->solarDay->subtract($n));
+        return $this->solarDay->getNineStar();
     }
 
     /**

@@ -8,7 +8,7 @@ use PHPUnit\Framework\TestCase;
 class RabByungYearTest extends TestCase
 {
 
-    public function test0()
+    function test0()
     {
         $y = RabByungYear::fromElementZodiac(0, RabByungElement::fromName('火'), Zodiac::fromName('兔'));
         $this->assertEquals('第一饶迥火兔年', $y->getName());
@@ -17,24 +17,24 @@ class RabByungYearTest extends TestCase
         $this->assertEquals(10, $y->getLeapMonth());
     }
 
-    public function test1()
+    function test1()
     {
         $this->assertEquals('第一饶迥火兔年', RabByungYear::fromYear(1027)->getName());
     }
 
-    public function test2()
+    function test2()
     {
         $this->assertEquals('第十七饶迥铁虎年', RabByungYear::fromYear(2010)->getName());
     }
 
-    public function test3()
+    function test3()
     {
         $this->assertEquals(5, RabByungYear::fromYear(2043)->getLeapMonth());
         $this->assertEquals(0, RabByungYear::fromYear(2044)->getLeapMonth());
         $this->assertEquals(4, RabByungYear::fromYear(1951)->getLeapMonth());
     }
 
-    public function test4()
+    function test4()
     {
         $this->assertEquals('第十六饶迥铁牛年', RabByungYear::fromYear(1961)->getName());
     }

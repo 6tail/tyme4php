@@ -132,3 +132,10 @@
 3. 新增：事件。
 4. 优化：代码和算法。
 5. 修改：公历现代节日和法定假日的名称。
+
+## [1.4.0] - 2026-04-20
+1. 废弃：节日类型FestivalType。
+2. 优化：公历现代节日SolarFestival和农历传统节日LunarFestival由事件Event实现。
+3. 优化：公历周SolarWeek和农历周LunarWeek共用名称。
+4. 优化：藏历月RabByungMonth使用农历月LunarMonth的名称。
+5. 优化：藏历五行使用单独的名称。

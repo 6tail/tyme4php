@@ -73,7 +73,7 @@ class LunarYear extends YearUnit
     static function validate(int $year): void
     {
         if ($year < -1 || $year > 9999) {
-            throw new InvalidArgumentException(sprintf('illegal lunar year: %d', $year));
+            throw new InvalidArgumentException('illegal lunar year: ' . $year);
         }
     }
 
@@ -184,7 +184,7 @@ class LunarYear extends YearUnit
      *
      * @return LunarMonth 农历月
      */
-    public function getFirstMonth(): LunarMonth
+    function getFirstMonth(): LunarMonth
     {
         return LunarMonth::fromYm($this->year, 1);
     }

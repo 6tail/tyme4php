@@ -83,12 +83,12 @@ class SixtyCycleMonth extends AbstractTyme
      */
     function getName(): string
     {
-        return sprintf('%s月', $this->month);
+        return $this->month . '月';
     }
 
     function __toString(): string
     {
-        return sprintf('%s%s', $this->year, $this->getName());
+        return $this->year . $this->getName();
     }
 
     function next(int $n): SixtyCycleMonth

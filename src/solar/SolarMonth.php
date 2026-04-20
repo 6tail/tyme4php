@@ -29,7 +29,7 @@ class SolarMonth extends MonthUnit
     static function validate(int $year, int $month): void
     {
         if ($month < 1 || $month > 12) {
-            throw new InvalidArgumentException(sprintf('illegal solar month: %d', $month));
+            throw new InvalidArgumentException('illegal solar month: ' . $month);
         }
         SolarYear::validate($year);
     }
@@ -104,7 +104,7 @@ class SolarMonth extends MonthUnit
 
     function __toString(): string
     {
-        return sprintf('%s%s', $this->getSolarYear(), $this->getName());
+        return $this->getSolarYear() . $this->getName();
     }
 
     function next(int $n): SolarMonth

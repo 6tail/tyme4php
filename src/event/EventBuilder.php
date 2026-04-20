@@ -27,29 +27,27 @@ class EventBuilder
      * @param string $name 名称
      * @return self 事件构造器
      */
-    public function name(string $name): self
+    function name(string $name): self
     {
         $this->name = $name;
         return $this;
     }
 
-    /**
-     * 编码事件类型
-     * @param EventType $type 事件类型
-     * @return string 数据字符
-     */
-    public static function encodeType(EventType $type): string
+    protected function getChar(int $index): string
     {
-        return EventManager::CHARS[$type->getCode()];
+        return EventManager::CHARS[$index];
+    }
+
+    function setValue(int $index, int $n): self
+    {
+        $this->data[$index] = $this->getChar(31 + $n);
+        return $this;
     }
 
     protected function content(EventType $type, int $a, int $b, int $c): self
     {
-        $this->data[1] = self::encodeType($type);
-        $this->data[2] = EventManager::CHARS[31 + $a];
-        $this->data[3] = EventManager::CHARS[31 + $b];
-        $this->data[4] = EventManager::CHARS[31 + $c];
-        return $this;
+        $this->data[1] = $this->getChar($type->getCode());
+        return $this->setValue(2, $a)->setValue(3, $b)->setValue(4, $c);
     }
 
     /**
@@ -59,7 +57,7 @@ class EventBuilder
      * @param int $delayDays 顺延天数，例如生日在2月29，非闰年没有2月29，是+1天，还是-1天（最远支持-31至31天）
      * @return self 事件构造器
      */
-    public function solarDay(int $solarMonth, int $solarDay, int $delayDays): self
+    function solarDay(int $solarMonth, int $solarDay, int $delayDays): self
     {
         return $this->content(EventType::SOLAR_DAY, $solarMonth, $solarDay, $delayDays);
     }
@@ -72,7 +70,7 @@ class EventBuilder
      * @param int $delayDays 顺延天数，例如生日在某月的三十，但下一年当月可能只有29天，是+1天，还是-1天（最远支持-31至31天）
      * @return self 事件构建器
      */
-    public function lunarDay(int $lunarMonth, int $lunarDay, int $delayDays): self
+    function lunarDay(int $lunarMonth, int $lunarDay, int $delayDays): self
     {
         return $this->content(EventType::LUNAR_DAY, $lunarMonth, $lunarDay, $delayDays);
     }
@@ -85,7 +83,7 @@ class EventBuilder
      * @param int $week 星期几（0至6，0代表星期天，1代表星期一）
      * @return self 事件构建器
      */
-    public function solarWeek(int $solarMonth, int $weekIndex, int $week): self
+    function solarWeek(int $solarMonth, int $weekIndex, int $week): self
     {
         return $this->content(EventType::SOLAR_WEEK, $solarMonth, $weekIndex, $week);
     }
@@ -97,7 +95,7 @@ class EventBuilder
      * @param int $delayDays 顺延天数（最远支持-31至31天）
      * @return self 事件构建器
      */
-    public function termDay(int $termIndex, int $delayDays): self
+    function termDay(int $termIndex, int $delayDays): self
     {
         return $this->content(EventType::TERM_DAY, $termIndex, 0, $delayDays);
     }
@@ -110,7 +108,7 @@ class EventBuilder
      * @param int $delayDays 顺延天数（最远支持-31至31天）
      * @return self 事件构建器
      */
-    public function termHeavenStem(int $termIndex, int $heavenStemIndex, int $delayDays): self
+    function termHeavenStem(int $termIndex, int $heavenStemIndex, int $delayDays): self
     {
         return $this->content(EventType::TERM_HS, $termIndex, $heavenStemIndex, $delayDays);
     }
@@ -123,7 +121,7 @@ class EventBuilder
      * @param int $delayDays 顺延天数（最远支持-31至31天）
      * @return self 事件构建器
      */
-    public function termEarthBranch(int $termIndex, int $earthBranchIndex, int $delayDays): self
+    function termEarthBranch(int $termIndex, int $earthBranchIndex, int $delayDays): self
     {
         return $this->content(EventType::TERM_EB, $termIndex, $earthBranchIndex, $delayDays);
     }
@@ -134,12 +132,12 @@ class EventBuilder
      * @param int $year 年
      * @return self 事件构造器
      */
-    public function startYear(int $year): self
+    function startYear(int $year): self
     {
         $size = strlen(EventManager::CHARS);
         $n = $year;
         for ($i = 0; $i < 3; $i++) {
-            $this->data[8 - $i] = EventManager::CHARS[$n % $size];
+            $this->data[8 - $i] = $this->getChar($n % $size);
             $n = intdiv($n, $size);
         }
         return $this;
@@ -151,10 +149,9 @@ class EventBuilder
      * @param int $days 天数（最远支持-31至31天）
      * @return self 事件构造器
      */
-    public function offset(int $days): self
+    function offset(int $days): self
     {
-        $this->data[5] = EventManager::CHARS[31 + $days];
-        return $this;
+        return $this->setValue(5, $days);
     }
 
     /**
@@ -162,7 +159,7 @@ class EventBuilder
      *
      * @return Event 事件
      */
-    public function build(): Event
+    function build(): Event
     {
         return new Event($this->name, $this->data);
     }

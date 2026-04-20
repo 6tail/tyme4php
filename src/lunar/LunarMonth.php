@@ -38,7 +38,7 @@ class LunarMonth extends MonthUnit
     static function validate($year, $month): void
     {
         if ($month === 0 || $month > 12 || $month < -12) {
-            throw new InvalidArgumentException(sprintf('illegal lunar month: %d', $month));
+            throw new InvalidArgumentException('illegal lunar month: ' . $month);
         }
         if ($month < 0 && -$month != LunarYear::fromYear($year)->getLeapMonth()) {
             throw new InvalidArgumentException(sprintf('illegal leap month %d in lunar year %d', -$month, $year));
@@ -173,12 +173,12 @@ class LunarMonth extends MonthUnit
      */
     function getName(): string
     {
-        return sprintf('%s%s', $this->leap ? '闰' : '', static::$NAMES[$this->month - 1]);
+        return ($this->leap ? '闰' : '') . static::$NAMES[$this->month - 1];
     }
 
     function __toString(): string
     {
-        return sprintf('%s%s', $this->getLunarYear(), $this->getName());
+        return $this->getLunarYear() . $this->getName();
     }
 
     function next(int $n): LunarMonth

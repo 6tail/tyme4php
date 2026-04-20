@@ -33,13 +33,13 @@ class RabByungYear extends AbstractTyme
     function __construct(int $rabByungIndex, int $elementIndex, int $zodiacIndex)
     {
         if ($rabByungIndex < 0 || $rabByungIndex > 150) {
-            throw new InvalidArgumentException(sprintf('illegal rab-byung index: %d', $rabByungIndex));
+            throw new InvalidArgumentException('illegal rab-byung index: ' . $rabByungIndex);
         }
         if ($elementIndex < 0 || $elementIndex >= count(RabByungElement::$NAMES)) {
-            throw new InvalidArgumentException(sprintf('illegal element index: %d', $elementIndex));
+            throw new InvalidArgumentException('illegal element index: ' . $elementIndex);
         }
         if ($zodiacIndex < 0 || $zodiacIndex >= count(Zodiac::$NAMES)) {
-            throw new InvalidArgumentException(sprintf('illegal zodiac index: %d', $zodiacIndex));
+            throw new InvalidArgumentException('illegal zodiac index: ' . $zodiacIndex);
         }
         $this->rabByungIndex = $rabByungIndex;
         $this->elementIndex = $elementIndex;
@@ -49,7 +49,7 @@ class RabByungYear extends AbstractTyme
     static function validate(int $year): void
     {
         if ($year < 1027 || $year > 9999) {
-            throw new InvalidArgumentException(sprintf('illegal rab-byung year: %d', $year));
+            throw new InvalidArgumentException('illegal rab-byung year: ' . $year);
         }
     }
 

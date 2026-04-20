@@ -14,6 +14,7 @@ use com\tyme\culture\phenology\Phenology;
 use com\tyme\culture\phenology\PhenologyDay;
 use com\tyme\culture\plumrain\PlumRain;
 use com\tyme\culture\plumrain\PlumRainDay;
+use com\tyme\culture\star\nine\NineStar;
 use com\tyme\culture\Week;
 use com\tyme\enums\HideHeavenStemType;
 use com\tyme\event\Event;
@@ -101,7 +102,7 @@ class SolarDay extends DayUnit
 
     function __toString(): string
     {
-        return sprintf('%s%s', $this->getSolarMonth(), $this->getName());
+        return $this->getSolarMonth() . $this->getName();
     }
 
     function next(int $n): SolarDay
@@ -412,6 +413,35 @@ class SolarDay extends DayUnit
     function getPhase(): Phase
     {
         return $this->getPhaseDay()->getPhase();
+    }
+
+    /**
+     * 九星
+     *
+     * @return NineStar 九星
+     */
+    function getNineStar(): NineStar
+    {
+        $y = $this->getYear();
+        $winterSolstice = SolarTerm::fromIndex($y, 0)->getSolarDay();
+        $summerSolstice = SolarTerm::fromIndex($y, 12)->getSolarDay();
+        $nextWinterSolstice = SolarTerm::fromIndex($y + 1, 0)->getSolarDay();
+        // 距冬至最近的甲子日
+        $w = $winterSolstice->next($winterSolstice->getLunarDay()->getSixtyCycle()->stepsCloseTo(0));
+        // 距夏至最近的甲子日
+        $s = $summerSolstice->next($summerSolstice->getLunarDay()->getSixtyCycle()->stepsCloseTo(0));
+        // 距下个冬至最近的甲子日
+        $n = $nextWinterSolstice->next($nextWinterSolstice->getLunarDay()->getSixtyCycle()->stepsCloseTo(0));
+        // 43210012345678876543210012345
+        //      w        s        n
+        //     冬至     夏至      冬至
+        if ($this->isBefore($w)) {
+            return NineStar::fromIndex($w->subtract($this) - 1);
+        }
+        if ($this->isBefore($s)) {
+            return NineStar::fromIndex($this->subtract($w));
+        }
+        return NineStar::fromIndex($this->isBefore($n) ? $n->subtract($this) - 1 : $this->subtract($n));
     }
 
 }

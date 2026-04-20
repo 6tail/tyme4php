@@ -13,8 +13,6 @@ use InvalidArgumentException;
  */
 class SolarWeek extends WeekUnit
 {
-    static array $NAMES = ['第一周', '第二周', '第三周', '第四周', '第五周', '第六周'];
-
     protected function __construct(int $year, int $month, int $index, int $start)
     {
         self::validate($year, $month, $index, $start);
@@ -70,7 +68,7 @@ class SolarWeek extends WeekUnit
 
     function __toString(): string
     {
-        return sprintf('%s%s', $this->getSolarMonth(), $this->getName());
+        return $this->getSolarMonth() . $this->getName();
     }
 
     function next(int $n): static

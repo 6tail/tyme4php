@@ -45,7 +45,7 @@ class Event extends AbstractCulture
      * 验证数据格式
      * @param string $data 数据
      */
-    public static function validate(string $data): void
+    static function validate(string $data): void
     {
         if (strlen($data) !== 9) {
             throw new InvalidArgumentException('illegal event data: ' . $data);
@@ -56,7 +56,7 @@ class Event extends AbstractCulture
      * 获取构造器
      * @return EventBuilder 事件构造器
      */
-    public static function builder(): EventBuilder
+    static function builder(): EventBuilder
     {
         return new EventBuilder();
     }
@@ -66,7 +66,7 @@ class Event extends AbstractCulture
      * @param string $name 名称
      * @return self|null 事件
      */
-    public static function fromName(string $name): ?self
+    static function fromName(string $name): ?self
     {
         if (preg_match(sprintf(EventManager::REGEX, preg_quote($name, '/')), EventManager::$DATA, $matches)) {
             return new self($name, $matches[1]);
@@ -74,20 +74,41 @@ class Event extends AbstractCulture
         return null;
     }
 
+    protected function getCharIndex(int $index): int
+    {
+        return strpos(EventManager::CHARS, $this->data[$index]);
+    }
+
+    function getValue(int $index): int
+    {
+        return $this->getCharIndex($index) - 31;
+    }
+
+    function getMonth(int $year): array
+    {
+        $y = $year;
+        $m = $this->getValue(2);
+        if ($m > 12) {
+            $m = 1;
+            $y += 1;
+        }
+        return [$y, $m];
+    }
+
     /**
      * 获取事件类型
      * @return EventType|null 事件类型
      */
-    public function getType(): ?EventType
+    function getType(): ?EventType
     {
-        return EventType::fromCode(strpos(EventManager::CHARS, $this->data[1]));
+        return EventType::fromCode($this->getCharIndex(1));
     }
 
     /**
      * 获取名称
      * @return string 名称
      */
-    public function getName(): string
+    function getName(): string
     {
         return $this->name;
     }
@@ -96,7 +117,7 @@ class Event extends AbstractCulture
      * 获取数据
      * @return string 数据
      */
-    public function getData(): string
+    function getData(): string
     {
         return $this->data;
     }
@@ -105,12 +126,12 @@ class Event extends AbstractCulture
      * 获取起始年
      * @return int 年
      */
-    public function getStartYear(): int
+    function getStartYear(): int
     {
         $n = 0;
         $size = strlen(EventManager::CHARS);
         for ($i = 0; $i < 3; $i++) {
-            $n = $n * $size + strpos(EventManager::CHARS, $this->data[6 + $i]);
+            $n = $n * $size + $this->getCharIndex(6 + $i);
         }
         return $n;
     }
@@ -120,7 +141,7 @@ class Event extends AbstractCulture
      * @param SolarDay $d 公历日
      * @return self[] 事件列表
      */
-    public static function fromSolarDay(SolarDay $d): array
+    static function fromSolarDay(SolarDay $d): array
     {
         $l = [];
         foreach (self::all() as $e) {
@@ -135,7 +156,7 @@ class Event extends AbstractCulture
      * 获取所有事件
      * @return self[] 事件列表
      */
-    public static function all(): array
+    static function all(): array
     {
         $l = [];
         preg_match_all(sprintf(EventManager::REGEX, '[^@]+'), EventManager::$DATA, $matches, PREG_SET_ORDER);
@@ -150,7 +171,7 @@ class Event extends AbstractCulture
      * @param int $year 年
      * @return SolarDay|null 公历日
      */
-    public function getSolarDay(int $year): ?SolarDay
+    function getSolarDay(int $year): ?SolarDay
     {
         $type = $this->getType();
         if ($type === null) {
@@ -183,7 +204,7 @@ class Event extends AbstractCulture
         if ($d === null) {
             return null;
         }
-        $offset = strpos(EventManager::CHARS, $this->data[5]) - 31;
+        $offset = $this->getValue(5);
         return $offset === 0 ? $d : $d->next($offset);
     }
 
@@ -194,16 +215,12 @@ class Event extends AbstractCulture
      */
     protected function getSolarDayBySolarDay(int $year): ?SolarDay
     {
-        $y = $year;
-        $m = strpos(EventManager::CHARS, $this->data[2]) - 31;
-        if ($m > 12) {
-            $m = 1;
-            $y += 1;
-        }
-        $d = strpos(EventManager::CHARS, $this->data[3]) - 31;
-        $delay = strpos(EventManager::CHARS, $this->data[4]) - 31;
-        $month = SolarMonth::fromYm($y, $m);
-        $lastDay = $month->getDayCount();
+        $month = $this->getMonth($year);
+        $y = $month[0];
+        $m = $month[1];
+        $d = $this->getValue(3);
+        $delay = $this->getValue(4);
+        $lastDay = SolarMonth::fromYm($y, $m)->getDayCount();
         if ($d > $lastDay) {
             if ($delay === 0) {
                 return null;
@@ -220,16 +237,12 @@ class Event extends AbstractCulture
      */
     protected function getSolarDayByLunarDay(int $year): ?SolarDay
     {
-        $y = $year;
-        $m = strpos(EventManager::CHARS, $this->data[2]) - 31;
-        if ($m > 12) {
-            $m = 1;
-            $y += 1;
-        }
-        $d = strpos(EventManager::CHARS, $this->data[3]) - 31;
-        $delay = strpos(EventManager::CHARS, $this->data[4]) - 31;
-        $month = LunarMonth::fromYm($y, $m);
-        $lastDay = $month->getDayCount();
+        $month = $this->getMonth($year);
+        $y = $month[0];
+        $m = $month[1];
+        $d = $this->getValue(3);
+        $delay = $this->getValue(4);
+        $lastDay = LunarMonth::fromYm($y, $m)->getDayCount();
         if ($d > $lastDay) {
             if ($delay === 0) {
                 return null;
@@ -246,12 +259,12 @@ class Event extends AbstractCulture
      */
     protected function getSolarDayByWeek(int $year): ?SolarDay
     {
-        $n = strpos(EventManager::CHARS, $this->data[3]) - 31;
+        $n = $this->getValue(3);
         if ($n === 0) {
             return null;
         }
-        $m = SolarMonth::fromYm($year, strpos(EventManager::CHARS, $this->data[2]) - 31);
-        $w = strpos(EventManager::CHARS, $this->data[4]) - 31;
+        $m = SolarMonth::fromYm($year, $this->getValue(2));
+        $w = $this->getValue(4);
         if ($n > 0) {
             $d = $m->getFirstDay();
             return $d->next($d->getWeek()->stepsTo($w) + 7 * $n - 7);
@@ -268,9 +281,8 @@ class Event extends AbstractCulture
      */
     protected function getSolarDayByTerm(int $year): ?SolarDay
     {
-        $offset = strpos(EventManager::CHARS, $this->data[4]) - 31;
-        $termIndex = strpos(EventManager::CHARS, $this->data[2]) - 31;
-        $d = SolarTerm::fromIndex($year, $termIndex)->getSolarDay();
+        $offset = $this->getValue(4);
+        $d = SolarTerm::fromIndex($year, $this->getValue(2))->getSolarDay();
         return $offset === 0 ? $d : $d->next($offset);
     }
 
@@ -282,9 +294,7 @@ class Event extends AbstractCulture
     protected function getSolarDayByTermHeavenStem(int $year): ?SolarDay
     {
         $d = $this->getSolarDayByTerm($year);
-        $targetHsIndex = strpos(EventManager::CHARS, $this->data[3]) - 31;
-        $steps = $d->getLunarDay()->getSixtyCycle()->getHeavenStem()->stepsTo($targetHsIndex);
-        return $d->next($steps);
+        return $d->next($d->getLunarDay()->getSixtyCycle()->getHeavenStem()->stepsTo($this->getValue(3)));
     }
 
     /**
@@ -295,8 +305,6 @@ class Event extends AbstractCulture
     protected function getSolarDayByTermEarthBranch(int $year): ?SolarDay
     {
         $d = $this->getSolarDayByTerm($year);
-        $targetEbIndex = strpos(EventManager::CHARS, $this->data[3]) - 31;
-        $steps = $d->getLunarDay()->getSixtyCycle()->getEarthBranch()->stepsTo($targetEbIndex);
-        return $d->next($steps);
+        return $d->next($d->getLunarDay()->getSixtyCycle()->getEarthBranch()->stepsTo($this->getValue(3)));
     }
 }

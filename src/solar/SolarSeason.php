@@ -30,7 +30,7 @@ class SolarSeason extends YearUnit
     static function validate(int $year, int $index): void
     {
         if ($index < 0 || $index > 3) {
-            throw new InvalidArgumentException(sprintf('illegal solar season index: %d', $index));
+            throw new InvalidArgumentException('illegal solar season index: ' . $index);
         }
         SolarYear::validate($year);
     }
@@ -66,7 +66,7 @@ class SolarSeason extends YearUnit
 
     function __toString(): string
     {
-        return sprintf('%s%s', $this->getSolarYear(), $this->getName());
+        return $this->getSolarYear() . $this->getName();
     }
 
     function next(int $n): static

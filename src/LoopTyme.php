@@ -85,7 +85,7 @@ abstract class LoopTyme extends AbstractTyme
                     return $i;
                 }
             }
-            throw new InvalidArgumentException(sprintf('illegal name: %d', $name));
+            throw new InvalidArgumentException('illegal name: ' . $name);
         }
         throw new InvalidArgumentException('need index or name');
     }
