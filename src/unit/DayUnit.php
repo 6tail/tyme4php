@@ -29,4 +29,9 @@ abstract class DayUnit extends MonthUnit
     {
         return $this->day;
     }
+
+    protected function getCompareIndex(): int
+    {
+        return parent::getCompareIndex() + $this->day;
+    }
 }

@@ -19,6 +19,7 @@ use com\tyme\culture\Week;
 use com\tyme\enums\HideHeavenStemType;
 use com\tyme\event\Event;
 use com\tyme\festival\SolarFestival;
+use com\tyme\hijri\HijriDay;
 use com\tyme\holiday\LegalHoliday;
 use com\tyme\jd\JulianDay;
 use com\tyme\lunar\LunarDay;
@@ -47,14 +48,15 @@ class SolarDay extends DayUnit
 
     static function validate(int $year, int $month, int $day): void
     {
-        if ($day < 1) {
-            throw new InvalidArgumentException(sprintf('illegal solar day: %d-%d-%d', $year, $month, $day));
-        }
-        if (1582 === $year && 10 === $month) {
-            if (($day > 4 && $day < 15) || $day > 31) {
-                throw new InvalidArgumentException(sprintf('illegal solar day: %d-%d-%d', $year, $month, $day));
+        $illegal = $day < 1;
+        if (!$illegal) {
+            if (1582 === $year && 10 === $month) {
+                $illegal = ($day > 4 && $day < 15) || $day > 31;
+            } else {
+                $illegal = $day > SolarMonth::fromYm($year, $month)->getDayCount();
             }
-        } else if ($day > SolarMonth::fromYm($year, $month)->getDayCount()) {
+        }
+        if ($illegal) {
             throw new InvalidArgumentException(sprintf('illegal solar day: %d-%d-%d', $year, $month, $day));
         }
     }
@@ -91,8 +93,10 @@ class SolarDay extends DayUnit
      */
     function getConstellation(): Constellation
     {
-        $y = $this->month * 100 + $this->day;
-        return Constellation::fromIndex($y > 1221 || $y < 120 ? 9 : ($y < 219 ? 10 : ($y < 321 ? 11 : ($y < 420 ? 0 : ($y < 521 ? 1 : ($y < 622 ? 2 : ($y < 723 ? 3 : ($y < 823 ? 4 : ($y < 923 ? 5 : ($y < 1024 ? 6 : ($y < 1123 ? 7 : 8)))))))))));
+        $days = [19, 18, 20, 19, 20, 21, 22, 22, 22, 23, 22, 21];
+        $m = $this->month - 1;
+        $offset = ($this->day > $days[$m]) ? 1 : 0;
+        return Constellation::fromIndex(9 + $m + $offset);
     }
 
     function getName(): string
@@ -105,7 +109,7 @@ class SolarDay extends DayUnit
         return $this->getSolarMonth() . $this->getName();
     }
 
-    function next(int $n): SolarDay
+    function next(int $n): static
     {
         return $this->getJulianDay()->next($n)->getSolarDay();
     }
@@ -118,10 +122,7 @@ class SolarDay extends DayUnit
      */
     function isBefore(SolarDay $target): bool
     {
-        if ($this->year != $target->year) {
-            return $this->year < $target->year;
-        }
-        return $this->month != $target->month ? $this->month < $target->month : $this->day < $target->day;
+        return $this->getCompareIndex() < $target->getCompareIndex();
     }
 
     /**
@@ -132,10 +133,7 @@ class SolarDay extends DayUnit
      */
     function isAfter(SolarDay $target): bool
     {
-        if ($this->year != $target->year) {
-            return $this->year > $target->year;
-        }
-        return $this->month != $target->month ? $this->month > $target->month : $this->day > $target->day;
+        return $this->getCompareIndex() > $target->getCompareIndex();
     }
 
     /**
@@ -442,6 +440,22 @@ class SolarDay extends DayUnit
             return NineStar::fromIndex($this->subtract($w));
         }
         return NineStar::fromIndex($this->isBefore($n) ? $n->subtract($this) - 1 : $this->subtract($n));
+    }
+
+    /**
+     * 回历日
+     * @return HijriDay 回历日
+     */
+    function getHijriDay(): HijriDay
+    {
+        $d = $this->subtract(static::fromYmd(622, 7, 16));
+        $z = intdiv($d, 10631);
+        $d -= $z * 10631;
+        $y = (int)floor(($d + 0.5) / 354.366);
+        $d -= (int)floor($y * 354.366 + 0.5);
+        $m = (int)floor(($d + 0.11) / 29.51);
+        $d -= (int)floor($m * 29.5 + 0.5);
+        return HijriDay::fromYmd($z * 30 + $y + 1, $m + 1, $d + 1);
     }
 
 }

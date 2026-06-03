@@ -5,7 +5,6 @@ namespace com\tyme\solar;
 
 use com\tyme\rabbyung\RabByungYear;
 use com\tyme\unit\YearUnit;
-use InvalidArgumentException;
 
 /**
  * 公历年
@@ -22,9 +21,7 @@ class SolarYear extends YearUnit
 
     static function validate(int $year): void
     {
-        if ($year < 1 || $year > 9999) {
-            throw new InvalidArgumentException('illegal solar year: ' . $year);
-        }
+        parent::validateRange($year, 1, 9999, 'solar year');
     }
 
     static function fromYear(int $year): static

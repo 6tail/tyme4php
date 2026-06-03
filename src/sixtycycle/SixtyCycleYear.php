@@ -7,7 +7,6 @@ use com\tyme\AbstractTyme;
 use com\tyme\culture\Direction;
 use com\tyme\culture\star\nine\NineStar;
 use com\tyme\culture\Twenty;
-use InvalidArgumentException;
 
 /**
  * 干支年
@@ -23,9 +22,7 @@ class SixtyCycleYear extends AbstractTyme
 
     function __construct(int $year)
     {
-        if ($year < -1 || $year > 9999) {
-            throw new InvalidArgumentException('illegal sixty cycle year: ' . $year);
-        }
+        parent::validateRange($year, -1, 9999, 'sixty cycle year');
         $this->year = $year;
     }
 

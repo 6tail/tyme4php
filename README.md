@@ -1,6 +1,6 @@
 # Tyme [![License](https://img.shields.io/badge/license-MIT-4EB1BA.svg?style=flat-square)](https://github.com/6tail/tyme4php/blob/master/LICENSE)
 
-Tyme是一个非常强大的日历工具库，可以看作 [Lunar](https://6tail.cn/calendar/api.html "https://6tail.cn/calendar/api.html") 的升级版，拥有更优的设计和扩展性，支持公历、农历、藏历、星座、干支、生肖、节气、法定假日等。
+Tyme是一个非常强大的日历工具库，可以看作 [Lunar](https://6tail.cn/calendar/api.html "https://6tail.cn/calendar/api.html") 的升级版，拥有更优的设计和扩展性，支持公历、农历、藏历、回历、星座、干支、生肖、节气、月相、法定假日等。
 
 
 > 基于php8.1开发。
@@ -22,6 +22,9 @@ Tyme是一个非常强大的日历工具库，可以看作 [Lunar](https://6tail
      
     // 第十七饶迥火虎年四月廿一
     echo $solarDay->getRabByungDay();
+     
+    // 1406年赖买丹月20日
+    echo $solarDay->getHijriDay();
      
     // 扩展方法
     SolarDay::extend('myMethod', function () {
@@ -50,6 +53,16 @@ Tyme是一个非常强大的日历工具库，可以看作 [Lunar](https://6tail
      
     // 第十七饶迥火虎年四月廿一
     echo $solarDay->getRabByungDay();
+     
+    // 1406年赖买丹月20日
+    echo $solarDay->getHijriDay();
+     
+    // 扩展方法
+    SolarDay::extend('myMethod', function () {
+        return sprintf('%04d-%02d-%02d', $this->getYear(), $this->getMonth(), $this->getDay());
+    });
+    // 1986-05-29
+    echo $solarDay->myMethod();
 
 ## 文档
 

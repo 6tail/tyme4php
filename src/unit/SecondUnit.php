@@ -3,8 +3,6 @@
 namespace com\tyme\unit;
 
 
-use InvalidArgumentException;
-
 /**
  * 秒
  * @author 6tail
@@ -37,15 +35,9 @@ abstract class SecondUnit extends DayUnit
 
     static function validate($year, $month, $day, $hour, $minute, $second): void
     {
-        if ($hour < 0 || $hour > 23) {
-            throw new InvalidArgumentException('illegal hour: ' . $hour);
-        }
-        if ($minute < 0 || $minute > 59) {
-            throw new InvalidArgumentException('illegal minute: ' . $minute);
-        }
-        if ($second < 0 || $second > 59) {
-            throw new InvalidArgumentException('illegal second: ' . $second);
-        }
+        parent::validateRange($hour, 0, 23, 'hour');
+        parent::validateRange($minute, 0, 59, 'minute');
+        parent::validateRange($second, 0, 59, 'second');
     }
 
     /**
@@ -73,5 +65,19 @@ abstract class SecondUnit extends DayUnit
     function getSecond(): int
     {
         return $this->second;
+    }
+
+    /**
+     * 当天秒数
+     * @return int 当天秒数
+     */
+    function getSecondsInDay(): int
+    {
+        return $this->hour * 3600 + $this->minute * 60 + $this->second;
+    }
+
+    protected function getCompareIndex(): int
+    {
+        return parent::getCompareIndex() * 86400 + $this->getSecondsInDay();
     }
 }

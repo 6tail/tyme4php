@@ -3,7 +3,6 @@
 namespace com\tyme\festival;
 
 
-use com\tyme\enums\FestivalType;
 use com\tyme\event\Event;
 use com\tyme\solar\SolarDay;
 
@@ -18,9 +17,9 @@ class SolarFestival extends AbstractFestival
 
     static string $DATA = '0VV__0Ux0Xc__0Ux0Xg__0_Q0ZV__0Ux0ZY__0Ux0aV__0Ux0bV__0Uo0cV__0Ug0de__0_V0eV__0Ux';
 
-    protected function __construct(FestivalType $type, int $index, Event $event, SolarDay $day)
+    protected function __construct(int $index, Event $event, SolarDay $day)
     {
-        parent::__construct($type, $index, $event, $day);
+        parent::__construct($index, $event, $day);
     }
 
     static function fromIndex(int $year, int $index): ?static
@@ -33,7 +32,7 @@ class SolarFestival extends AbstractFestival
         if ($year < $e->getStartYear()) {
             return null;
         }
-        return new static(FestivalType::DAY, $index, $e, SolarDay::fromYmd($year, $e->getValue(2), $e->getValue(3)));
+        return new static($index, $e, SolarDay::fromYmd($year, $e->getValue(2), $e->getValue(3)));
     }
 
     static function fromYmd(int $year, int $month, int $day): ?static
@@ -43,7 +42,7 @@ class SolarFestival extends AbstractFestival
             $start = $i * 8;
             $e = new Event(static::$NAMES[$i], '@' . substr(static::$DATA, $start, 8));
             if ($d->getYear() >= $e->getStartYear() && $d->getMonth() === $e->getValue(2) && $d->getDay() === $e->getValue(3)) {
-                return new static(FestivalType::DAY, $i, $e, $d);
+                return new static($i, $e, $d);
             }
         }
         return null;

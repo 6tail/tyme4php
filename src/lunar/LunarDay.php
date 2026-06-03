@@ -90,14 +90,7 @@ class LunarDay extends DayUnit
      */
     function isBefore(LunarDay $target): bool
     {
-        if ($this->year != $target->year) {
-            return $this->year < $target->year;
-        }
-        if ($this->month != $target->month) {
-            $t = abs($target->month);
-            return $this->month == $t || abs($this->month) < $t;
-        }
-        return $this->day < $target->day;
+        return $this->getCompareIndex() < $target->getCompareIndex();
     }
 
     /**
@@ -108,14 +101,7 @@ class LunarDay extends DayUnit
      */
     function isAfter(LunarDay $target): bool
     {
-        if ($this->year != $target->year) {
-            return $this->year > $target->year;
-        }
-        if ($this->month != $target->month) {
-            $t = abs($this->month);
-            return $t == $target->month || $t > abs($target->month);
-        }
-        return $this->day > $target->day;
+        return $this->getCompareIndex() > $target->getCompareIndex();
     }
 
     /**

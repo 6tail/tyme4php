@@ -30,4 +30,14 @@ abstract class YearUnit extends AbstractTyme
     {
         return $this->year;
     }
+
+    /**
+     * 用于比较大小的索引
+     *
+     * @return int 索引
+     */
+    protected function getCompareIndex(): int
+    {
+        return $this->year * 10000;
+    }
 }

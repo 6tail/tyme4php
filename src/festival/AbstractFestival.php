@@ -4,7 +4,6 @@ namespace com\tyme\festival;
 
 
 use com\tyme\AbstractTyme;
-use com\tyme\enums\FestivalType;
 use com\tyme\event\Event;
 use com\tyme\unit\DayUnit;
 
@@ -15,12 +14,6 @@ use com\tyme\unit\DayUnit;
  */
 abstract class AbstractFestival extends AbstractTyme
 {
-    /**
-     * 类型
-     * @deprecated
-     */
-    protected FestivalType $type;
-
     /**
      * @var int 索引
      */
@@ -36,9 +29,8 @@ abstract class AbstractFestival extends AbstractTyme
      */
     protected Event $event;
 
-    protected function __construct(FestivalType $type, int $index, Event $event, DayUnit $day)
+    protected function __construct(int $index, Event $event, DayUnit $day)
     {
-        $this->type = $type;
         $this->index = $index;
         $this->event = $event;
         $this->day = $day;
@@ -47,16 +39,6 @@ abstract class AbstractFestival extends AbstractTyme
     function __toString(): string
     {
         return sprintf('%s %s', $this->day, $this->getName());
-    }
-
-    /**
-     * 类型
-     * @deprecated
-     * @return FestivalType 节日类型
-     */
-    function getType(): FestivalType
-    {
-        return $this->type;
     }
 
     /**

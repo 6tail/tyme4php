@@ -87,15 +87,7 @@ class LunarHour extends SecondUnit
      */
     function isBefore(LunarHour $target): bool
     {
-        $aDay = $this->getLunarDay();
-        $bDay = $target->getLunarDay();
-        if (!$aDay->equals($bDay)) {
-            return $aDay->isBefore($bDay);
-        }
-        if ($this->hour != $target->hour) {
-            return $this->hour < $target->hour;
-        }
-        return $this->minute != $target->minute ? $this->minute < $target->minute : $this->second < $target->second;
+        return $this->getCompareIndex() < $target->getCompareIndex();
     }
 
     /**
@@ -106,30 +98,14 @@ class LunarHour extends SecondUnit
      */
     function isAfter(LunarHour $target): bool
     {
-        $aDay = $this->getLunarDay();
-        $bDay = $target->getLunarDay();
-        if (!$aDay->equals($bDay)) {
-            return $aDay->isAfter($bDay);
-        }
-        if ($this->hour != $target->hour) {
-            return $this->hour > $target->hour;
-        }
-        return $this->minute != $target->minute ? $this->minute > $target->minute : $this->second > $target->second;
+        return $this->getCompareIndex() > $target->getCompareIndex();
     }
 
     function next(int $n): LunarHour
     {
         $h = $this->hour + $n * 2;
-        $diff = $h < 0 ? -1 : 1;
-        $hour = abs($h);
-        $days = intdiv($hour, 24) * $diff;
-        $hour = ($hour % 24) * $diff;
-        if ($hour < 0) {
-            $hour += 24;
-            $days--;
-        }
-        $d = $this->getLunarDay()->next($days);
-        return static::fromYmdHms($d->getYear(), $d->getMonth(), $d->getDay(), $hour, $this->minute, $this->second);
+        $d = $this->getLunarDay()->next((int) floor($h / 24));
+        return static::fromYmdHms($d->getYear(), $d->getMonth(), $d->getDay(), ($h % 24 + 24) % 24, $this->minute, $this->second);
     }
 
     /**

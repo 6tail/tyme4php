@@ -62,15 +62,7 @@ class SolarTime extends SecondUnit
      */
     function isBefore(SolarTime $target): bool
     {
-        $aDay = $this->getSolarDay();
-        $bDay = $target->getSolarDay();
-        if (!$aDay->equals($bDay)) {
-            return $aDay->isBefore($bDay);
-        }
-        if ($this->hour != $target->hour) {
-            return $this->hour < $target->hour;
-        }
-        return $this->minute != $target->minute ? $this->minute < $target->minute : $this->second < $target->second;
+        return $this->getCompareIndex() < $target->getCompareIndex();
     }
 
     /**
@@ -81,15 +73,7 @@ class SolarTime extends SecondUnit
      */
     function isAfter(SolarTime $target): bool
     {
-        $aDay = $this->getSolarDay();
-        $bDay = $target->getSolarDay();
-        if (!$aDay->equals($bDay)) {
-            return $aDay->isAfter($bDay);
-        }
-        if ($this->hour != $target->hour) {
-            return $this->hour > $target->hour;
-        }
-        return $this->minute != $target->minute ? $this->minute > $target->minute : $this->second > $target->second;
+        return $this->getCompareIndex() > $target->getCompareIndex();
     }
 
     /**
@@ -138,16 +122,7 @@ class SolarTime extends SecondUnit
      */
     function subtract(SolarTime $target): int
     {
-        $days = $this->getSolarDay()->subtract($target->getSolarDay());
-        $cs = $this->hour * 3600 + $this->minute * 60 + $this->second;
-        $ts = $target->hour * 3600 + $target->minute * 60 + $target->second;
-        $seconds = $cs - $ts;
-        if ($seconds < 0) {
-            $seconds += 86400;
-            $days--;
-        }
-        $seconds += $days * 86400;
-        return $seconds;
+        return (int)($this->getSolarDay()->subtract($target->getSolarDay()) * 86400 + $this->getSecondsInDay() - $target->getSecondsInDay());
     }
 
     /**
@@ -156,33 +131,15 @@ class SolarTime extends SecondUnit
      * @param int $n 推移秒数
      * @return SolarTime 公历时刻
      */
-    function next(int $n): SolarTime
+    function next(int $n): static
     {
         if ($n === 0) {
             return static::fromYmdHms($this->year, $this->month, $this->day, $this->hour, $this->minute, $this->second);
         }
-        $ts = $this->second + $n;
-        $tm = $this->minute + intdiv($ts, 60);
-        $ts %= 60;
-        if ($ts < 0) {
-            $ts += 60;
-            $tm -= 1;
-        }
-        $th = $this->hour + intdiv($tm, 60);
-        $tm %= 60;
-        if ($tm < 0) {
-            $tm += 60;
-            $th -= 1;
-        }
-        $td = intdiv($th, 24);
-        $th %= 24;
-        if ($th < 0) {
-            $th += 24;
-            $td -= 1;
-        }
-
-        $d = $this->getSolarDay()->next($td);
-        return static::fromYmdHms($d->getYear(), $d->getMonth(), $d->getDay(), $th, $tm, $ts);
+        $t = $this->hour * 3600 + $this->minute * 60 + $this->second + $n;
+        $s = (($t % 86400) + 86400) % 86400;
+        $d = $this->getSolarDay()->next((int) floor($t / 86400));
+        return static::fromYmdHms($d->getYear(), $d->getMonth(), $d->getDay(), (int) ($s / 3600), (int) (($s % 3600) / 60), $s % 60);
     }
 
     /**

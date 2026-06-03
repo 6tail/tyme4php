@@ -4,7 +4,6 @@ namespace com\tyme\solar;
 
 
 use com\tyme\unit\MonthUnit;
-use InvalidArgumentException;
 
 /**
  * 公历月
@@ -28,9 +27,7 @@ class SolarMonth extends MonthUnit
 
     static function validate(int $year, int $month): void
     {
-        if ($month < 1 || $month > 12) {
-            throw new InvalidArgumentException('illegal solar month: ' . $month);
-        }
+        parent::validateRange($month, 1, 12, 'solar month');
         SolarYear::validate($year);
     }
 
@@ -107,7 +104,7 @@ class SolarMonth extends MonthUnit
         return $this->getSolarYear() . $this->getName();
     }
 
-    function next(int $n): SolarMonth
+    function next(int $n): static
     {
         $i = $this->month - 1 + $n;
         return static::fromYm(intdiv($this->year * 12 + $i, 12), $this->indexOf($i, null, 12) + 1);

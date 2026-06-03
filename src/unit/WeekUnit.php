@@ -3,8 +3,6 @@
 namespace com\tyme\unit;
 
 
-use InvalidArgumentException;
-
 /**
  * 周
  * @author 6tail
@@ -33,12 +31,8 @@ abstract class WeekUnit extends MonthUnit
 
     static function validate(int $year, int $month, int $index, int $start): void
     {
-        if ($index < 0 || $index > 5) {
-            throw new InvalidArgumentException('illegal week index: ' . $index);
-        }
-        if ($start < 0 || $start > 6) {
-            throw new InvalidArgumentException('illegal week start: ' . $start);
-        }
+        parent::validateRange($index, 0, 5, 'week index');
+        parent::validateRange($start, 0, 6, 'week start');
     }
 
     /**

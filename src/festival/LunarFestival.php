@@ -4,7 +4,6 @@ namespace com\tyme\festival;
 
 
 use com\tyme\enums\EventType;
-use com\tyme\enums\FestivalType;
 use com\tyme\event\Event;
 use com\tyme\lunar\LunarDay;
 use com\tyme\solar\SolarTerm;
@@ -21,9 +20,9 @@ class LunarFestival extends AbstractFestival
 
     static string $DATA = '2VV__0002Vj__0002WW__0002XX__0003b___0002ZZ__0002bb__0002bj__0002cj__0002dd__0003s___0002gc__0002hV_U000';
 
-    protected function __construct(FestivalType $type, int $index, Event $event, DayUnit $day)
+    protected function __construct(int $index, Event $event, DayUnit $day)
     {
-        parent::__construct($type, $index, $event, $day);
+        parent::__construct($index, $event, $day);
     }
 
     static function fromIndex(int $year, int $index): ?static
@@ -38,9 +37,9 @@ class LunarFestival extends AbstractFestival
                 $m = $e->getMonth($year);
                 $d = LunarDay::fromYmd($m[0], $m[1], $e->getValue(3));
                 $offset = $e->getValue(5);
-                return new static(FestivalType::DAY, $index, $e, $offset === 0 ? $d : $d->next($offset));
+                return new static($index, $e, $offset === 0 ? $d : $d->next($offset));
             case EventType::TERM_DAY:
-                return new static(FestivalType::TERM, $index, $e, SolarTerm::fromIndex($year, $e->getValue(2))->getSolarDay()->getLunarDay());
+                return new static($index, $e, SolarTerm::fromIndex($year, $e->getValue(2))->getSolarDay()->getLunarDay());
             default:
                 return null;
         }
@@ -57,20 +56,20 @@ class LunarFestival extends AbstractFestival
                     $offset = $e->getValue(5);
                     if ($offset === 0) {
                         if ($d->getMonth() === $e->getValue(2) && $d->getDay() === $e->getValue(3)) {
-                            return new static(FestivalType::DAY, $i, $e, $d);
+                            return new static($i, $e, $d);
                         }
                     } else {
                         $m = $e->getMonth($year);
                         $next = $d->next(-$offset);
                         if ($next->getYear() === $m[0] && $next->getMonth() === $m[1] && $next->getDay() === $e->getValue(3)) {
-                            return new static(FestivalType::DAY, $i, $e, $d);
+                            return new static($i, $e, $d);
                         }
                     }
                     break;
                 case EventType::TERM_DAY:
                     $term = $d->getSolarDay()->getTermDay();
                     if ($term->getDayIndex() === 0 && $term->getSolarTerm()->getIndex() === $e->getValue(2) % 24) {
-                        return new static(FestivalType::TERM, $i, $e, $d);
+                        return new static($i, $e, $d);
                     }
                 default:
             }

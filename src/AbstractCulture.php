@@ -47,4 +47,19 @@ abstract class AbstractCulture implements Culture
         }
         throw new InvalidArgumentException(sprintf('invalid name: %s, size: %d', $name, $size));
     }
+
+    /**
+     * 校验值是否在指定范围内
+     *
+     * @param int $value 待校验的值
+     * @param int $min   最小值（包含）
+     * @param int $max   最大值（包含）
+     * @param string $field 字段名称，用于异常提示
+     */
+    protected static function validateRange(int $value, int $min, int $max, string $field): void
+    {
+        if ($value < $min || $value > $max) {
+            throw new InvalidArgumentException('illegal ' . $field . ': ' . $value);
+        }
+    }
 }

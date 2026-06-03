@@ -29,4 +29,9 @@ abstract class MonthUnit extends YearUnit
     {
         return $this->month;
     }
+
+    protected function getCompareIndex(): int
+    {
+        return parent::getCompareIndex() + ($this->month > 0 ? $this->month * 2 : abs($this->month) * 2 + 1) * 100;
+    }
 }

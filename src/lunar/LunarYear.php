@@ -9,7 +9,6 @@ use com\tyme\culture\star\nine\NineStar;
 use com\tyme\culture\Twenty;
 use com\tyme\sixtycycle\SixtyCycle;
 use com\tyme\unit\YearUnit;
-use InvalidArgumentException;
 
 /**
  * 农历年
@@ -72,9 +71,7 @@ class LunarYear extends YearUnit
 
     static function validate(int $year): void
     {
-        if ($year < -1 || $year > 9999) {
-            throw new InvalidArgumentException('illegal lunar year: ' . $year);
-        }
+        parent::validateRange($year, -1, 9999, 'lunar year');
     }
 
     static function fromYear(int $year): static

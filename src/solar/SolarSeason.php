@@ -4,7 +4,6 @@ namespace com\tyme\solar;
 
 
 use com\tyme\unit\YearUnit;
-use InvalidArgumentException;
 
 /**
  * 公历季度
@@ -29,9 +28,7 @@ class SolarSeason extends YearUnit
 
     static function validate(int $year, int $index): void
     {
-        if ($index < 0 || $index > 3) {
-            throw new InvalidArgumentException('illegal solar season index: ' . $index);
-        }
+        parent::validateRange($index, 0, 3, 'solar season index');
         SolarYear::validate($year);
     }
 

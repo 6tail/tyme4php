@@ -48,9 +48,7 @@ class RabByungYear extends AbstractTyme
 
     static function validate(int $year): void
     {
-        if ($year < 1027 || $year > 9999) {
-            throw new InvalidArgumentException('illegal rab-byung year: ' . $year);
-        }
+        parent::validateRange($year, 1027, 9999, 'rab-byung year');
     }
 
     static function fromSixtyCycle(int $rabByungIndex, SixtyCycle $sixtyCycle): static

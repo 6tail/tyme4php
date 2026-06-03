@@ -679,4 +679,22 @@ class EightCharTest extends TestCase
         $expected = array('1812年2月18日 16:00:00', '1992年3月5日 15:00:00', '2052年2月19日 16:00:00');
         $this->assertEquals($expected, $actual);
     }
+
+    function test48()
+    {
+        $eightChar = SolarTime::fromYmdHms(1997, 12, 7, 10, 4, 49)->getLunarHour()->getEightChar();
+        $actual = $eightChar->__toString();
+
+        $expected = '丁丑 辛亥 癸未 丁巳';
+        $this->assertEquals($expected, $actual);
+    }
+
+    function test49()
+    {
+        $eightChar = SolarTime::fromYmdHms(1997, 12, 7, 10, 4, 52)->getLunarHour()->getEightChar();
+        $actual = $eightChar->__toString();
+
+        $expected = '丁丑 壬子 癸未 丁巳';
+        $this->assertEquals($expected, $actual);
+    }
 }
