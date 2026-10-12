@@ -21,6 +21,7 @@ use InvalidArgumentException;
  */
 class LunarMonth extends MonthUnit
 {
+    private static array $NEW_MOON_CACHE = [];
     static array $NAMES = ['正月', '二月', '三月', '四月', '五月', '六月', '七月', '八月', '九月', '十月', '十一月', '十二月'];
 
     /**
@@ -72,6 +73,11 @@ class LunarMonth extends MonthUnit
 
     protected function getNewMoon(): float
     {
+        $idx = $this->leap ? 12 : $this->month - 1;
+        if (isset(self::$NEW_MOON_CACHE[$this->year][$idx])) {
+            return self::$NEW_MOON_CACHE[$this->year][$idx];
+        }
+
         $year = $this->year;
         // 冬至
         $dongZhiJd = SolarTerm::fromIndex($year, 0)->getCursoryJulianDay();
@@ -91,7 +97,9 @@ class LunarMonth extends MonthUnit
         }
 
         // 本月初一
-        return $w + 29.5306 * ($offset + $this->getIndexInYear());
+        $v =  $w + 29.5306 * ($offset + $this->getIndexInYear());
+        self::$NEW_MOON_CACHE[$this->year][$idx] = $v;
+        return $v;
     }
 
     /**

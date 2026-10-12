@@ -69,6 +69,8 @@ function parseDirectory($path): void
             $sorts[] = '../src/'. $name . '.php';
         }
         $sorts[] = '../src/unit';
+        $sorts[] = '../src/solar';
+        $sorts[] = '../src/lunar';
         $files = sortFiles($files, $sorts);
     } else if ('../src/unit' == $path) {
         $sorts = array();
