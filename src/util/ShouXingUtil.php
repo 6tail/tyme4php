@@ -579,46 +579,19 @@ class ShouXingUtil
 
   static function calcCached(string $ns, float $jd, callable $doCalc): float
   {
-      static $useApcu = null;
       static $cache = [];
-      static $maxSize = 13;
-
-      if ($useApcu === null) {
-          $useApcu = extension_loaded('apcu') && function_exists('apcu_fetch') && (PHP_SAPI === 'cli' ? ini_get('apc.enable_cli') : ini_get('apc.enabled'));
-      }
-
       $k = sprintf('%.8f', $jd);
-      $ak = $ns . '_' . $k;
-
-      // APCu 分支
-      if ($useApcu) {
-          $v = apcu_fetch('calc_' . $ak, $ok);
-          if ($ok)
-          {
-              return $v;
-          }
-
-          $v = $doCalc($jd);
-          apcu_store('calc_' . $ak, $v, 3600);
-          return $v;
-      }
-
-      // static LRU 分支，按 ns 分桶
       if (!isset($cache[$ns])) {
           $cache[$ns] = [];
       }
 
       if (array_key_exists($k, $cache[$ns])) {
-          $v = $cache[$ns][$k];
-          unset($cache[$ns][$k]);
-          $cache[$ns][$k] = $v;
-          return $v;
+          return $cache[$ns][$k];
       }
 
       $v = $doCalc($jd);
-
       $cache[$ns][$k] = $v;
-      while (count($cache[$ns]) > $maxSize) {
+      if (count($cache[$ns]) > 13) {
           unset($cache[$ns][array_key_first($cache[$ns])]);
       }
       return $v;
