@@ -4,14 +4,14 @@ namespace com\tyme\solar;
 
 
 use com\tyme\rabbyung\RabByungYear;
-use com\tyme\unit\YearUnit;
+use com\tyme\unit\AbstractYear;
 
 /**
  * 公历年
  * @author 6tail
  * @package com\tyme\solar
  */
-class SolarYear extends YearUnit
+class SolarYear extends AbstractYear
 {
     protected function __construct(int $year)
     {
@@ -53,11 +53,6 @@ class SolarYear extends YearUnit
             return $this->year % 4 === 0;
         }
         return ($this->year % 4 === 0 && $this->year % 100 != 0) || ($this->year % 400 == 0);
-    }
-
-    function getName(): string
-    {
-        return $this->year . '年';
     }
 
     function next(int $n): static

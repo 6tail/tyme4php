@@ -2,48 +2,23 @@
 
 namespace com\tyme\rabbyung;
 
-use com\tyme\AbstractTyme;
 use com\tyme\culture\Zodiac;
 use com\tyme\sixtycycle\SixtyCycle;
 use com\tyme\solar\SolarYear;
-use InvalidArgumentException;
+use com\tyme\unit\AbstractTraditionalYear;
 
 /**
  * 藏历年(公历1027年为藏历元年，第一饶迥火兔年）
+ *
  * @author 6tail
  * @package com\tyme\rabbyung
  */
-class RabByungYear extends AbstractTyme
+class RabByungYear extends AbstractTraditionalYear
 {
-    /**
-     * @var int 饶迥(胜生周)序号，从0开始
-     */
-    protected int $rabByungIndex;
-
-    /**
-     * @var int 五行索引，从0开始
-     */
-    protected int $elementIndex;
-
-    /**
-     * @var int 生肖索引，从0开始
-     */
-    protected int $zodiacIndex;
-
-    function __construct(int $rabByungIndex, int $elementIndex, int $zodiacIndex)
+    function __construct(int $year)
     {
-        if ($rabByungIndex < 0 || $rabByungIndex > 150) {
-            throw new InvalidArgumentException('illegal rab-byung index: ' . $rabByungIndex);
-        }
-        if ($elementIndex < 0 || $elementIndex >= count(RabByungElement::$NAMES)) {
-            throw new InvalidArgumentException('illegal element index: ' . $elementIndex);
-        }
-        if ($zodiacIndex < 0 || $zodiacIndex >= count(Zodiac::$NAMES)) {
-            throw new InvalidArgumentException('illegal zodiac index: ' . $zodiacIndex);
-        }
-        $this->rabByungIndex = $rabByungIndex;
-        $this->elementIndex = $elementIndex;
-        $this->zodiacIndex = $zodiacIndex;
+        self::validate($year);
+        parent::__construct($year);
     }
 
     static function validate(int $year): void
@@ -53,44 +28,54 @@ class RabByungYear extends AbstractTyme
 
     static function fromSixtyCycle(int $rabByungIndex, SixtyCycle $sixtyCycle): static
     {
-        return new static($rabByungIndex, $sixtyCycle->getHeavenStem()->getElement()->getIndex(), $sixtyCycle->getEarthBranch()->getZodiac()->getIndex());
+        return static::fromYear(1024 + $rabByungIndex * 60 + $sixtyCycle->getIndex());
     }
 
     static function fromElementZodiac(int $rabByungIndex, RabByungElement $element, Zodiac $zodiac): static
     {
-        return new static($rabByungIndex, $element->getIndex(), $zodiac->getIndex());
+        return static::fromSixtyCycle($rabByungIndex, SixtyCycle::fromIndex(6 * ($element->getIndex() * 2 + $zodiac->getIndex() % 2) - 5 * $zodiac->getIndex()));
     }
 
     static function fromYear(int $year): static
     {
-        return static::fromSixtyCycle(intval(($year - 1024) / 60), SixtyCycle::fromIndex($year - 4));
+        return new static($year);
     }
 
+    /**
+     * 饶迥序号
+     *
+     * @return int 数字，从0开始
+     */
     function getRabByungIndex(): int
     {
-        return $this->rabByungIndex;
+        return intval(($this->year - 1024) / 60);
     }
 
-    function getSixtyCycle(): SixtyCycle
-    {
-        return SixtyCycle::fromIndex(6 * ($this->elementIndex * 2 + $this->zodiacIndex % 2) - 5 * $this->zodiacIndex);
-    }
-
+    /**
+     * 生肖
+     *
+     * @return Zodiac 生肖
+     */
     function getZodiac(): Zodiac
     {
-        return Zodiac::fromIndex($this->zodiacIndex);
+        return $this->getSixtyCycle()->getEarthBranch()->getZodiac();
     }
 
+    /**
+     * 五行
+     *
+     * @return RabByungElement 藏历五行
+     */
     function getElement(): RabByungElement
     {
-        return RabByungElement::fromIndex($this->elementIndex);
+        return RabByungElement::fromIndex($this->getSixtyCycle()->getHeavenStem()->getElement()->getIndex());
     }
 
     function getName(): string
     {
         $digits = ['零', '一', '二', '三', '四', '五', '六', '七', '八', '九'];
         $units = ['', '十', '百'];
-        $n = $this->rabByungIndex + 1;
+        $n = $this->getRabByungIndex() + 1;
         $s = '';
         $pos = 0;
         while ($n > 0) {
@@ -111,12 +96,7 @@ class RabByungYear extends AbstractTyme
 
     function next($n): static
     {
-        return static::fromYear($this->getYear() + $n);
-    }
-
-    function getYear(): int
-    {
-        return 1024 + $this->rabByungIndex * 60 + $this->getSixtyCycle()->getIndex();
+        return static::fromYear($this->year + $n);
     }
 
     function getLeapMonth(): int
@@ -124,7 +104,7 @@ class RabByungYear extends AbstractTyme
         $y = 1;
         $m = 4;
         $t = 1;
-        $currentYear = $this->getYear();
+        $currentYear = $this->year;
         while ($y < $currentYear) {
             $i = $m + 31 + $t;
             $y += 2;
@@ -140,28 +120,22 @@ class RabByungYear extends AbstractTyme
 
     function getSolarYear(): SolarYear
     {
-        return SolarYear::fromYear($this->getYear());
+        return SolarYear::fromYear($this->year);
     }
 
     function getFirstMonth(): RabByungMonth
     {
-        return new RabByungMonth($this->getYear(), 1);
-    }
-
-    function getMonthCount(): int
-    {
-        return $this->getLeapMonth() < 1 ? 12 : 13;
+        return new RabByungMonth($this->year, 1);
     }
 
     function getMonths(): array
     {
         $l = [];
-        $y = $this->getYear();
         $leapMonth = $this->getLeapMonth();
         for ($i = 1; $i < 13; $i++) {
-            $l[] = new RabByungMonth($y, $i);
+            $l[] = new RabByungMonth($this->year, $i);
             if ($i == $leapMonth) {
-                $l[] = new RabByungMonth($y, -$i);
+                $l[] = new RabByungMonth($this->year, -$i);
             }
         }
         return $l;

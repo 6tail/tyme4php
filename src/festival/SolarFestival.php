@@ -24,11 +24,10 @@ class SolarFestival extends AbstractFestival
 
     static function fromIndex(int $year, int $index): ?static
     {
-        if ($index < 0 || $index >= count(static::$NAMES)) {
+        $e = self::buildEvent(static::$NAMES, static::$DATA, $index);
+        if ($e === null) {
             return null;
         }
-        $start = $index * 8;
-        $e = new Event(static::$NAMES[$index], '@' . substr(static::$DATA, $start, 8));
         if ($year < $e->getStartYear()) {
             return null;
         }

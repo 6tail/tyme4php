@@ -64,4 +64,21 @@ abstract class AbstractFestival extends AbstractTyme
     {
         return $this->event->getName();
     }
+
+    /**
+     * 构建事件
+     *
+     * @param string[] $names 事件名称列表
+     * @param string $data 所有事件数据
+     * @param int $index 事件索引
+     * @return Event|null 事件
+     */
+    static function buildEvent(array $names, string $data, int $index): ?Event
+    {
+        if ($index < 0 || $index >= count($names)) {
+            return null;
+        }
+        $start = $index * 8;
+        return new Event($names[$index], '@' . substr($data, $start, 8));
+    }
 }

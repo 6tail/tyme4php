@@ -2,17 +2,19 @@
 
 namespace com\tyme\hijri;
 
+use com\tyme\culture\Week;
 use com\tyme\jd\JulianDay;
 use com\tyme\solar\SolarDay;
-use com\tyme\unit\DayUnit;
+use com\tyme\unit\AbstractDay;
 use InvalidArgumentException;
 
 /**
  * 回历日
+ *
  * @author 6tail
  * @package com\tyme\hijri
  */
-class HijriDay extends DayUnit
+class HijriDay extends AbstractDay
 {
 
     static array $NAMES = ['1日', '2日', '3日', '4日', '5日', '6日', '7日', '8日', '9日', '10日', '11日', '12日', '13日', '14日', '15日', '16日', '17日', '18日', '19日', '20日', '21日', '22日', '23日', '24日', '25日', '26日', '27日', '28日', '29日', '30日'];
@@ -37,11 +39,17 @@ class HijriDay extends DayUnit
 
     /**
      * 回历月
+     *
      * @return HijriMonth 回历月
      */
     function getHijriMonth(): HijriMonth
     {
         return HijriMonth::fromYm($this->year, $this->month);
+    }
+
+    function getWeek(): Week
+    {
+        return $this->getJulianDay()->getWeek();
     }
 
     function getName(): string
@@ -61,6 +69,7 @@ class HijriDay extends DayUnit
 
     /**
      * 是否在指定回历日之前
+     *
      * @param HijriDay $target 回历日
      * @return bool true/false
      */
@@ -71,6 +80,7 @@ class HijriDay extends DayUnit
 
     /**
      * 是否在指定回历日之后
+     *
      * @param HijriDay $target 回历日
      * @return bool true/false
      */
@@ -81,6 +91,7 @@ class HijriDay extends DayUnit
 
     /**
      * 位于当年的索引
+     *
      * @return int 索引
      */
     function getIndexInYear(): int
@@ -90,6 +101,7 @@ class HijriDay extends DayUnit
 
     /**
      * 回历日期相减，获得相差天数
+     *
      * @param HijriDay $target 回历日
      * @return int 天数
      */
@@ -100,6 +112,7 @@ class HijriDay extends DayUnit
 
     /**
      * 儒略日
+     *
      * @return JulianDay 儒略日
      */
     function getJulianDay(): JulianDay
@@ -109,6 +122,7 @@ class HijriDay extends DayUnit
 
     /**
      * 公历日
+     *
      * @return SolarDay 公历日
      */
     function getSolarDay(): SolarDay

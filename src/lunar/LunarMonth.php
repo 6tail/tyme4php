@@ -10,7 +10,8 @@ use com\tyme\culture\star\nine\NineStar;
 use com\tyme\jd\JulianDay;
 use com\tyme\sixtycycle\SixtyCycle;
 use com\tyme\solar\SolarTerm;
-use com\tyme\unit\MonthUnit;
+use com\tyme\unit\AbstractLeapMonth;
+use com\tyme\unit\AbstractYear;
 use com\tyme\util\ShouXingUtil;
 use InvalidArgumentException;
 
@@ -19,20 +20,15 @@ use InvalidArgumentException;
  * @author 6tail
  * @package com\tyme\lunar
  */
-class LunarMonth extends MonthUnit
+class LunarMonth extends AbstractLeapMonth
 {
+    private static array $NEW_MOON_CACHE = [];
     static array $NAMES = ['正月', '二月', '三月', '四月', '五月', '六月', '七月', '八月', '九月', '十月', '十一月', '十二月'];
-
-    /**
-     * @var bool 是否闰月
-     */
-    protected bool $leap;
 
     protected function __construct(int $year, int $month)
     {
         self::validate($year, $month);
-        parent::__construct($year, abs($month));
-        $this->leap = $month < 0;
+        parent::__construct($year, $month);
     }
 
     static function validate($year, $month): void
@@ -60,18 +56,18 @@ class LunarMonth extends MonthUnit
         return LunarYear::fromYear($this->year);
     }
 
-    /**
-     * 月
-     *
-     * @return int 月，当月为闰月时，返回负数
-     */
-    function getMonthWithLeap(): int
+    function getAbstractYear(): AbstractYear
     {
-        return $this->leap ? -$this->month : $this->month;
+        return $this->getLunarYear();
     }
 
     protected function getNewMoon(): float
     {
+        $idx = $this->leap ? 12 : $this->month - 1;
+        if (isset(self::$NEW_MOON_CACHE[$this->year][$idx])) {
+            return self::$NEW_MOON_CACHE[$this->year][$idx];
+        }
+
         $year = $this->year;
         // 冬至
         $dongZhiJd = SolarTerm::fromIndex($year, 0)->getCursoryJulianDay();
@@ -91,38 +87,17 @@ class LunarMonth extends MonthUnit
         }
 
         // 本月初一
-        return $w + 29.5306 * ($offset + $this->getIndexInYear());
+        $v =  $w + 29.5306 * ($offset + $this->getIndexInYear());
+        self::$NEW_MOON_CACHE[$this->year][$idx] = $v;
+        return $v;
     }
 
-    /**
-     * 天数(大月30天，小月29天)
-     *
-     * @return int 天数
-     */
     function getDayCount(): int
     {
+        // 大月30天，小月29天
         $w = $this->getNewMoon();
         // 本月天数 = 下月初一 - 本月初一
         return (int)(ShouXingUtil::calcShuo($w + 29.5306) - ShouXingUtil::calcShuo($w));
-    }
-
-    /**
-     * 位于当年的索引(0-12)
-     *
-     * @return int 索引
-     */
-    function getIndexInYear(): int
-    {
-        $index = $this->month - 1;
-        if ($this->leap) {
-            $index += 1;
-        } else {
-            $leapMonth = $this->getLunarYear()->getLeapMonth();
-            if ($leapMonth > 0 && $this->month > $leapMonth) {
-                $index += 1;
-            }
-        }
-        return $index;
     }
 
     /**
@@ -146,27 +121,6 @@ class LunarMonth extends MonthUnit
     }
 
     /**
-     * 是否闰月
-     *
-     * @return bool true/false
-     */
-    function isLeap(): bool
-    {
-        return $this->leap;
-    }
-
-    /**
-     * 周数
-     *
-     * @param int $start 起始星期，1234560分别代表星期一至星期天
-     * @return int 周数
-     */
-    function getWeekCount(int $start): int
-    {
-        return (int)ceil(($this->indexOf($this->getFirstJulianDay()->getWeek()->getIndex() - $start, null, 7) + $this->getDayCount()) / 7);
-    }
-
-    /**
      * 依据国家标准《农历的编算和颁行》GB/T 33661-2017中农历月的命名方法。
      *
      * @return string 名称
@@ -176,42 +130,10 @@ class LunarMonth extends MonthUnit
         return ($this->leap ? '闰' : '') . static::$NAMES[$this->month - 1];
     }
 
-    function __toString(): string
-    {
-        return $this->getLunarYear() . $this->getName();
-    }
-
     function next(int $n): LunarMonth
     {
-        if ($n === 0) {
-            return static::fromYm($this->year, $this->getMonthWithLeap());
-        }
-        $m = $this->getIndexInYear() + 1 + $n;
-        $y = $this->getLunarYear();
-        if ($n > 0) {
-            $monthCount = $y->getMonthCount();
-            while ($m > $monthCount) {
-                $m -= $monthCount;
-                $y = $y->next(1);
-                $monthCount = $y->getMonthCount();
-            }
-        } else {
-            while ($m <= 0) {
-                $y = $y->next(-1);
-                $m += $y->getMonthCount();
-            }
-        }
-        $leap = false;
-        $leapMonth = $y->getLeapMonth();
-        if ($leapMonth > 0) {
-            if ($m === $leapMonth + 1) {
-                $leap = true;
-            }
-            if ($m > $leapMonth) {
-                $m--;
-            }
-        }
-        return static::fromYm($y->getYear(), $leap ? -$m : $m);
+        $m = parent::next($n);
+        return static::fromYm($m->year, $m->getMonthValue());
     }
 
     /**
@@ -222,7 +144,7 @@ class LunarMonth extends MonthUnit
     function getDays(): array
     {
         $size = $this->getDayCount();
-        $m = $this->getMonthWithLeap();
+        $m = $this->getMonthValue();
         $l = array();
         for ($i = 0; $i < $size; $i++) {
             $l[] = LunarDay::fromYmd($this->year, $m, $i + 1);
@@ -232,7 +154,7 @@ class LunarMonth extends MonthUnit
 
     function getFirstDay(): LunarDay
     {
-        return LunarDay::fromYmd($this->year, $this->getMonthWithLeap(), 1);
+        return LunarDay::fromYmd($this->year, $this->getMonthValue(), 1);
     }
 
     /**
@@ -244,7 +166,7 @@ class LunarMonth extends MonthUnit
     function getWeeks(int $start): array
     {
         $size = $this->getWeekCount($start);
-        $m = $this->getMonthWithLeap();
+        $m = $this->getMonthValue();
         $l = array();
         for ($i = 0; $i < $size; $i++) {
             $l[] = LunarWeek::fromYm($this->year, $m, $i, $start);

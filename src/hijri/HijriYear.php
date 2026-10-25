@@ -2,14 +2,15 @@
 
 namespace com\tyme\hijri;
 
-use com\tyme\unit\YearUnit;
+use com\tyme\unit\AbstractYear;
 
 /**
  * 回历年
+ *
  * @author 6tail
  * @package com\tyme\hijri
  */
-class HijriYear extends YearUnit
+class HijriYear extends AbstractYear
 {
     protected function __construct(int $year)
     {
@@ -29,6 +30,7 @@ class HijriYear extends YearUnit
 
     /**
      * 天数（平年354，闰年355）
+     *
      * @return int 天数
      */
     function getDayCount(): int
@@ -38,16 +40,12 @@ class HijriYear extends YearUnit
 
     /**
      * 是否闰年（30年周期中第2、5、7、10、13、16、18、21、24、26、29年为闰年）
+     *
      * @return bool true/false
      */
     function isLeap(): bool
     {
         return in_array(((($this->year - 1) % 30) + 30) % 30, [1, 4, 6, 9, 12, 15, 17, 20, 23, 25, 28]);
-    }
-
-    function getName(): string
-    {
-        return $this->year . '年';
     }
 
     function next(int $n): static
@@ -56,7 +54,8 @@ class HijriYear extends YearUnit
     }
 
     /**
-     * 月份列表，1年有12个月。
+     * 月份列表，1年有12个月
+     *
      * @return HijriMonth[] 回历月列表
      */
     function getMonths(): array
@@ -70,6 +69,7 @@ class HijriYear extends YearUnit
 
     /**
      * 首月
+     *
      * @return HijriMonth 回历月
      */
     function getFirstMonth(): HijriMonth

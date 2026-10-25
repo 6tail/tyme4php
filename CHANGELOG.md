@@ -144,3 +144,11 @@
 1. 移除：节日类型FestivalType。
 2. 新增：回历。
 3. 优化：代码和算法。
+
+## [1.5.1] - 2026-10-25
+1. 优化：更多抽象和重构，减少重复代码。
+2. 优化：藏历日RabByungDay使用农历日LunarDay的名称。
+3. 优化：批量公农历转换的性能。
+4. 废弃：getMonthWithLeap()。
+5. 新增：getMonthValue()用于替代getMonthWithLeap()，当月为闰月时返回负数。
+6. 修复：公历周和农历周的equals问题。

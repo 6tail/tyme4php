@@ -3,15 +3,17 @@
 namespace com\tyme\rabbyung;
 
 use com\tyme\lunar\LunarMonth;
-use com\tyme\unit\MonthUnit;
+use com\tyme\unit\AbstractLeapMonth;
+use com\tyme\unit\AbstractYear;
 use InvalidArgumentException;
 
 /**
  * 藏历月，仅支持藏历1950年十二月至藏历2050年十二月
+ *
  * @author 6tail
  * @package com\tyme\rabbyung
  */
-class RabByungMonth extends MonthUnit
+class RabByungMonth extends AbstractLeapMonth
 {
     /**
      * @var string[] 别名
@@ -22,11 +24,6 @@ class RabByungMonth extends MonthUnit
      * @var ?array 缓存{string:int[]}
      */
     protected static ?array $DAYS = null;
-
-    /**
-     * @var bool 是否闰月
-     */
-    protected bool $leap;
 
     private static function init(): void
     {
@@ -57,8 +54,7 @@ class RabByungMonth extends MonthUnit
             static::init();
         }
         self::validate($year, $month);
-        parent::__construct($year, abs($month));
-        $this->leap = $month < 0;
+        parent::__construct($year, $month);
     }
 
     static function validate($year, $month): void
@@ -94,14 +90,9 @@ class RabByungMonth extends MonthUnit
         return RabByungYear::fromYear($this->year);
     }
 
-    /**
-     * 月
-     *
-     * @return int 月，当月为闰月时，返回负数
-     */
-    function getMonthWithLeap(): int
+    function getAbstractYear(): AbstractYear
     {
-        return $this->leap ? -$this->month : $this->month;
+        return $this->getRabByungYear();
     }
 
     /**
@@ -123,16 +114,6 @@ class RabByungMonth extends MonthUnit
         return $index;
     }
 
-    /**
-     * 是否闰月
-     *
-     * @return bool true/false
-     */
-    function isLeap(): bool
-    {
-        return $this->leap;
-    }
-
     function getName(): string
     {
         return ($this->leap ? '闰' : '') . LunarMonth::$NAMES[$this->month - 1];
@@ -148,42 +129,10 @@ class RabByungMonth extends MonthUnit
         return ($this->leap ? '闰' : '') . static::$ALIAS[$this->month - 1];
     }
 
-    function __toString(): string
-    {
-        return $this->getRabByungYear() . $this->getName();
-    }
-
     function next($n): static
     {
-        if ($n == 0) {
-            return static::fromYm($this->getYear(), $this->getMonthWithLeap());
-        }
-        $m = $this->getIndexInYear() + 1 + $n;
-        $y = $this->getRabByungYear();
-        if ($n > 0) {
-            $monthCount = $y->getMonthCount();
-            while ($m > $monthCount) {
-                $m -= $monthCount;
-                $y = $y->next(1);
-                $monthCount = $y->getMonthCount();
-            }
-        } else {
-            while ($m <= 0) {
-                $y = $y->next(-1);
-                $m += $y->getMonthCount();
-            }
-        }
-        $leap = false;
-        $leapMonth = $y->getLeapMonth();
-        if ($leapMonth > 0) {
-            if ($m == $leapMonth + 1) {
-                $leap = true;
-            }
-            if ($m > $leapMonth) {
-                $m--;
-            }
-        }
-        return static::fromYm($y->getYear(), $leap ? -$m : $m);
+        $m = parent::next($n);
+        return static::fromYm($m->year, $m->getMonthValue());
     }
 
     /**
@@ -193,7 +142,7 @@ class RabByungMonth extends MonthUnit
      */
     function getFirstDay(): RabByungDay
     {
-        return new RabByungDay($this->getYear(), $this->getMonthWithLeap(), 1);
+        return new RabByungDay($this->getYear(), $this->getMonthValue(), 1);
     }
 
     /**
@@ -204,25 +153,19 @@ class RabByungMonth extends MonthUnit
     function getDays(): array
     {
         $days = [];
-        $y = $this->getYear();
-        $m = $this->getMonthWithLeap();
+        $m = $this->getMonthValue();
         $missDays = $this->getMissDays();
         $leapDays = $this->getLeapDays();
         for ($i = 1; $i <= 30; $i++) {
             if (in_array($i, $missDays)) continue;
-            $days[] = new RabByungDay($y, $m, $i);
+            $days[] = new RabByungDay($this->year, $m, $i);
             if (in_array($i, $leapDays)) {
-                $days[] = new RabByungDay($y, $m, -$i);
+                $days[] = new RabByungDay($this->year, $m, -$i);
             }
         }
         return $days;
     }
 
-    /**
-     * 当月天数
-     *
-     * @return int 数量
-     */
     function getDayCount(): int
     {
         return 30 + count($this->getLeapDays()) - count($this->getMissDays());

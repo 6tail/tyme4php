@@ -25,7 +25,7 @@ abstract class SecondUnit extends DayUnit
      */
     protected int $second;
 
-    protected function __construct(int $year, int $month, int $day, $hour, $minute, $second)
+    function __construct(int $year, int $month, int $day, $hour, $minute, $second)
     {
         parent::__construct($year, $month, $day);
         $this->hour = $hour;

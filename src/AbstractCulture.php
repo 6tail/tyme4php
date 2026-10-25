@@ -3,10 +3,12 @@
 namespace com\tyme;
 
 
+use BadMethodCallException;
 use InvalidArgumentException;
 
 /**
  * 传统文化抽象
+ *
  * @author 6tail
  * @package com\tyme
  */
@@ -17,6 +19,11 @@ abstract class AbstractCulture implements Culture
     function __toString(): string
     {
         return $this->getName();
+    }
+
+    function getName(): string
+    {
+        throw new BadMethodCallException(__FUNCTION__ . ' is not implemented');
     }
 
     /**

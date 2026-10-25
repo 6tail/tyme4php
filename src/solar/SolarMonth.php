@@ -3,14 +3,15 @@
 namespace com\tyme\solar;
 
 
-use com\tyme\unit\MonthUnit;
+use com\tyme\unit\AbstractMonth;
+use com\tyme\unit\AbstractYear;
 
 /**
  * 公历月
  * @author 6tail
  * @package com\tyme\solar
  */
-class SolarMonth extends MonthUnit
+class SolarMonth extends AbstractMonth
 {
     static array $NAMES = ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月'];
 
@@ -45,11 +46,11 @@ class SolarMonth extends MonthUnit
         return SolarYear::fromYear($this->year);
     }
 
-    /**
-     * 天数（1582年10月只有21天)
-     *
-     * @return int 天数
-     */
+    function getAbstractYear(): AbstractYear
+    {
+        return $this->getSolarYear();
+    }
+
     function getDayCount(): int
     {
         if (1582 === $this->year && 10 === $this->month) {
@@ -83,25 +84,9 @@ class SolarMonth extends MonthUnit
         return SolarSeason::fromIndex($this->year, intdiv($this->getIndexInYear(), 3));
     }
 
-    /**
-     * 周数
-     *
-     * @param int $start 起始星期，1234560分别代表星期一至星期天
-     * @return int 周数
-     */
-    function getWeekCount(int $start): int
-    {
-        return (int)ceil(($this->indexOf(SolarDay::fromYmd($this->year, $this->month, 1)->getWeek()->getIndex() - $start, null, 7) + $this->getDayCount()) / 7);
-    }
-
     function getName(): string
     {
         return static::$NAMES[$this->getIndexInYear()];
-    }
-
-    function __toString(): string
-    {
-        return $this->getSolarYear() . $this->getName();
     }
 
     function next(int $n): static

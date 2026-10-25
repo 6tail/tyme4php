@@ -7,6 +7,7 @@ use com\tyme\AbstractTyme;
 use com\tyme\culture\Week;
 use com\tyme\solar\SolarDay;
 use com\tyme\solar\SolarTime;
+use com\tyme\unit\SecondUnit;
 
 /**
  * 儒略日
@@ -78,7 +79,8 @@ class JulianDay extends AbstractTyme
      */
     function getSolarDay(): SolarDay
     {
-        return $this->getSolarTime()->getSolarDay();
+        $u = $this->getSecondUnit();
+        return SolarDay::fromYmd($u->getYear(), $u->getMonth(), $u->getDay());
     }
 
     /**
@@ -87,6 +89,18 @@ class JulianDay extends AbstractTyme
      * @return SolarTime 公历时刻
      */
     function getSolarTime(): SolarTime
+    {
+        $u = $this->getSecondUnit(true);
+        $y = $u->getYear();
+        $m = $u->getMonth();
+        $d = $u->getDay();
+        $hour = $u->getHour();
+        $minute = $u->getMinute();
+        $second = $u->getSecond();
+        return $second < 60 ? SolarTime::fromYmdHms($y, $m, $d, $hour, $minute, $second) : SolarTime::fromYmdHms($y, $m, $d, $hour, $minute, $second - 60)->next(60);
+    }
+
+    function getSecondUnit(bool $withTime = false): SecondUnit
     {
         $d = (int)($this->day + 0.5);
         $f = $this->day + 0.5 - $d;
@@ -107,17 +121,22 @@ class JulianDay extends AbstractTyme
         }
         $m -= 1;
         $y -= 4715;
-        $f *= 24;
-        $hour = (int)$f;
+        $hour = 0;
+        $minute = 0;
+        $second = 0;
+        if ($withTime) {
+            $f *= 24;
+            $hour = (int)$f;
 
-        $f -= $hour;
-        $f *= 60;
-        $minute = (int)$f;
+            $f -= $hour;
+            $f *= 60;
+            $minute = (int)$f;
 
-        $f -= $minute;
-        $f *= 60;
-        $second = (int)round($f);
-        return $second < 60 ? SolarTime::fromYmdHms($y, $m, $d, $hour, $minute, $second) : SolarTime::fromYmdHms($y, $m, $d, $hour, $minute, $second - 60)->next(60);
+            $f -= $minute;
+            $f *= 60;
+            $second = (int)round($f);
+        }
+        return new class($y, $m, $d, $hour, $minute, $second) extends SecondUnit{};
     }
 
     /**

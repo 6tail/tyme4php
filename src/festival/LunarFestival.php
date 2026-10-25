@@ -27,15 +27,14 @@ class LunarFestival extends AbstractFestival
 
     static function fromIndex(int $year, int $index): ?static
     {
-        if ($index < 0 || $index >= count(static::$NAMES)) {
+        $e = self::buildEvent(static::$NAMES, static::$DATA, $index);
+        if ($e === null) {
             return null;
         }
-        $start = $index * 8;
-        $e = new Event(static::$NAMES[$index], '@' . substr(static::$DATA, $start, 8));
         switch ($e->getType()) {
             case EventType::LUNAR_DAY:
                 $m = $e->getMonth($year);
-                $d = LunarDay::fromYmd($m[0], $m[1], $e->getValue(3));
+                $d = LunarDay::fromYmd($m->getYear(), $m->getMonth(), $e->getValue(3));
                 $offset = $e->getValue(5);
                 return new static($index, $e, $offset === 0 ? $d : $d->next($offset));
             case EventType::TERM_DAY:
@@ -61,7 +60,7 @@ class LunarFestival extends AbstractFestival
                     } else {
                         $m = $e->getMonth($year);
                         $next = $d->next(-$offset);
-                        if ($next->getYear() === $m[0] && $next->getMonth() === $m[1] && $next->getDay() === $e->getValue(3)) {
+                        if ($next->getYear() === $m->getYear() && $next->getMonth() === $m->getMonth() && $next->getDay() === $e->getValue(3)) {
                             return new static($i, $e, $d);
                         }
                     }

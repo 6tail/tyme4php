@@ -22,7 +22,7 @@ use com\tyme\sixtycycle\SixtyCycle;
 use com\tyme\sixtycycle\SixtyCycleDay;
 use com\tyme\sixtycycle\ThreePillars;
 use com\tyme\solar\SolarDay;
-use com\tyme\unit\DayUnit;
+use com\tyme\unit\AbstractDay;
 use InvalidArgumentException;
 
 /**
@@ -31,7 +31,7 @@ use InvalidArgumentException;
  * @author 6tail
  * @package com\tyme\lunar
  */
-class LunarDay extends DayUnit
+class LunarDay extends AbstractDay
 {
     static array $NAMES = ['初一', '初二', '初三', '初四', '初五', '初六', '初七', '初八', '初九', '初十', '十一', '十二', '十三', '十四', '十五', '十六', '十七', '十八', '十九', '二十', '廿一', '廿二', '廿三', '廿四', '廿五', '廿六', '廿七', '廿八', '廿九', '三十'];
 
@@ -210,7 +210,7 @@ class LunarDay extends DayUnit
     {
         $today = $this->getSolarDay();
         $m = $this->getLunarMonth()->next(1);
-        $p = Phase::fromIndex($m->getYear(), $m->getMonthWithLeap(), 0);
+        $p = Phase::fromIndex($m->getYear(), $m->getMonthValue(), 0);
         $d = $p->getSolarDay();
         while ($d->isAfter($today)) {
             $p = $p->next(-1);

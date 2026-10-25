@@ -36,7 +36,7 @@ class Phase extends LoopTyme
             parent::__construct(static::$NAMES, $index);
             $m = LunarMonth::fromYm($lunarYear, $lunarMonth)->next(intdiv($index, $this->getSize()));
             $this->lunarYear = $m->getYear();
-            $this->lunarMonth = $m->getMonthWithLeap();
+            $this->lunarMonth = $m->getMonthValue();
         } else if ($name !== null) {
             parent::__construct(static::$NAMES, null, $name);
             $this->lunarYear = $lunarYear;
@@ -66,7 +66,7 @@ class Phase extends LoopTyme
         if ($i != 0) {
             $m = $m->next($i);
         }
-        return static::fromIndex($m->getYear(), $m->getMonthWithLeap(), $this->nextIndex($n));
+        return static::fromIndex($m->getYear(), $m->getMonthValue(), $this->nextIndex($n));
     }
 
     function getStartSolarTime(): SolarTime
