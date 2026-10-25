@@ -3,7 +3,8 @@
 namespace com\tyme\solar;
 
 
-use com\tyme\unit\WeekUnit;
+use com\tyme\unit\AbstractMonth;
+use com\tyme\unit\AbstractWeek;
 use InvalidArgumentException;
 
 /**
@@ -11,7 +12,7 @@ use InvalidArgumentException;
  * @author 6tail
  * @package com\tyme\solar
  */
-class SolarWeek extends WeekUnit
+class SolarWeek extends AbstractWeek
 {
     protected function __construct(int $year, int $month, int $index, int $start)
     {
@@ -43,6 +44,11 @@ class SolarWeek extends WeekUnit
         return SolarMonth::fromYm($this->year, $this->month);
     }
 
+    function getAbstractMonth(): AbstractMonth
+    {
+        return $this->getSolarMonth();
+    }
+
     /**
      * 位于当年的索引
      *
@@ -66,35 +72,10 @@ class SolarWeek extends WeekUnit
         return static::$NAMES[$this->index];
     }
 
-    function __toString(): string
-    {
-        return $this->getSolarMonth() . $this->getName();
-    }
-
     function next(int $n): static
     {
-        $d = $this->index + $n;
-        $m = $this->getSolarMonth();
-        if ($n > 0) {
-            $weekCount = $m->getWeekCount($this->start);
-            while ($d >= $weekCount) {
-                $d -= $weekCount;
-                $m = $m->next(1);
-                if ($m->getFirstDay()->getWeek()->getIndex() != $this->start) {
-                    $d += 1;
-                }
-                $weekCount = $m->getWeekCount($this->start);
-            }
-        } else if ($n < 0) {
-            while ($d < 0) {
-                if ($m->getFirstDay()->getWeek()->getIndex() != $this->start) {
-                    $d -= 1;
-                }
-                $m = $m->next(-1);
-                $d += $m->getWeekCount($this->start);
-            }
-        }
-        return static::fromYm($m->getYear(), $m->getMonth(), $d, $this->start);
+        $w = parent::next($n);
+        return static::fromYm($w->year, $w->month, $w->index, $this->start);
     }
 
     /**
@@ -130,6 +111,6 @@ class SolarWeek extends WeekUnit
      */
     function equals(mixed $o): bool
     {
-        return $o instanceof SolarWeek && $this->getFirstDay() . $this->equals($o->getFirstDay());
+        return $o instanceof SolarWeek && $this->getFirstDay()->equals($o->getFirstDay());
     }
 }

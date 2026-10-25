@@ -3,19 +3,15 @@
 namespace com\tyme\lunar;
 
 
-use com\tyme\culture\Direction;
 use com\tyme\culture\KitchenGodSteed;
-use com\tyme\culture\star\nine\NineStar;
-use com\tyme\culture\Twenty;
-use com\tyme\sixtycycle\SixtyCycle;
-use com\tyme\unit\YearUnit;
+use com\tyme\unit\AbstractTraditionalYear;
 
 /**
  * 农历年
  * @author 6tail
  * @package com\tyme\lunar
  */
-class LunarYear extends YearUnit
+class LunarYear extends AbstractTraditionalYear
 {
     /**
      * @var ?array 缓存{闰月:年}
@@ -94,16 +90,6 @@ class LunarYear extends YearUnit
     }
 
     /**
-     * 月数
-     *
-     * @return int 月数
-     */
-    function getMonthCount(): int
-    {
-        return $this->getLeapMonth() < 1 ? 12 : 13;
-    }
-
-    /**
      * 依据国家标准《农历的编算和颁行》GB/T 33661-2017，农历年有2种命名方法：干支纪年法和生肖纪年法，这里默认采用干支纪年法。
      *
      * @return string 名称
@@ -134,46 +120,6 @@ class LunarYear extends YearUnit
             }
         }
         return 0;
-    }
-
-    /**
-     * 干支
-     *
-     * @return SixtyCycle 干支
-     */
-    function getSixtyCycle(): SixtyCycle
-    {
-        return SixtyCycle::fromIndex($this->year - 4);
-    }
-
-    /**
-     * 运
-     *
-     * @return Twenty 运
-     */
-    function getTwenty(): Twenty
-    {
-        return Twenty::fromIndex((int)floor(($this->year - 1864) / 20));
-    }
-
-    /**
-     * 九星
-     *
-     * @return NineStar 九星
-     */
-    function getNineStar(): NineStar
-    {
-        return NineStar::fromIndex(63 + $this->getTwenty()->getSixty()->getIndex() * 3 - $this->getSixtyCycle()->getIndex());
-    }
-
-    /**
-     * 太岁方位
-     *
-     * @return Direction 方位
-     */
-    function getJupiterDirection(): Direction
-    {
-        return Direction::fromIndex([0, 7, 7, 2, 3, 3, 8, 1, 1, 6, 0, 0][$this->getSixtyCycle()->getEarthBranch()->getIndex()]);
     }
 
     /**

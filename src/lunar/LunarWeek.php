@@ -76,7 +76,7 @@ class LunarWeek extends WeekUnit
                 $d += $m->getWeekCount($this->start);
             }
         }
-        return static::fromYm($m->getYear(), $m->getMonthWithLeap(), $d, $this->start);
+        return static::fromYm($m->getYear(), $m->getMonthValue(), $d, $this->start);
     }
 
     /**
@@ -112,6 +112,6 @@ class LunarWeek extends WeekUnit
      */
     function equals(mixed $o): bool
     {
-        return $o instanceof LunarWeek && $this->getFirstDay() . $this->equals($o->getFirstDay());
+        return $o instanceof LunarWeek && $this->getFirstDay()->equals($o->getFirstDay());
     }
 }

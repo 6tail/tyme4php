@@ -2,19 +2,20 @@
 
 namespace com\tyme\rabbyung;
 
+use com\tyme\culture\Week;
+use com\tyme\lunar\LunarDay;
 use com\tyme\solar\SolarDay;
-use com\tyme\unit\DayUnit;
+use com\tyme\unit\AbstractDay;
 use InvalidArgumentException;
 
 /**
  * 藏历日，仅支持藏历1950年十二月初一（公历1951年1月8日）至藏历2050年十二月三十（公历2051年2月11日）
+ *
  * @author 6tail
  * @package com\tyme\rabbyung
  */
-class RabByungDay extends DayUnit
+class RabByungDay extends AbstractDay
 {
-    static array $NAMES = ['初一', '初二', '初三', '初四', '初五', '初六', '初七', '初八', '初九', '初十', '十一', '十二', '十三', '十四', '十五', '十六', '十七', '十八', '十九', '二十', '廿一', '廿二', '廿三', '廿四', '廿五', '廿六', '廿七', '廿八', '廿九', '三十'];
-
     /**
      * @var bool 是否闰日
      */
@@ -96,7 +97,7 @@ class RabByungDay extends DayUnit
                 }
             }
         }
-        return new self($m->getYear(), $m->getMonthWithLeap(), $day);
+        return new self($m->getYear(), $m->getMonthValue(), $day);
     }
 
     /**
@@ -129,9 +130,14 @@ class RabByungDay extends DayUnit
         return $this->leap ? -$this->day : $this->day;
     }
 
+    function getWeek(): Week
+    {
+        return $this->getSolarDay()->getWeek();
+    }
+
     function getName(): string
     {
-        return ($this->leap ? '闰' : '') . static::$NAMES[$this->day - 1];
+        return ($this->leap ? '闰' : '') . LunarDay::$NAMES[$this->day - 1];
     }
 
     function __toString(): string

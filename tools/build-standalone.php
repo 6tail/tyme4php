@@ -74,7 +74,7 @@ function parseDirectory($path): void
         $files = sortFiles($files, $sorts);
     } else if ('../src/unit' == $path) {
         $sorts = array();
-        foreach (['YearUnit', 'MonthUnit', 'WeekUnit', 'DayUnit', 'SecondUnit'] as $name) {
+        foreach (['YearUnit', 'MonthUnit', 'WeekUnit', 'DayUnit', 'SecondUnit', 'AbstractYear', 'AbstractTraditionalYear', 'AbstractMonth', 'AbstractLeapMonth', 'AbstractWeek', 'AbstractDay'] as $name) {
             $sorts[] = '../src/unit/'. $name . '.php';
         }
         $files = sortFiles($files, $sorts);
@@ -82,6 +82,12 @@ function parseDirectory($path): void
         $sorts = array();
         foreach (['AbstractFestival', 'LunarFestival', 'SolarFestival'] as $name) {
             $sorts[] = '../src/festival/'. $name . '.php';
+        }
+        $files = sortFiles($files, $sorts);
+    } else if ('../src/eightchar/provider/impl' == $path) {
+        $sorts = array();
+        foreach (['AbstractChildLimitProvider', 'DefaultChildLimitProvider', 'LunarSect1ChildLimitProvider', 'LunarSect2ChildLimitProvider', 'China95ChildLimitProvider', 'DefaultEightCharProvider', 'LunarSect2EightCharProvider'] as $name) {
+            $sorts[] = '../src/eightchar/provider/impl/'. $name . '.php';
         }
         $files = sortFiles($files, $sorts);
     }

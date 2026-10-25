@@ -7,6 +7,7 @@ use com\tyme\solar\SolarDay;
 
 /**
  * 法定假日（自2001-12-29起）
+ *
  * @author 6tail
  * @package com\tyme\holiday
  */
@@ -72,28 +73,21 @@ class LegalHoliday
         }
         $index += $n;
         $y = $year;
-        if ($n > 0) {
-            while ($index >= $size) {
+        while ($index >= $size || $index < 0) {
+            if ($index >= $size) {
                 $index -= $size;
                 $y += 1;
-                $size = 0;
-                if(preg_match_all(sprintf($reg, $y), static::$DATA, $matches)) {
-                    $size = count($matches[0]);
-                }
-                if ($size < 1) {
-                    return null;
-                }
-            }
-        } else {
-            while ($index < 0) {
+            } else {
                 $y -= 1;
-                $size = 0;
-                if(preg_match_all(sprintf($reg, $y), static::$DATA, $matches)) {
-                    $size = count($matches[0]);
-                }
-                if ($size < 1) {
-                    return null;
-                }
+            }
+            $size = 0;
+            if(preg_match_all(sprintf($reg, $y), static::$DATA, $matches)) {
+                $size = count($matches[0]);
+            }
+            if ($size < 1) {
+                return null;
+            }
+            if ($index < 0) {
                 $index += $size;
             }
         }

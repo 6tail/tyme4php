@@ -15,7 +15,7 @@ abstract class MonthUnit extends YearUnit
      */
     protected int $month;
 
-    protected function __construct(int $year, int $month)
+    function __construct(int $year, int $month)
     {
         parent::__construct($year);
         $this->month = $month;

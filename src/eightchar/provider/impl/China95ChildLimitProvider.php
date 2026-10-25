@@ -9,20 +9,15 @@ use com\tyme\solar\SolarTime;
 
 /**
  * 元亨利贞的童限计算
+ *
  * @author 6tail
  * @package com\tyme\eightchar\provider\impl
  */
-class China95ChildLimitProvider extends AbstractChildLimitProvider
+class China95ChildLimitProvider extends LunarSect2ChildLimitProvider
 {
     function getInfo(SolarTime $birthTime, SolarTerm $term): ChildLimitInfo
     {
-        // 出生时刻和节令时刻相差的分钟数
-        $minutes = intdiv(abs($term->getJulianDay()->getSolarTime()->subtract($birthTime)), 60);
-        $year = intdiv($minutes, 4320);
-        $minutes %= 4320;
-        $month = intdiv($minutes, 360);
-        $minutes %= 360;
-        $day = intdiv($minutes, 12);
-        return $this->next($birthTime, $year, $month, $day, 0, 0, 0);
+        $t = $this->compute($birthTime, $term);
+        return $this->next($birthTime, $t->getYear(), $t->getMonth(), $t->getDay(), 0, 0, 0);
     }
 }

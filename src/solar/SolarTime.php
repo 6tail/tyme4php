@@ -136,7 +136,7 @@ class SolarTime extends SecondUnit
         if ($n === 0) {
             return static::fromYmdHms($this->year, $this->month, $this->day, $this->hour, $this->minute, $this->second);
         }
-        $t = $this->hour * 3600 + $this->minute * 60 + $this->second + $n;
+        $t = $this->getSecondsInDay() + $n;
         $s = (($t % 86400) + 86400) % 86400;
         $d = $this->getSolarDay()->next((int) floor($t / 86400));
         return static::fromYmdHms($d->getYear(), $d->getMonth(), $d->getDay(), (int) ($s / 3600), (int) (($s % 3600) / 60), $s % 60);
@@ -171,7 +171,7 @@ class SolarTime extends SecondUnit
     function getPhase(): Phase
     {
         $month = $this->getLunarHour()->getLunarDay()->getLunarMonth()->next(1);
-        $p = Phase::fromIndex($month->getYear(), $month->getMonthWithLeap(), 0);
+        $p = Phase::fromIndex($month->getYear(), $month->getMonthValue(), 0);
         while ($p->getSolarTime()->isAfter($this)) {
             $p = $p->next(-1);
         }

@@ -28,7 +28,7 @@ use com\tyme\rabbyung\RabByungDay;
 use com\tyme\sixtycycle\HideHeavenStem;
 use com\tyme\sixtycycle\HideHeavenStemDay;
 use com\tyme\sixtycycle\SixtyCycleDay;
-use com\tyme\unit\DayUnit;
+use com\tyme\unit\AbstractDay;
 use InvalidArgumentException;
 
 /**
@@ -36,7 +36,7 @@ use InvalidArgumentException;
  * @author 6tail
  * @package com\tyme\solar
  */
-class SolarDay extends DayUnit
+class SolarDay extends AbstractDay
 {
     static array $NAMES = ['1日', '2日', '3日', '4日', '5日', '6日', '7日', '8日', '9日', '10日', '11日', '12日', '13日', '14日', '15日', '16日', '17日', '18日', '19日', '20日', '21日', '22日', '23日', '24日', '25日', '26日', '27日', '28日', '29日', '30日', '31日'];
 
@@ -95,7 +95,7 @@ class SolarDay extends DayUnit
     {
         $days = [19, 18, 20, 19, 20, 21, 22, 22, 22, 23, 22, 21];
         $m = $this->month - 1;
-        $offset = ($this->day > $days[$m]) ? 1 : 0;
+        $offset = $this->day > $days[$m] ? 1 : 0;
         return Constellation::fromIndex(9 + $m + $offset);
     }
 
@@ -343,7 +343,7 @@ class SolarDay extends DayUnit
             $m = $m->next(-1);
             $days += $m->getDayCount();
         }
-        return LunarDay::fromYmd($m->getYear(), $m->getMonthWithLeap(), $days + 1);
+        return LunarDay::fromYmd($m->getYear(), $m->getMonthValue(), $days + 1);
     }
 
     /**
@@ -394,7 +394,7 @@ class SolarDay extends DayUnit
     function getPhaseDay(): PhaseDay
     {
         $month = $this->getLunarDay()->getLunarMonth()->next(1);
-        $p = Phase::fromIndex($month->getYear(), $month->getMonthWithLeap(), 0);
+        $p = Phase::fromIndex($month->getYear(), $month->getMonthValue(), 0);
         $d = $p->getSolarDay();
         while ($d->isAfter($this)) {
             $p = $p->next(-1);

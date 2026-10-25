@@ -10,10 +10,12 @@ use com\tyme\lunar\LunarMonth;
 use com\tyme\solar\SolarDay;
 use com\tyme\solar\SolarMonth;
 use com\tyme\solar\SolarTerm;
+use com\tyme\unit\MonthUnit;
 use InvalidArgumentException;
 
 /**
  * 事件
+ *
  * @author 6tail
  * @package com\tyme\event
  */
@@ -84,7 +86,7 @@ class Event extends AbstractCulture
         return $this->getCharIndex($index) - 31;
     }
 
-    function getMonth(int $year): array
+    function getMonth(int $year): MonthUnit
     {
         $y = $year;
         $m = $this->getValue(2);
@@ -92,7 +94,7 @@ class Event extends AbstractCulture
             $m = 1;
             $y += 1;
         }
-        return [$y, $m];
+        return new class($y, $m) extends MonthUnit {};
     }
 
     /**
@@ -208,6 +210,25 @@ class Event extends AbstractCulture
         return $offset === 0 ? $d : $d->next($offset);
     }
 
+    protected function getSolarDayByDay(int $year, bool $isLunar): ?SolarDay
+    {
+        $month = $this->getMonth($year);
+        $y = $month->getYear();
+        $m = $month->getMonth();
+        $d = $this->getValue(3);
+        $delay = $this->getValue(4);
+        $lastDay = $isLunar ? LunarMonth::fromYm($y, $m)->getDayCount() : SolarMonth::fromYm($y, $m)->getDayCount();
+        if ($d > $lastDay) {
+            if ($delay === 0) {
+                return null;
+            } else if ($delay < 0) {
+                return $isLunar ? LunarDay::fromYmd($y, $m, $d + $delay)->getSolarDay() : SolarDay::fromYmd($y, $m, $d + $delay);
+            }
+            return $isLunar ? LunarDay::fromYmd($y, $m, $lastDay)->getSolarDay()->next($delay) : SolarDay::fromYmd($y, $m, $lastDay)->next($delay);
+        }
+        return $isLunar ? LunarDay::fromYmd($y, $m, $d)->getSolarDay() : SolarDay::fromYmd($y, $m, $d);
+    }
+
     /**
      * 根据公历日获取公历日
      * @param int $year 年
@@ -215,19 +236,7 @@ class Event extends AbstractCulture
      */
     protected function getSolarDayBySolarDay(int $year): ?SolarDay
     {
-        $month = $this->getMonth($year);
-        $y = $month[0];
-        $m = $month[1];
-        $d = $this->getValue(3);
-        $delay = $this->getValue(4);
-        $lastDay = SolarMonth::fromYm($y, $m)->getDayCount();
-        if ($d > $lastDay) {
-            if ($delay === 0) {
-                return null;
-            }
-            return $delay < 0 ? SolarDay::fromYmd($y, $m, $d + $delay) : SolarDay::fromYmd($y, $m, $lastDay)->next($delay);
-        }
-        return SolarDay::fromYmd($y, $m, $d);
+        return $this->getSolarDayByDay($year, false);
     }
 
     /**
@@ -237,19 +246,7 @@ class Event extends AbstractCulture
      */
     protected function getSolarDayByLunarDay(int $year): ?SolarDay
     {
-        $month = $this->getMonth($year);
-        $y = $month[0];
-        $m = $month[1];
-        $d = $this->getValue(3);
-        $delay = $this->getValue(4);
-        $lastDay = LunarMonth::fromYm($y, $m)->getDayCount();
-        if ($d > $lastDay) {
-            if ($delay === 0) {
-                return null;
-            }
-            return $delay < 0 ? LunarDay::fromYmd($y, $m, $d + $delay)->getSolarDay() : LunarDay::fromYmd($y, $m, $lastDay)->getSolarDay()->next($delay);
-        }
-        return LunarDay::fromYmd($y, $m, $d)->getSolarDay();
+        return $this->getSolarDayByDay($year, true);
     }
 
     /**

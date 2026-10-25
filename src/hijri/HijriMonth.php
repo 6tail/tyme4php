@@ -2,14 +2,16 @@
 
 namespace com\tyme\hijri;
 
-use com\tyme\unit\MonthUnit;
+use com\tyme\unit\AbstractMonth;
+use com\tyme\unit\AbstractYear;
 
 /**
  * 回历月
+ *
  * @author 6tail
  * @package com\tyme\hijri
  */
-class HijriMonth extends MonthUnit
+class HijriMonth extends AbstractMonth
 {
 
     static array $NAMES = ['穆哈兰姆月', '色法尔月', '赖比尔·敖外鲁月', '赖比尔·阿色尼月', '主马达·敖外鲁月', '主马达·阿色尼月', '赖哲卜月', '舍尔邦月', '赖买丹月', '闪瓦鲁月', '都尔喀尔德月', '都尔黑哲月'];
@@ -33,6 +35,7 @@ class HijriMonth extends MonthUnit
 
     /**
      * 回历年
+     *
      * @return HijriYear 回历年
      */
     function getHijriYear(): HijriYear
@@ -40,8 +43,14 @@ class HijriMonth extends MonthUnit
         return HijriYear::fromYear($this->year);
     }
 
+    function getAbstractYear(): AbstractYear
+    {
+        return $this->getHijriYear();
+    }
+
     /**
      * 天数（单数月30天，双数月29天，闰年第12月30天)
+     *
      * @return int 天数
      */
     function getDayCount(): int
@@ -55,6 +64,7 @@ class HijriMonth extends MonthUnit
 
     /**
      * 位于当年的索引(0-11)
+     *
      * @return int 索引
      */
     function getIndexInYear(): int
@@ -75,6 +85,7 @@ class HijriMonth extends MonthUnit
 
     /**
      * 本月的回历日列表
+     *
      * @return HijriDay[] 回历日列表
      */
     function getDays(): array
@@ -89,15 +100,11 @@ class HijriMonth extends MonthUnit
 
     /**
      * 首日
+     *
      * @return HijriDay 回历日
      */
     function getFirstDay(): HijriDay
     {
         return HijriDay::fromYmd($this->year, $this->month, 1);
-    }
-
-    function __toString(): string
-    {
-        return $this->getHijriYear() . $this->getName();
     }
 }
