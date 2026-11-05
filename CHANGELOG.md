@@ -152,3 +152,6 @@
 4. 废弃：getMonthWithLeap()。
 5. 新增：getMonthValue()用于替代getMonthWithLeap()，当月为闰月时返回负数。
 6. 修复：公历周和农历周的equals问题。
+
+## [1.5.2] - 2026-11-05
+1. 新增：2027年法定假日。
