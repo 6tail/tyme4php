@@ -8,7 +8,9 @@ use com\tyme\culture\Land;
 use com\tyme\culture\Luck;
 use com\tyme\culture\star\seven\SevenStar;
 use com\tyme\culture\Zone;
+use com\tyme\culture\Week;
 use com\tyme\LoopTyme;
+use com\tyme\sixtycycle\SixtyCycle;
 
 /**
  * 二十八宿
@@ -36,6 +38,11 @@ class TwentyEightStar extends LoopTyme
     static function fromName(string $name): static
     {
         return new static(null, $name);
+    }
+
+    static function fromDay(SixtyCycle $day, Week $week): static
+    {
+        return static::fromIndex(10 + 8 * $week->getIndex() - 7 * $day->getEarthBranch()->getIndex());
     }
 
     function next(int $n): static

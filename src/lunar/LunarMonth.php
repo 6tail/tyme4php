@@ -205,9 +205,7 @@ class LunarMonth extends AbstractLeapMonth
      */
     function getJupiterDirection(): Direction
     {
-        $sixtyCycle = $this->getSixtyCycle();
-        $n = [7, -1, 1, 3][$sixtyCycle->getEarthBranch()->next(-2)->getIndex() % 4];
-        return $n != -1 ? Direction::fromIndex($n) : $sixtyCycle->getHeavenStem()->getDirection();
+        return Direction::monthJupiter($this->getSixtyCycle());
     }
 
     /**

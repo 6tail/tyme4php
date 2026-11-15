@@ -143,7 +143,6 @@ class SixtyCycleMonth extends AbstractTyme
      */
     function getJupiterDirection(): Direction
     {
-        $n = [7, -1, 1, 3][$this->month->getEarthBranch()->next(-2)->getIndex() % 4];
-        return $n == -1 ? $this->month->getHeavenStem()->getDirection() : Direction::fromIndex($n);
+        return Direction::monthJupiter($this->month);
     }
 }

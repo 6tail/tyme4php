@@ -4,6 +4,7 @@ namespace com\tyme\culture;
 
 
 use com\tyme\LoopTyme;
+use com\tyme\sixtycycle\SixtyCycle;
 
 /**
  * 方位
@@ -34,6 +35,18 @@ class Direction extends LoopTyme
     static function fromName(string $name): static
     {
         return new static(null, $name);
+    }
+
+    static function monthJupiter(SixtyCycle $month): static
+    {
+        $n = [7, -1, 1, 3][$month->getEarthBranch()->next(-2)->getIndex() % 4];
+        return $n == -1 ? $month->getHeavenStem()->getDirection() : static::fromIndex($n);
+    }
+
+    static function dayJupiter(Direction $yearJupiter, SixtyCycle $day): static
+    {
+        $index = $day->getIndex();
+        return $index % 12 < 6 ? Element::fromIndex(intdiv($index, 12))->getDirection() : $yearJupiter;
     }
 
     function next(int $n): static

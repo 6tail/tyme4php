@@ -167,7 +167,7 @@ class LunarHour extends SecondUnit
      */
     function getTwelveStar(): TwelveStar
     {
-        return TwelveStar::fromIndex($this->getSixtyCycle()->getEarthBranch()->getIndex() + (8 - $this->getSixtyCycleHour()->getDay()->getEarthBranch()->getIndex() % 6) * 2);
+        return TwelveStar::fromHour($this->getSixtyCycleHour()->getDay(), $this->getSixtyCycle());
     }
 
     /**

@@ -187,8 +187,7 @@ class LunarDay extends AbstractDay
      */
     function getJupiterDirection(): Direction
     {
-        $index = $this->getSixtyCycle()->getIndex();
-        return $index % 12 < 6 ? Element::fromIndex(intdiv($index, 12))->getDirection() : $this->getLunarMonth()->getLunarYear()->getJupiterDirection();
+        return Direction::dayJupiter($this->getLunarMonth()->getLunarYear()->getJupiterDirection(), $this->getSixtyCycle());
     }
 
     /**
@@ -256,7 +255,7 @@ class LunarDay extends AbstractDay
      */
     function getTwentyEightStar(): TwentyEightStar
     {
-        return TwentyEightStar::fromIndex([10, 18, 26, 6, 14, 22, 2][$this->getSolarDay()->getWeek()->getIndex()])->next(-7 * $this->getSixtyCycle()->getEarthBranch()->getIndex());
+        return TwentyEightStar::fromDay($this->getSixtyCycle(), $this->getSolarDay()->getWeek());
     }
 
     /**

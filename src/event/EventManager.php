@@ -23,7 +23,7 @@ class EventManager
     /**
      * 数据匹配的正则表达式
      */
-    const REGEX = '/(@[0-9A-Za-z_]{8})(%s)/';
+    const REGEX = '/(@[0-9A-Za-z_]{8})(%s)(?=@|$)/';
 
     /**
      * 删除事件
@@ -43,7 +43,9 @@ class EventManager
     {
         $pattern = sprintf(self::REGEX, preg_quote($name, '/'));
         if (preg_match($pattern, self::$DATA)) {
-            self::$DATA = preg_replace($pattern, $data, self::$DATA);
+            self::$DATA = preg_replace_callback($pattern, function () use ($data) {
+                return $data;
+            }, self::$DATA);
         } else {
             self::$DATA .= $data;
         }

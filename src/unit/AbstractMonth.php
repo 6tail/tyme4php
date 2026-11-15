@@ -34,7 +34,7 @@ abstract class AbstractMonth extends MonthUnit
      */
     function getWeekCount(int $start): int
     {
-        return (int)ceil(($this->indexOf($this->getFirstDay()->getWeek()->getIndex() - $start, null, 7) + $this->getDayCount()) / 7);
+        return intdiv($this->indexOf($this->getFirstDay()->getWeek()->getIndex() - $start, null, 7) + $this->getDayCount() + 6, 7);
     }
 
     /**

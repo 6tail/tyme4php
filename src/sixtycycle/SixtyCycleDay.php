@@ -143,7 +143,7 @@ class SixtyCycleDay extends AbstractTyme
      */
     function getTwelveStar(): TwelveStar
     {
-        return TwelveStar::fromIndex($this->day->getEarthBranch()->getIndex() + (8 - $this->getMonth()->getEarthBranch()->getIndex() % 6) * 2);
+        return TwelveStar::fromDay($this->getMonth(), $this->day);
     }
 
     /**
@@ -163,8 +163,7 @@ class SixtyCycleDay extends AbstractTyme
      */
     function getJupiterDirection(): Direction
     {
-        $index = $this->day->getIndex();
-        return $index % 12 < 6 ? Element::fromIndex(intdiv($index, 12))->getDirection() : $this->month->getSixtyCycleYear()->getJupiterDirection();
+        return Direction::dayJupiter($this->month->getSixtyCycleYear()->getJupiterDirection(), $this->day);
     }
 
     /**
@@ -184,7 +183,7 @@ class SixtyCycleDay extends AbstractTyme
      */
     function getTwentyEightStar(): TwentyEightStar
     {
-        return TwentyEightStar::fromIndex([10, 18, 26, 6, 14, 22, 2][$this->solarDay->getWeek()->getIndex()])->next(-7 * $this->day->getEarthBranch()->getIndex());
+        return TwentyEightStar::fromDay($this->day, $this->solarDay->getWeek());
     }
 
     /**

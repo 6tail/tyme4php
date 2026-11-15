@@ -118,8 +118,17 @@ class SolarMonth extends AbstractMonth
      */
     function getDays(): array
     {
-        $size = $this->getDayCount();
         $l = array();
+        if (1582 === $this->year && 10 === $this->month) {
+            for ($i = 1; $i <= 4; $i++) {
+                $l[] = SolarDay::fromYmd($this->year, $this->month, $i);
+            }
+            for ($i = 15; $i <= 31; $i++) {
+                $l[] = SolarDay::fromYmd($this->year, $this->month, $i);
+            }
+            return $l;
+        }
+        $size = $this->getDayCount();
         for ($i = 1; $i <= $size; $i++) {
             $l[] = SolarDay::fromYmd($this->year, $this->month, $i);
         }

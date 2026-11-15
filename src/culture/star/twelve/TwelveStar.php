@@ -4,6 +4,7 @@ namespace com\tyme\culture\star\twelve;
 
 
 use com\tyme\LoopTyme;
+use com\tyme\sixtycycle\SixtyCycle;
 
 /**
  * 黄道黑道十二神
@@ -31,6 +32,21 @@ class TwelveStar extends LoopTyme
     static function fromName(string $name): static
     {
         return new static(null, $name);
+    }
+
+    protected static function fromSixtyCycle(SixtyCycle $parent, SixtyCycle $base): static
+    {
+        return static::fromIndex($base->getEarthBranch()->getIndex() + (8 - $parent->getEarthBranch()->getIndex() % 6) * 2);
+    }
+
+    static function fromDay(SixtyCycle $month, SixtyCycle $day): static
+    {
+        return static::fromSixtyCycle($month, $day);
+    }
+
+    static function fromHour(SixtyCycle $day, SixtyCycle $hour): static
+    {
+        return static::fromSixtyCycle($day, $hour);
     }
 
     function next(int $n): static

@@ -222,7 +222,11 @@ class Event extends AbstractCulture
             if ($delay === 0) {
                 return null;
             } else if ($delay < 0) {
-                return $isLunar ? LunarDay::fromYmd($y, $m, $d + $delay)->getSolarDay() : SolarDay::fromYmd($y, $m, $d + $delay);
+                $day = $d + $delay;
+                if ($day > 0 && $day <= $lastDay) {
+                    return $isLunar ? LunarDay::fromYmd($y, $m, $day)->getSolarDay() : SolarDay::fromYmd($y, $m, $day);
+                }
+                return null;
             }
             return $isLunar ? LunarDay::fromYmd($y, $m, $lastDay)->getSolarDay()->next($delay) : SolarDay::fromYmd($y, $m, $lastDay)->next($delay);
         }

@@ -38,18 +38,20 @@ class JulianDay extends AbstractTyme
 
     static function fromYmdHms(int $year, int $month, int $day, int $hour, int $minute, int $second): static
     {
+        $y = $year;
+        $m = $month;
         $d = $day + (($second / 60 + $minute) / 60 + $hour) / 24;
         $n = 0;
-        $g = $year * 372 + $month * 31 + (int)$d >= 588829;
-        if ($month <= 2) {
-            $month += 12;
-            $year--;
+        $g = $y * 372 + $m * 31 + (int)$d >= 588829;
+        if ($m <= 2) {
+            $m += 12;
+            $y--;
         }
         if ($g) {
-            $n = (int)($year * 0.01);
+            $n = (int)($y * 0.01);
             $n = 2 - $n + (int)($n * 0.25);
         }
-        return static::fromJulianDay((int)(365.25 * ($year + 4716)) + (int)(30.6001 * ($month + 1)) + $d + $n - 1524.5);
+        return static::fromJulianDay((int)(365.25 * ($y + 4716)) + (int)(30.6001 * ($m + 1)) + $d + $n - 1524.5);
     }
 
     /**

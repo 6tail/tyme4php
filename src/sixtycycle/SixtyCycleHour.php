@@ -53,7 +53,7 @@ class SixtyCycleHour extends AbstractTyme
 
         $term = $solarTime->getTerm();
         $index = $term->getIndex() - 3;
-        if ($index < 0 && $term->getJulianDay()->getSolarTime()->isAfter(SolarTerm::fromIndex($solarYear, 3)->getJulianDay()->getSolarTime())) {
+        if ($index < 0 && $term->getJulianDay()->getSolarTime()->isAfter($springSolarTime)) {
             $index += 24;
         }
         $d = $lunarDay->getSixtyCycle();
@@ -155,7 +155,7 @@ class SixtyCycleHour extends AbstractTyme
      */
     function getTwelveStar(): TwelveStar
     {
-        return TwelveStar::fromIndex($this->hour->getEarthBranch()->getIndex() + (8 - $this->getDay()->getEarthBranch()->getIndex() % 6) * 2);
+        return TwelveStar::fromHour($this->getDay(), $this->hour);
     }
 
     /**
